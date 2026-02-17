@@ -37,7 +37,7 @@ namespace CPP.Framework.Data
         /// <param name="state">The current change state of <paramref name="entity"/>.</param>
         /// <returns>
         /// The initial change state to set for <paramref name="entity"/>, which should normally be
-        /// <see cref="EntityState.Unchanged"/>.
+        /// EntityState.Unchanged.
         /// </returns>
         [UsedImplicitly]
         internal TState Materialize(object entity, TState state) => this.OnMaterialize(entity, state);
@@ -65,7 +65,7 @@ namespace CPP.Framework.Data
         /// <param name="state">The current change state of <paramref name="entity"/>.</param>
         /// <returns>
         /// The initial change state to set for <paramref name="entity"/>, which should normally be
-        /// <see cref="EntityState.Unchanged"/>.
+        /// EntityState.Unchanged.
         /// </returns>
         protected virtual TState OnMaterialize(object entity, TState state) => state;
 

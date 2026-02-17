@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace CPP.Framework.Data.Entities
 {
     /// <summary>
-    /// Thrown when a <see cref="DataEntityAttribute"/> has not been applied to a target entity.
+    /// Thrown when a DataEntityAttribute has not been applied to a target entity.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public class DataEntityNameMissingException : DataEntityException
@@ -41,12 +41,12 @@ namespace CPP.Framework.Data.Entities
         private static string FormatMessage(Type type)
         {
             type = (type ?? typeof(Object));
-            return String.Format(ErrorStrings.MissingEntityName, type.Name);
+            return String.Format(EntityDataErrorStrings.MissingEntityName, type.Name);
         }
     }
 
     /// <summary>
-    /// Thrown when a <see cref="DataEntityAttribute"/> has not been applied to a target entity.
+    /// Thrown when a DataEntityAttribute has not been applied to a target entity.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public class DataEntityNameMissingException<TEntity> :

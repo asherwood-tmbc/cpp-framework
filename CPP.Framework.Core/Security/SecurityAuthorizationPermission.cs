@@ -559,7 +559,7 @@ namespace CPP.Framework.Security
         /// <param name="name">The name of the attribute to read.</param>
         /// <param name="default">An optional default value to use if the attribute is not set.</param>
         /// <returns>
-        /// A string that contains either the value of the attribute, or <paramref name="@default"/>.
+        /// A string that contains either the value of the attribute, or <paramref name="default"/>.
         /// </returns>
         [ExcludeFromCodeCoverage]
         private static string ValidateAttribute(SecurityElement element, string name, string @default = null)
@@ -583,7 +583,7 @@ namespace CPP.Framework.Security
         /// <param name="name">The name of the attribute to read.</param>
         /// <param name="default">An optional default value to use if the attribute is not set.</param>
         /// <returns>
-        /// A string that contains either the value of the attribute, or <paramref name="@default"/>.
+        /// A string that contains either the value of the attribute, or <paramref name="default"/>.
         /// </returns>
         [ExcludeFromCodeCoverage]
         private static Version ValidateAttribute(SecurityElement element, string name, Version @default)

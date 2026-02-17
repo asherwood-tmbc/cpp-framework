@@ -3,7 +3,7 @@
 namespace CPP.Framework.Data.Entities
 {
     /// <summary>
-    /// Applied to a <see cref="IDataEntity"/> class or interface to indicate whether or the entity
+    /// Applied to a IDataEntity class or interface to indicate whether or the entity
     /// should automatically be assigned an new ID value when new instances are created through the
     /// data source context.
     /// </summary>

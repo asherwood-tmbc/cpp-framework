@@ -4,7 +4,7 @@
 
 All 9 projects target **.NET Framework 4.8** and use old-style csproj files. They have already been partially modernized (all use `<PackageReference>` instead of `packages.config`). This document provides a repeatable procedure for converting each project to SDK-style, plus a per-project reference of specific details needed during conversion.
 
-**Completed:** CPP.Framework.Core
+**Completed:** CPP.Framework.Core, CPP.Framework.Serialization, CPP.Framework.Messaging
 
 ---
 
@@ -24,6 +24,7 @@ Replace the entire csproj with a new SDK-style file structured as follows:
     <RootNamespace><!-- from old csproj --></RootNamespace>
     <AssemblyName><!-- from old csproj --></AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS0618</NoWarn>
 
     <!-- Assembly metadata (migrated from AssemblyInfo.cs) -->
     <Title><!-- from AssemblyTitle --></Title>
@@ -38,8 +39,13 @@ Replace the entire csproj with a new SDK-style file structured as follows:
     <!-- NuGet package (migrated from nuspec) -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version><!-- AssemblyInformationalVersion + "-alpha" --></Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes><!-- from nuspec releaseNotes --></PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <!-- InternalsVisibleTo (if any in AssemblyInfo.cs) -->
   <ItemGroup>
@@ -59,7 +65,11 @@ Replace the entire csproj with a new SDK-style file structured as follows:
 </Project>
 ```
 
-### Step 2: Remove items handled by SDK defaults
+### Step 2: Suppress warning CS0618
+
+Add `<NoWarn>CS0618</NoWarn>` to the main `<PropertyGroup>`. This suppresses "member is obsolete" warnings that are pervasive across the codebase (internal deprecated APIs that haven't been cleaned up yet). These warnings are pre-existing noise and not actionable during the migration.
+
+### Step 3: Remove items handled by SDK defaults
 
 The following items from the old csproj should NOT be carried over:
 
@@ -75,7 +85,7 @@ The following items from the old csproj should NOT be carried over:
 - `<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />`
 - `<None Include="*.nuspec">` items
 
-### Step 3: Keep only non-implicit framework references
+### Step 4: Keep only non-implicit framework references
 
 Remove these implicit framework references (SDK includes them automatically):
 - `System`, `System.Core`, `System.Data`, `System.Xml`, `System.Xml.Linq`
@@ -89,11 +99,11 @@ Keep any others that the project actually uses, e.g.:
 - `System.ServiceModel`
 - `System.DirectoryServices.AccountManagement`
 
-### Step 4: Remove StyleCop packages
+### Step 5: Remove StyleCop packages
 
 If the project has `StyleCop` or `StyleCop.MSBuild` PackageReferences, remove them. StyleCop 5.0 is deprecated and incompatible with SDK-style projects.
 
-### Step 5: Delete AssemblyInfo.cs
+### Step 6: Delete AssemblyInfo.cs
 
 After migrating all attributes into the csproj (Step 1), delete `Properties\AssemblyInfo.cs`. If the `Properties\` directory is now empty, delete it too.
 
@@ -114,17 +124,17 @@ These attributes are dropped (not needed):
 - `AssemblyConfiguration`, `AssemblyTrademark`, `AssemblyCulture`
 - `ComVisible`, `Guid`
 
-### Step 6: Delete the .nuspec file
+### Step 7: Delete the .nuspec file
 
 After migrating metadata into the csproj (Step 1), delete the `.nuspec` file. NuGet package dependencies auto-flow from `<PackageReference>` items, and framework assembly dependencies are covered by `<Reference>` items — no need to list them explicitly.
 
-### Step 7: Check for excluded source files
+### Step 8: Check for excluded source files
 
 SDK-style projects auto-glob all `**/*.cs` files. If the old csproj intentionally excluded any `.cs` files (i.e., they exist on disk but are not in any `<Compile Include>`), either:
 - **Delete them** if they are no longer needed, or
 - **Add `<Compile Remove="path" />`** to exclude them from compilation
 
-### Step 8: Preserve special items
+### Step 9: Preserve special items
 
 Some projects have items that must be carried over:
 
@@ -149,7 +159,11 @@ Some projects have items that must be carried over:
 
 - **app.config files**: SDK-style projects auto-detect `app.config` — no explicit `<None Include>` needed.
 
-### Step 9: Build and verify
+### Step 10: Create a README.md
+
+For projects that generate a NuGet package (`GeneratePackageOnBuild`), create a `README.md` in the project root with a brief description and feature list. The csproj template (Step 1) already includes `<PackageReadmeFile>` and the `<None Include="README.md" Pack="true" .../>` item to include it in the package.
+
+### Step 11: Build and verify
 
 ```
 dotnet build <project>.csproj --configuration Debug
@@ -227,7 +241,7 @@ Converted. See `CPP.Framework.Core\CPP.Framework.Core.csproj` for the reference 
 
 ---
 
-### CPP.Framework.Messaging
+### CPP.Framework.Messaging — DONE
 
 | Field | Value |
 |-------|-------|
@@ -453,7 +467,7 @@ Same as CPP.Framework.Testing: remove `<Choose>` blocks and `Microsoft.TestTools
 
 1. ~~CPP.Framework.Core~~ — **Done**
 2. ~~CPP.Framework.Serialization~~ — **Done**
-3. CPP.Framework.Messaging — no special issues
+3. ~~CPP.Framework.Messaging~~ — **Done**
 4. CPP.Framework.WindowsAzure.ApplicationInsights — no special issues
 5. CPP.Framework.EntityData — has project reference to Core (already converted)
 6. CPP.Framework.Web — has custom build target to preserve

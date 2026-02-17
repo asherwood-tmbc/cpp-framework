@@ -43,7 +43,7 @@ namespace CPP.Framework.Data.Entities
         /// <returns>The error message for the exception.</returns>
         private static string FormatMessage(Type entityType, string propertyName)
         {
-            return String.Format(ErrorStrings.DataEntityRelationNotFound, entityType, propertyName);
+            return String.Format(EntityDataErrorStrings.DataEntityRelationNotFound, entityType, propertyName);
         }
     }
 }

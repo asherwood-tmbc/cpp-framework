@@ -51,7 +51,7 @@ namespace CPP.Framework.Data.Entities
         private static string FormatMessage(Type entityType, Guid entityId)
         {
             entityType = (entityType ?? typeof(Object));
-            return String.Format(ErrorStrings.DataEntityNotFound, entityType.Name, entityId);
+            return String.Format(EntityDataErrorStrings.DataEntityNotFound, entityType.Name, entityId);
         }
 
         /// <summary>

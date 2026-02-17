@@ -41,7 +41,7 @@ namespace CPP.Framework.Data.Entities
         private static string FormatMessage(Type entityType)
         {
             entityType = (entityType ?? typeof(Object));
-            return String.Format(ErrorStrings.InvalidDataEntityType, entityType.FullName);
+            return String.Format(EntityDataErrorStrings.InvalidDataEntityType, entityType.FullName);
         }
     }
 

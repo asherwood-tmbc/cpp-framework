@@ -96,7 +96,7 @@ namespace CPP.Framework.Data.Entities
         /// <summary>
         /// Gets a flags that indicates whether or not to use the <see cref="PropertyName"/> value
         /// when looking up the target property (true), or use the default applied to the entity via
-        /// the <see cref="DataEntityAttribute"/> (false).
+        /// the DataEntityAttribute (false).
         /// </summary>
         public bool UsePropertyName => (!string.IsNullOrWhiteSpace(this.PropertyName));
     }

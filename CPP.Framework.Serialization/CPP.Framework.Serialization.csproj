@@ -5,6 +5,7 @@
     <RootNamespace>CPP.Framework</RootNamespace>
     <AssemblyName>CPP.Framework.Serialization</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS0618</NoWarn>
 
     <!-- Assembly metadata (migrated from AssemblyInfo.cs) -->
     <Title>CPP Serialization Framework Package</Title>
@@ -19,8 +20,13 @@
     <!-- NuGet package (migrated from nuspec) -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>2.0.3-alpha</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>Fixed the dependency list for the package.</PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <!-- Framework references not implicitly included -->
   <ItemGroup>

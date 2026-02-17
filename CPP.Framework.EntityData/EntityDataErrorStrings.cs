@@ -6,7 +6,7 @@ namespace CPP.Framework
     /// Defines the error strings for the library.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    internal sealed class ErrorStrings
+    internal sealed class EntityDataErrorStrings
     {
         /// <summary>
         /// The action "{0}" is not bound to entity "{1}" or is not defined.

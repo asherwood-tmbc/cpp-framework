@@ -129,7 +129,7 @@ namespace CPP.Framework.Cryptography
         /// Retrieves a <see cref="CryptoBundle"/> assigned to a given version number.
         /// </summary>
         /// <param name="version">
-        /// The target bundle version number, or <see cref="LatestVersion"/> to get the latest.
+        /// The target bundle version number, or LatestVersion to get the latest.
         /// </param>
         /// <returns>A <see cref="CryptoBundle"/> object.</returns>
         /// <exception cref="KeyNotFoundException">

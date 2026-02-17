@@ -5,6 +5,7 @@
     <RootNamespace>CPP.Framework</RootNamespace>
     <AssemblyName>CPP.Framework.Core</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS0618</NoWarn>
 
     <!-- Assembly metadata (migrated from AssemblyInfo.cs) -->
     <Title>CPP Core Framework Package</Title>
@@ -19,8 +20,13 @@
     <!-- NuGet package (migrated from nuspec) -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>2.0.7-alpha</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>Make internals visible to CPP.Platform.Data.Objects</PackageReleaseNotes>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <!-- InternalsVisibleTo (migrated from AssemblyInfo.cs) -->
   <ItemGroup>

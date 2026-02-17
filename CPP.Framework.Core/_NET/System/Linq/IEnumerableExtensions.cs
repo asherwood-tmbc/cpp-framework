@@ -101,7 +101,7 @@ namespace System.Linq
         /// <typeparam name="TObject">The type of the elements in the sequence.</typeparam>
         /// <param name="sequence">The input sequence being enumerated.</param>
         /// <param name="action">
-        /// A delegate that performs an action for each element, provided <see cref="sequence"/> 
+        /// A delegate that performs an action for each element, provided sequence 
         /// contains at least one element.
         /// </param>
         /// <returns>A copy of the input sequence.</returns>
@@ -117,7 +117,7 @@ namespace System.Linq
         /// <typeparam name="TContext">The type of the user-defined context object.</typeparam>
         /// <param name="sequence">The input sequence being enumerated.</param>
         /// <param name="action">
-        /// A delegate that performs an action for each element, provided <see cref="sequence"/> 
+        /// A delegate that performs an action for each element, provided sequence 
         /// contains at least one element.
         /// </param>
         /// <param name="context">
@@ -141,7 +141,7 @@ namespace System.Linq
         /// sequence.
         /// </param>
         /// <param name="action">
-        /// A delegate that performs an action for each cycle, provided <see cref="sequence"/> 
+        /// A delegate that performs an action for each cycle, provided sequence 
         /// contains at least one element.
         /// </param>
         /// <returns>A copy of the input sequence.</returns>
@@ -163,7 +163,7 @@ namespace System.Linq
         /// sequence.
         /// </param>
         /// <param name="action">
-        /// A delegate that performs an action for each cycle, provided <see cref="sequence"/> 
+        /// A delegate that performs an action for each cycle, provided sequence 
         /// contains at least one element.
         /// </param>
         /// <param name="context">
