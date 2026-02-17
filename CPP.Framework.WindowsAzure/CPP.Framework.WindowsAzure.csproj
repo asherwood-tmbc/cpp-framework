@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D5976497-AA2E-4341-9C13-0353208661AB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CPP.Framework</RootNamespace>
+    <AssemblyName>CPP.Framework.WindowsAzure</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;USES_TARGETED_SBMESSAGES</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\CPP.Framework.WindowsAzure.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;USES_TARGETED_SBMESSAGES</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\CPP.Framework.WindowsAzure.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP Dev|AnyCPU'">
+    <OutputPath>bin\PDP Dev\</OutputPath>
+    <DefineConstants>TRACE;USES_TARGETED_SBMESSAGES</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\PDP Dev\CPP.Framework.WindowsAzure.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP QA|AnyCPU'">
+    <OutputPath>bin\PDP QA\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\PDP QA\CPP.Framework.WindowsAzure.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP Prod|AnyCPU'">
+    <OutputPath>bin\PDP Prod\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\PDP Prod\CPP.Framework.WindowsAzure.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP Demo|AnyCPU'">
+    <OutputPath>bin\PDP Demo\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\PDP Demo\CPP.Framework.WindowsAzure.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>TRACE;USES_TARGETED_SBMESSAGES</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Demo\CPP.Framework.WindowsAzure.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.WindowsAzure.ServiceRuntime, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\AzureConfigProviderExtensions.cs" />
+    <Compile Include="Configuration\CloudConfigProvider.cs" />
+    <Compile Include="Configuration\CloudConfigurationManagerService.cs" />
+    <Compile Include="Configuration\RoleConfigProvider.cs" />
+    <Compile Include="Configuration\RoleEnvironmentService.cs" />
+    <Compile Include="Diagnostics\AzureStorageJournalListener.cs" />
+    <Compile Include="ErrorStrings.cs" />
+    <Compile Include="Messaging\AzureAttachmentProvider.cs" />
+    <Compile Include="Messaging\AzureMessageAttachment.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WindowsAzure\AzureTableQueue.cs" />
+    <Compile Include="WindowsAzure\InvalidMessageContentException.cs" />
+    <Compile Include="WindowsAzure\IAzureTableQueueModel.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\AzureMessagePropertyAttribute.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\AzureServiceBus.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\MessageProperty.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\MessagePropertyMetadata{TContent}.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\MessagePropertyReader.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\MessagePropertyReader{TContent}.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\Queue\AzureServiceBusQueue.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\Queue\AzureServiceBusSubscriptionQueue.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\AzureServiceBusNameResolver.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\AzureServiceBusObject.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\AzureServiceBusSubscription.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\AzureServiceBusTopic.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\Queue\AzureServiceBusTableQueue.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\Queue\AzureServiceBusTableQueueHandler.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\Queue\DefaultEventNameAttribute.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\Queue\AzureServiceBusQueueAttribute.cs" />
+    <Compile Include="WindowsAzure\ServiceBus\AzureServiceBusTopicAttribute.cs" />
+    <Compile Include="WindowsAzure\AzureAccountNameAttribute.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureRequestContext.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureStorageAccount.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureStorageBlob.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureStorageLeaseManager.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureStorageBlockBlob.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureStorageLease.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureStorageObject.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureStoragePath.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureStorageQueue.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureRequestOptions.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureStorageReferenceException.cs" />
+    <Compile Include="WindowsAzure\Storage\Entities\AzureTableEntityKey.cs" />
+    <Compile Include="WindowsAzure\Storage\Entities\AzureTableEntity{TModel}.cs" />
+    <Compile Include="WindowsAzure\Storage\Policies\AzureRetryPolicy.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureStorageTable.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureTableNameAttribute.cs" />
+    <Compile Include="WindowsAzure\Storage\Entities\AzureTableEntity.cs" />
+    <Compile Include="WindowsAzure\Storage\Entities\AzureTableEntitySerializer.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\BinaryPropertyFilter.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\BoolPropertyFilter.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\TableFilterGroup.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\CombineOperator.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\DateTimePropertyFilter.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\AzureTableFilter.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\DoublePropertyFilter.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\GuidPropertyFilter.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\IntPropertyFilter.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\LongPropertyFilter.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\TablePropertyFilter.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\ComparisonOperator.cs" />
+    <Compile Include="WindowsAzure\Storage\Filters\StringPropertyFilter.cs" />
+    <Compile Include="WindowsAzure\Storage\Policies\ExponentialRetryPolicy.cs" />
+    <Compile Include="WindowsAzure\Storage\Policies\LinearRetryPolicy.cs" />
+    <Compile Include="WindowsAzure\Storage\Policies\NoRetryPolicy.cs" />
+    <Compile Include="WindowsAzure\Storage\Queues\AzureStorageTableQueue.cs" />
+    <Compile Include="WindowsAzure\Storage\AzureTablePropertyNotFoundException.cs" />
+    <Compile Include="WindowsAzure\WebJobs\AzureWebJob.cs" />
+    <Compile Include="WindowsAzure\WebJobs\AzureWebJobJournalConfigProvider.cs" />
+    <Compile Include="Diagnostics\AzureWebJobJournalListener.cs" />
+    <Compile Include="WindowsAzure\WebJobs\ServiceBusTriggerEventAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CPP.Framework.Core\CPP.Framework.Core.csproj">
+      <Project>{c904dd3d-3c24-4162-8add-99c73584c63e}</Project>
+      <Name>CPP.Framework.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CPP.Framework.WindowsAzure.ApplicationInsights\CPP.Framework.WindowsAzure.ApplicationInsights.csproj">
+      <Project>{e266114c-8caa-468d-92d0-4c00bcff75b0}</Project>
+      <Name>CPP.Framework.WindowsAzure.ApplicationInsights</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="CPP.Framework.WindowsAzure.nuspec">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations">
+      <Version>11.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Azure.WebJobs">
+      <Version>1.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Azure.WebJobs.ServiceBus">
+      <Version>1.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager">
+      <Version>3.2.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="WindowsAzure.ServiceBus">
+      <Version>2.7.6</Version>
+    </PackageReference>
+    <PackageReference Include="WindowsAzure.Storage">
+      <Version>4.3.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

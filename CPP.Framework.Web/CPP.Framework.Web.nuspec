@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>$id$</id>
+    <version>$version$-alpha</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Fixed a bug related to SecurityAuthorizeAttribute not working correctly for MVC controllers and action methods.</releaseNotes>
+    <copyright>$copyright$</copyright>
+    <dependencies>
+      <dependency id="Microsoft.AspNet.Mvc" version="5.2.9" />
+      <dependency id="Microsoft.AspNet.WebApi" version="5.2.9" />
+      <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.9" />
+      <dependency id="Microsoft.AspNet.WebApi.Versioning" version="2.3.0" />
+      <dependency id="Newtonsoft.Json" version="13.0.3" />
+    </dependencies>
+  </metadata>
+</package>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+    <id>$id$</id>
+    <version>$version$-alpha</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Added the XML documentation files for the library to make them available for Visual Studio IntelliSense.</releaseNotes>
+    <copyright>$copyright$</copyright>
+    <dependencies>
+      <dependency id="SendGrid" version="1.0.2" />
+    </dependencies>
+  </metadata>
+</package>
