@@ -200,11 +200,11 @@ Converted. See `CPP.Framework.Core\CPP.Framework.Core.csproj` for the reference 
 
 ---
 
-### CPP.Framework.Serialization
+### CPP.Framework.Serialization — DONE
 
 | Field | Value |
 |-------|-------|
-| RootNamespace | `CPP.Framework.Serialization` |
+| RootNamespace | `CPP.Framework` |
 | AssemblyName | `CPP.Framework.Serialization` |
 | AssemblyVersion | `2.0.3.0` |
 | FileVersion | `2.0.3.0` |
@@ -452,7 +452,7 @@ Same as CPP.Framework.Testing: remove `<Choose>` blocks and `Microsoft.TestTools
 ## Suggested Conversion Order
 
 1. ~~CPP.Framework.Core~~ — **Done**
-2. CPP.Framework.Serialization — no special issues
+2. ~~CPP.Framework.Serialization~~ — **Done**
 3. CPP.Framework.Messaging — no special issues
 4. CPP.Framework.WindowsAzure.ApplicationInsights — no special issues
 5. CPP.Framework.EntityData — has project reference to Core (already converted)
