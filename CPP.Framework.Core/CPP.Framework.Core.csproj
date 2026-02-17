@@ -1,336 +1,60 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C904DD3D-3C24-4162-8ADD-99C73584C63E}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net48</TargetFramework>
     <RootNamespace>CPP.Framework</RootNamespace>
     <AssemblyName>CPP.Framework.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="'$(SolutionDir)' == ''">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
-    <TargetFrameworkProfile />
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- Assembly metadata (migrated from AssemblyInfo.cs) -->
+    <Title>CPP Core Framework Package</Title>
+    <Description>Provides basic application services, such as method parameter validation, IoC injection containers, reading application configuration settings, etc.</Description>
+    <Company>The Myers-Briggs Company</Company>
+    <Product>CPP.Framework.Core</Product>
+    <Copyright>Copyright © The Myers-Briggs Company 2024</Copyright>
+    <AssemblyVersion>2.0.7.0</AssemblyVersion>
+    <FileVersion>2.0.7.0</FileVersion>
+    <InformationalVersion>2.0.7</InformationalVersion>
+
+    <!-- NuGet package (migrated from nuspec) -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2.0.7-alpha</Version>
+    <PackageReleaseNotes>Make internals visible to CPP.Platform.Data.Objects</PackageReleaseNotes>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\CPP.Framework.Core.xml</DocumentationFile>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\CPP.Framework.Core.xml</DocumentationFile>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP Dev|AnyCPU'">
-    <OutputPath>bin\PDP Dev\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\PDP Dev\CPP.Framework.Core.xml</DocumentationFile>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP QA|AnyCPU'">
-    <OutputPath>bin\PDP QA\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\PDP QA\CPP.Framework.Core.xml</DocumentationFile>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP Prod|AnyCPU'">
-    <OutputPath>bin\PDP Prod\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\PDP Prod\CPP.Framework.Core.xml</DocumentationFile>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP Demo|AnyCPU'">
-    <OutputPath>bin\PDP Demo\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\PDP Demo\CPP.Framework.Core.xml</DocumentationFile>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
-    <OutputPath>bin\Demo\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Demo\CPP.Framework.Core.xml</DocumentationFile>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
-  </PropertyGroup>
+
+  <!-- InternalsVisibleTo (migrated from AssemblyInfo.cs) -->
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <InternalsVisibleTo Include="CPP.Framework.UnitTests" />
+    <InternalsVisibleTo Include="CPP.Elevate.BusinessServices.UnitTests" />
+    <InternalsVisibleTo Include="CPP.Framework.EntityData" />
+    <InternalsVisibleTo Include="CPP.Platform.Data.Objects" />
   </ItemGroup>
+
+  <!-- Framework references not implicitly included -->
   <ItemGroup>
-    <Compile Include="ArgumentValidator.cs" />
-    <Compile Include="Caching\ICacheableEntity.cs" />
-    <Compile Include="Collections\CollectionPropertyMap{T}.cs" />
-    <Compile Include="Collections\ContraVariantCollection{T}.cs" />
-    <Compile Include="Collections\Generic\CompoundDictionary.cs" />
-    <Compile Include="Collections\Generic\IdentityEqualityComparer{T}.cs" />
-    <Compile Include="Collections\Generic\SetDictionary{TKey,TValue}.cs" />
-    <Compile Include="Collections\Generic\Traits\KeyTrait{TKey,TItem}.cs" />
-    <Compile Include="Collections\Generic\Traits\LambdaKeyTrait{TKey,TItem}.cs" />
-    <Compile Include="Collections\Generic\Traits\PropertyKeyTrait{TKey,TItem}.cs" />
-    <Compile Include="Collections\ICollectionPropertyMap.cs" />
-    <Compile Include="Collections\IContraVariantCollection.cs" />
-    <Compile Include="Collections\InvalidStateChangeException.cs" />
-    <Compile Include="Collections\InvalidStateChangeException{T}.cs" />
-    <Compile Include="Collections\StateChangeMap{T}.cs" />
-    <Compile Include="ComponentModel\DynamicPropertyAccessor.cs" />
-    <Compile Include="Configuration\ConfigSettingNames.cs" />
-    <Compile Include="Configuration\ConfigurationManagerBridge.cs" />
-    <Compile Include="Configuration\ConfigurationManagerBridgeBuilderExtensions.cs" />
-    <Compile Include="Configuration\IConfiguarationManagerService.cs" />
-    <Compile Include="Cryptography\Bundles\AsymmetricCryptoBundle.cs" />
-    <Compile Include="Cryptography\Bundles\CryptoBundle.cs" />
-    <Compile Include="Cryptography\Bundles\AesCryptoBundle.cs" />
-    <Compile Include="Cryptography\Bundles\LegacyBundle.cs" />
-    <Compile Include="Cryptography\Bundles\SymmetricCryptoBundle.cs" />
-    <Compile Include="Cryptography\CryptographyService.cs" />
-    <Compile Include="Data\DataSourceFilter.cs" />
-    <Compile Include="Data\Entities\AutoGenerateKeyAttribute.cs" />
-    <Compile Include="Data\Entities\DataEntityForeignKeyAttribute.cs" />
-    <Compile Include="Data\Entities\DataEntityRelationAttribute.cs" />
-    <Compile Include="DependencyInjection\Resolvers\UnityContainerResolver.cs" />
-    <Compile Include="DependencyInjection\WithResolver.cs" />
-    <Compile Include="ObjectModel\SecuredObjectExtensions.cs" />
-    <Compile Include="Security\Profiles\SecurityClaimPolicyExtensions.cs" />
-    <Compile Include="Services\ICodeService.cs" />
-    <Compile Include="Services\SingletonInstanceCleanupMethodAttribute.cs" />
-    <Compile Include="DependencyInjection\CodeServiceSingletonLifetimeManager.cs" />
-    <Compile Include="DependencyInjection\IServiceLocatorConfiguration.cs" />
-    <Compile Include="Services\ICodeServiceSingleton.cs" />
-    <Compile Include="DependencyInjection\ServiceRegistrationAttribute.cs" />
-    <Compile Include="DependencyInjection\ServiceLocatorExtension.cs" />
-    <Compile Include="DependencyInjection\ConstructorSelectorPolicy.cs" />
-    <Compile Include="DependencyInjection\CodeServiceSingletonTypeStrategy.cs" />
-    <Compile Include="DependencyInjection\ServiceLocatorConstructorAttribute.cs" />
-    <Compile Include="Services\SingletonInstanceStartupMethodAttribute.cs" />
-    <Compile Include="ObjectModel\SecuredObject.cs" />
-    <Compile Include="ObjectModel\Validation\DependentValidationAttribute.cs" />
-    <Compile Include="ObjectModel\Validation\ObjectValidator.cs" />
-    <Compile Include="ObjectModel\Validation\RequiredIfAttribute.cs" />
-    <Compile Include="ObjectModel\Validation\Resources\ValidationResources.Designer.cs">
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommonServiceLocator" Version="1.3.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="11.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Unity" Version="4.0.1" />
+  </ItemGroup>
+
+  <!-- Resx designer generation -->
+  <ItemGroup>
+    <EmbeddedResource Update="ObjectModel\Validation\Resources\ValidationResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ValidationResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="ObjectModel\Validation\Resources\ValidationResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ValidationResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ObjectModel\Validation\UniqueAttribute.cs" />
-    <Compile Include="Security\ClaimByTypeComparer.cs" />
-    <Compile Include="Security\CommonClaimTypes.cs" />
-    <Compile Include="Security\Policies\ISupportsObjectAccessPolicy.cs" />
-    <Compile Include="Security\Policies\SecurityAccessRolesPolicy.cs" />
-    <Compile Include="Security\SecurityAuthenticationException.cs" />
-    <Compile Include="Security\Policies\SecurityClaimPolicy.cs" />
-    <Compile Include="Security\Policies\SecurityAuthorizationPolicy.cs" />
-    <Compile Include="Security\Policies\SecurityAuthorizationPolicyGroup.cs" />
-    <Compile Include="Security\SecurityAuthorizationException.cs" />
-    <Compile Include="Security\SecurityAuthorizationPermission.cs" />
-    <Compile Include="Security\SecurityAuthorizationPermissionAttribute.cs" />
-    <Compile Include="Security\Policies\SecurityAccessRightPolicy.cs" />
-    <Compile Include="Security\SecurityAuthorizationContext.cs" />
-    <Compile Include="Security\SecurityAuthorizationManager.cs" />
-    <Compile Include="Security\Policies\SecurityFeatureNamePolicy.cs" />
-    <Compile Include="Security\SecurityClaimNotFoundException.cs" />
-    <Compile Include="Services\AutoRegisterServiceAttribute.cs" />
-    <Compile Include="Services\CreateServiceInstanceAttribute.cs" />
-    <Compile Include="Data\ConfidentialAttribute.cs" />
-    <Compile Include="DependencyInjection\Resolvers\DependencyResolver{T}.cs" />
-    <Compile Include="Diagnostics\ConsoleJournalListener.cs" />
-    <Compile Include="Diagnostics\EventLogJournalListener.cs" />
-    <Compile Include="Diagnostics\EventLogProvider.cs" />
-    <Compile Include="Diagnostics\IJournalListenerEx.cs" />
-    <Compile Include="Diagnostics\IJournalStatisticSource.cs" />
-    <Compile Include="Diagnostics\IJournalTelemetrySource.cs" />
-    <Compile Include="Diagnostics\JournalExceptionMessage.cs" />
-    <Compile Include="Diagnostics\JournalFormattedMessage.cs" />
-    <Compile Include="Diagnostics\JournalListenerEventArgs.cs" />
-    <Compile Include="Diagnostics\JournalTelemetry.cs" />
-    <Compile Include="Diagnostics\JournalMessage.cs" />
-    <Compile Include="Services\InvalidServiceRegistrationException.cs" />
-    <Compile Include="Services\MissingServiceRegistrationException.cs" />
-    <Compile Include="Services\CodeService.cs" />
-    <Compile Include="Services\CodeServiceNamedSingletonContainer{TService}.cs" />
-    <Compile Include="Services\CodeServicePerUseLifetimeContainer{TService}.cs" />
-    <Compile Include="Services\CodeServiceContainer.cs" />
-    <Compile Include="Services\CodeServiceContainer{TService}.cs" />
-    <Compile Include="Services\CodeServiceProvider.cs" />
-    <Compile Include="Services\CodeServiceSingleton.cs" />
-    <Compile Include="Services\CodeServiceActivator.cs" />
-    <Compile Include="Services\CodeServiceActivator{TProvider}.cs" />
-    <Compile Include="Services\CodeServiceBasicSingletonContainer{TService}.cs" />
-    <Compile Include="Services\ServiceRegistrationException.cs" />
-    <Compile Include="Threading\AsyncLock.cs" />
-    <Compile Include="Threading\Tasks\AsyncHelper.cs" />
-    <Compile Include="Threading\Tasks\CancellableResourceGroup.cs" />
-    <Compile Include="Threading\Tasks\CancellableResourceManager.cs" />
-    <Compile Include="Threading\Tasks\ICancellableResource.cs" />
-    <Compile Include="ComponentModel\ObservableModel.cs" />
-    <Compile Include="Configuration\ConfigSettingUsageAttribute.cs" />
-    <Compile Include="Configuration\ConfigSettingKey.cs" />
-    <Compile Include="Configuration\ConfigSettingProvider.cs" />
-    <Compile Include="Configuration\ConfigurationManagerService.cs" />
-    <Compile Include="Cryptography\CertificateEncryptionProvider.cs" />
-    <Compile Include="Cryptography\CertificateNotFoundException.cs" />
-    <Compile Include="Cryptography\CertificateProvider.cs" />
-    <Compile Include="Cryptography\CurrentUserCertificateProvider.cs" />
-    <Compile Include="Cryptography\EncryptionKeys.cs" />
-    <Compile Include="Cryptography\FileCertificateProvider.cs" />
-    <Compile Include="Cryptography\ICertificateProvider.cs" />
-    <Compile Include="Cryptography\MachineCertificateProvider.cs" />
-    <Compile Include="Data\EncryptedPropertyAttribute.cs" />
-    <Compile Include="DateTimeService.cs" />
-    <Compile Include="DependencyInjection\InjectionConfigNotFoundException.cs" />
-    <Compile Include="DependencyInjection\InvalidInjectionConfigException.cs" />
-    <Compile Include="DependencyInjection\Resolvers\DependencyResolver.cs" />
-    <Compile Include="DependencyInjection\Resolvers\ParameterResolver.cs" />
-    <Compile Include="DependencyInjection\ServiceLocator.cs" />
-    <Compile Include="DependencyInjection\Resolvers\ServiceResolver.cs" />
-    <Compile Include="Diagnostics\DebugJournalListener.cs" />
-    <Compile Include="Diagnostics\IJournalListener.cs" />
-    <Compile Include="Diagnostics\Journal.cs" />
-    <Compile Include="Diagnostics\JournalListenerCollection.cs" />
-    <Compile Include="Diagnostics\JournalScope.cs" />
-    <Compile Include="Diagnostics\JournalSource.cs" />
-    <Compile Include="Diagnostics\JournalSeverity.cs" />
-    <Compile Include="Diagnostics\TraceJournalListener.cs" />
-    <Compile Include="ErrorStrings.cs" />
-    <Compile Include="Globalization\CultureInfoService.cs" />
-    <Compile Include="Collections\Generic\InlineEqualityComparer{T}.cs" />
-    <Compile Include="GuidGeneratorService.cs" />
-    <Compile Include="IO\CommaSeparatedReader.cs" />
-    <Compile Include="IO\CommaSeparatedStream.cs" />
-    <Compile Include="IO\CommaSeparatedWriter.cs" />
-    <Compile Include="IO\InvalidStreamFormatException.cs" />
-    <Compile Include="ICustomArgumentValidator.cs" />
-    <Compile Include="IO\FileService.cs" />
-    <Compile Include="Messaging\FileAttachmentProvider.cs" />
-    <Compile Include="Messaging\FileMessageAttachment.cs" />
-    <Compile Include="Messaging\IMailMessage.cs" />
-    <Compile Include="Messaging\IMailMessageAttachment.cs" />
-    <Compile Include="Messaging\InvalidMailRecipientsException.cs" />
-    <Compile Include="Messaging\InvalidMailServerException.cs" />
-    <Compile Include="Messaging\MailAttachmentProvider.cs" />
-    <Compile Include="Messaging\MailAttachmentProviderAttribute.cs" />
-    <Compile Include="Messaging\MailAttachmentResolver.cs" />
-    <Compile Include="Messaging\MailMessage.cs" />
-    <Compile Include="Messaging\MessagingException.cs" />
-    <Compile Include="Messaging\WebAttachmentProvider.cs" />
-    <Compile Include="Messaging\WebMessageAttachment.cs" />
-    <Compile Include="Randomizer.cs" />
-    <Compile Include="Resources\ResourceContainer.cs" />
-    <Compile Include="Text\RegularExpression.cs" />
-    <Compile Include="Threading\MultiAccessLockAsync.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Threading\ThreadLimiter.cs" />
-    <Compile Include="TimeZoneInfoService.cs" />
-    <Compile Include="Configuration\ConfigSettingProviderExtensions.cs" />
-    <Compile Include="_NET\System\Collections\Generic\IListExtensions.cs" />
-    <Compile Include="_NET\System\Collections\ObjectModel\ObservableCollectonExtensions.cs" />
-    <Compile Include="_NET\System\Collections\Generic\IDictionaryExtensions.cs" />
-    <Compile Include="_NET\System\ComponentModel\DataAnnotations\ValidationContextExtensions.cs" />
-    <Compile Include="_NET\System\EnumExtensions.cs" />
-    <Compile Include="_NET\System\Linq\Expressions\ExpressionExtensions.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SingletonServiceBase.cs" />
-    <Compile Include="Threading\MultiAccessLock.cs" />
-    <Compile Include="_NET\System\Linq\IEnumerableExtensions.cs" />
-    <Compile Include="_NET\System\Linq\IQueryableExtensions.cs" />
-    <Compile Include="_NET\System\MigrationCategory.cs" />
-    <Compile Include="_NET\System\Reflection\MemberInfoExtensions.cs" />
-    <Compile Include="_NET\System\Reflection\MethodInfoExtensions.cs" />
-    <Compile Include="_NET\System\Runtime\Serialization\SerializationInfoExtensions.cs" />
-    <Compile Include="_NET\System\Security\Claims\ClaimsIdentityExtensions.cs" />
-    <Compile Include="_NET\System\StringExtensions.cs" />
-    <Compile Include="_NET\System\TypeExtensions.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="CPP.Framework.Core.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="CommonServiceLocator">
-      <Version>1.3.0</Version>
-    </PackageReference>
-    <PackageReference Include="JetBrains.Annotations">
-      <Version>11.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Configuration">
-      <Version>5.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="StyleCop">
-      <Version>5.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="StyleCop.MSBuild">
-      <PrivateAssets>true</PrivateAssets>
-      <Version>5.0.0</Version>
-    </PackageReference>
-    <PackageReference Include="Unity">
-      <Version>4.0.1</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="ObjectModel\Validation\Resources\ValidationResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ValidationResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
