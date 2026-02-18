@@ -66,14 +66,17 @@ namespace CPP.Framework.Diagnostics.Testing
         /// <param name="additionalArgs">One or more addition arguments to append to the assert message, which are replaced starting at index 5.</param>
         protected void ThrowAssertFailure(string format, params object[] additionalArgs)
         {
+            var testFrame = new System.Diagnostics.StackTrace().GetFrames()
+                ?.FirstOrDefault(f => f.GetMethod()
+                    ?.GetCustomAttributes(typeof(TestMethodAttribute), true).Any() == true);
             var customExceptionMessage = (String.IsNullOrEmpty(_NoExceptionMessage)
                 ? (_NoExceptionMessage)
                 : (" " + _NoExceptionMessage));
             var arguments = Enumerable.Empty<object>()
                 .Concat(new object[]
                 {
-                    (this.TestContext?.FullyQualifiedTestClassName ?? "???"),
-                    (this.TestContext?.TestName ?? "???"),
+                    (testFrame?.GetMethod()?.DeclaringType?.FullName ?? "???"),
+                    (testFrame?.GetMethod()?.Name ?? "???"),
                     this.ExceptionType.FullName,
                     this.ParamName,
                     customExceptionMessage,

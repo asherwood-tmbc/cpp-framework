@@ -4,7 +4,7 @@
 
 All 9 projects target **.NET Framework 4.8** and use old-style csproj files. They have already been partially modernized (all use `<PackageReference>` instead of `packages.config`). This document provides a repeatable procedure for converting each project to SDK-style, plus a per-project reference of specific details needed during conversion.
 
-**Completed:** CPP.Framework.Core, CPP.Framework.Serialization, CPP.Framework.Messaging, CPP.Framework.Web, CPP.Framework.EntityData, CPP.Framework.WindowsAzure, CPP.Framework.WindowsAzure.ApplicationInsights
+**Completed:** CPP.Framework.Core, CPP.Framework.Serialization, CPP.Framework.Messaging, CPP.Framework.Web, CPP.Framework.EntityData, CPP.Framework.WindowsAzure, CPP.Framework.WindowsAzure.ApplicationInsights, CPP.Framework.Testing
 
 ---
 
@@ -374,7 +374,7 @@ No excluded files.
 
 ---
 
-### CPP.Framework.Testing
+### CPP.Framework.Testing — DONE
 
 | Field | Value |
 |-------|-------|
@@ -403,6 +403,17 @@ The old csproj has `<Choose>` conditional blocks referencing `Microsoft.VisualSt
 <PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
 ```
 Remove all `<Choose>` blocks and the `Microsoft.TestTools.targets` import.
+
+**Source fix required:** `ExpectedExceptionBaseAttribute.TestContext` was `protected` in the old GAC MSTest but is `internal` in all NuGet versions. In `ExpectedArgumentExceptionAttribute.ThrowAssertFailure`, replace the `TestContext` usages with a stack trace walk to find the test method:
+```csharp
+var testFrame = new System.Diagnostics.StackTrace().GetFrames()
+    ?.FirstOrDefault(f => f.GetMethod()
+        ?.GetCustomAttributes(typeof(TestMethodAttribute), true).Any() == true);
+// then use:
+(testFrame?.GetMethod()?.DeclaringType?.FullName ?? "???"),
+(testFrame?.GetMethod()?.Name ?? "???"),
+```
+The subclasses (`ExpectedArgumentNullExceptionAttribute`, `ExpectedArgumentOutOfRangeException`) inherit the fix automatically.
 
 No excluded files.
 
@@ -472,7 +483,7 @@ Same as CPP.Framework.Testing: remove `<Choose>` blocks and `Microsoft.TestTools
 5. ~~CPP.Framework.EntityData~~ — **Done**
 6. ~~CPP.Framework.Web~~ — **Done**
 7. ~~CPP.Framework.WindowsAzure~~ — **Done**
-8. CPP.Framework.Testing — has MSTest Choose blocks to migrate
+8. ~~CPP.Framework.Testing~~ — **Done**
 9. CPP.Framework.UnitTests — has MSTest + GAC reference + most project references; do last
 
 ---
