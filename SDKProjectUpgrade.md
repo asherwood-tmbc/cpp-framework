@@ -4,7 +4,7 @@
 
 All 9 projects target **.NET Framework 4.8** and use old-style csproj files. They have already been partially modernized (all use `<PackageReference>` instead of `packages.config`). This document provides a repeatable procedure for converting each project to SDK-style, plus a per-project reference of specific details needed during conversion.
 
-**Completed:** CPP.Framework.Core, CPP.Framework.Serialization, CPP.Framework.Messaging, CPP.Framework.Web
+**Completed:** CPP.Framework.Core, CPP.Framework.Serialization, CPP.Framework.Messaging, CPP.Framework.Web, CPP.Framework.WindowsAzure, CPP.Framework.WindowsAzure.ApplicationInsights
 
 ---
 
@@ -310,7 +310,7 @@ No excluded files.
 
 ---
 
-### CPP.Framework.WindowsAzure
+### CPP.Framework.WindowsAzure — DONE
 
 | Field | Value |
 |-------|-------|
@@ -330,7 +330,7 @@ No excluded files.
 - System.ServiceModel
 
 **GAC Reference (non-NuGet):**
-- `Microsoft.WindowsAzure.ServiceRuntime, Version=2.7.0.0` — This is from the Azure Cloud Services SDK and is not available as a NuGet package. Include it as a `<Reference>` with a `<HintPath>` pointing to its location on disk, or remove it if Azure Cloud Services support is no longer needed.
+- `Microsoft.WindowsAzure.ServiceRuntime, Version=2.7.0.0` — Resolved using a local copy at `..\lib\Microsoft.WindowsAzure.ServiceRuntime.dll` (checked into the repo under `lib\`).
 
 **PackageReferences:**
 | Package | Version |
@@ -347,7 +347,7 @@ No excluded files.
 
 ---
 
-### CPP.Framework.WindowsAzure.ApplicationInsights
+### CPP.Framework.WindowsAzure.ApplicationInsights — DONE
 
 | Field | Value |
 |-------|-------|
@@ -468,10 +468,10 @@ Same as CPP.Framework.Testing: remove `<Choose>` blocks and `Microsoft.TestTools
 1. ~~CPP.Framework.Core~~ — **Done**
 2. ~~CPP.Framework.Serialization~~ — **Done**
 3. ~~CPP.Framework.Messaging~~ — **Done**
-4. CPP.Framework.WindowsAzure.ApplicationInsights — no special issues
+4. ~~CPP.Framework.WindowsAzure.ApplicationInsights~~ — **Done**
 5. CPP.Framework.EntityData — has project reference to Core (already converted)
 6. ~~CPP.Framework.Web~~ — **Done**
-7. CPP.Framework.WindowsAzure — has GAC reference to resolve
+7. ~~CPP.Framework.WindowsAzure~~ — **Done**
 8. CPP.Framework.Testing — has MSTest Choose blocks to migrate
 9. CPP.Framework.UnitTests — has MSTest + GAC reference + most project references; do last
 
