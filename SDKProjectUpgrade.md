@@ -4,7 +4,7 @@
 
 All 9 projects target **.NET Framework 4.8** and use old-style csproj files. They have already been partially modernized (all use `<PackageReference>` instead of `packages.config`). This document provides a repeatable procedure for converting each project to SDK-style, plus a per-project reference of specific details needed during conversion.
 
-**Completed:** CPP.Framework.Core, CPP.Framework.Serialization, CPP.Framework.Messaging
+**Completed:** CPP.Framework.Core, CPP.Framework.Serialization, CPP.Framework.Messaging, CPP.Framework.Web
 
 ---
 
@@ -267,7 +267,7 @@ Converted. See `CPP.Framework.Core\CPP.Framework.Core.csproj` for the reference 
 
 ---
 
-### CPP.Framework.Web
+### CPP.Framework.Web — DONE
 
 | Field | Value |
 |-------|-------|
@@ -470,7 +470,7 @@ Same as CPP.Framework.Testing: remove `<Choose>` blocks and `Microsoft.TestTools
 3. ~~CPP.Framework.Messaging~~ — **Done**
 4. CPP.Framework.WindowsAzure.ApplicationInsights — no special issues
 5. CPP.Framework.EntityData — has project reference to Core (already converted)
-6. CPP.Framework.Web — has custom build target to preserve
+6. ~~CPP.Framework.Web~~ — **Done**
 7. CPP.Framework.WindowsAzure — has GAC reference to resolve
 8. CPP.Framework.Testing — has MSTest Choose blocks to migrate
 9. CPP.Framework.UnitTests — has MSTest + GAC reference + most project references; do last
