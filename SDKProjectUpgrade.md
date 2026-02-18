@@ -4,7 +4,7 @@
 
 All 9 projects target **.NET Framework 4.8** and use old-style csproj files. They have already been partially modernized (all use `<PackageReference>` instead of `packages.config`). This document provides a repeatable procedure for converting each project to SDK-style, plus a per-project reference of specific details needed during conversion.
 
-**Completed:** CPP.Framework.Core, CPP.Framework.Serialization, CPP.Framework.Messaging, CPP.Framework.Web, CPP.Framework.WindowsAzure, CPP.Framework.WindowsAzure.ApplicationInsights
+**Completed:** CPP.Framework.Core, CPP.Framework.Serialization, CPP.Framework.Messaging, CPP.Framework.Web, CPP.Framework.EntityData, CPP.Framework.WindowsAzure, CPP.Framework.WindowsAzure.ApplicationInsights
 
 ---
 
@@ -186,7 +186,7 @@ Converted. See `CPP.Framework.Core\CPP.Framework.Core.csproj` for the reference 
 
 ---
 
-### CPP.Framework.EntityData
+### CPP.Framework.EntityData — DONE
 
 | Field | Value |
 |-------|-------|
@@ -469,7 +469,7 @@ Same as CPP.Framework.Testing: remove `<Choose>` blocks and `Microsoft.TestTools
 2. ~~CPP.Framework.Serialization~~ — **Done**
 3. ~~CPP.Framework.Messaging~~ — **Done**
 4. ~~CPP.Framework.WindowsAzure.ApplicationInsights~~ — **Done**
-5. CPP.Framework.EntityData — has project reference to Core (already converted)
+5. ~~CPP.Framework.EntityData~~ — **Done**
 6. ~~CPP.Framework.Web~~ — **Done**
 7. ~~CPP.Framework.WindowsAzure~~ — **Done**
 8. CPP.Framework.Testing — has MSTest Choose blocks to migrate

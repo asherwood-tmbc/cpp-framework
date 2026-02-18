@@ -1,141 +1,54 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4028DC9C-CC54-4CD3-8FAA-EE6596EF9082}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net48</TargetFramework>
     <RootNamespace>CPP.Framework</RootNamespace>
     <AssemblyName>CPP.Framework.EntityData</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
-    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
-    <TargetFrameworkProfile />
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS0618</NoWarn>
+
+    <!-- Assembly metadata (migrated from AssemblyInfo.cs) -->
+    <Title>CPP Entity Data Framework Package</Title>
+    <Description>Provides helper classes to simplify access to Entity Framework database first components.</Description>
+    <Company>CPP, Inc.</Company>
+    <Product>CPP.Framework.EntityData</Product>
+    <Copyright>Copyright © The Myers-Briggs Company 2024</Copyright>
+    <AssemblyVersion>2.0.4.0</AssemblyVersion>
+    <FileVersion>2.0.4.0</FileVersion>
+    <InformationalVersion>2.0.4</InformationalVersion>
+
+    <!-- NuGet package (migrated from nuspec) -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2.0.4-alpha</Version>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>Fixed a bug in the Entity Framework data source context that prevents SaveChanges() from returning successfully when an entity is being deleted, even though the database operation completed successfully.</PackageReleaseNotes>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\CPP.Framework.EntityData.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\CPP.Framework.EntityData.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP Dev|AnyCPU'">
-    <OutputPath>bin\PDP Dev\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\PDP Dev\CPP.Framework.EntityData.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP QA|AnyCPU'">
-    <OutputPath>bin\PDP QA\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\PDP QA\CPP.Framework.EntityData.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP Prod|AnyCPU'">
-    <OutputPath>bin\PDP Prod\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\PDP Prod\CPP.Framework.EntityData.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'PDP Demo|AnyCPU'">
-    <OutputPath>bin\PDP Demo\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\PDP Demo\CPP.Framework.EntityData.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
-    <OutputPath>bin\Demo\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Demo\CPP.Framework.EntityData.xml</DocumentationFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- InternalsVisibleTo (migrated from AssemblyInfo.cs) -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <InternalsVisibleTo Include="CPP.Framework.UnitTests" />
+    <InternalsVisibleTo Include="CPP.Elevate.BusinessServices.UnitTests" />
+    <InternalsVisibleTo Include="CPP.Platform.Data.Objects" />
+  </ItemGroup>
+
+  <!-- Framework references not implicitly included -->
+  <ItemGroup>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Data\EFXDataSourceFilter.cs" />
-    <Compile Include="Data\Entities\DataEntityException.cs" />
-    <Compile Include="Data\Entities\DataEntityRelationProperty.cs" />
-    <Compile Include="Data\Entities\DataEntityNotFoundException.cs" />
-    <Compile Include="Data\Entities\DataEntityRelation.cs" />
-    <Compile Include="Data\Entities\DataEntityRelationNotFoundException.cs" />
-    <Compile Include="Data\Entities\DataEntityNameMissingException.cs" />
-    <Compile Include="Data\Entities\InvalidDataEntityException.cs" />
-    <Compile Include="Data\Entities\InvalidDataEntityRelationException.cs" />
-    <Compile Include="EntityDataErrorStrings.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="_NET\CPP\Framework\Diagnostics\JournalSourceExtensions.cs" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\CPP.Framework.Core\CPP.Framework.Core.csproj">
-      <Project>{c904dd3d-3c24-4162-8add-99c73584c63e}</Project>
-      <Name>CPP.Framework.Core</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\CPP.Framework.Core\CPP.Framework.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="CPP.Framework.EntityData.nuspec">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="EntityFramework">
-      <Version>6.4.4</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
