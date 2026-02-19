@@ -30,10 +30,7 @@
     <PackageReference Include="Microsoft.WindowsAzure.ConfigurationManager" Version="3.2.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.6.3" />
     <PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RhinoMocks" Version="3.6.1" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="2.7.6" />
-    <PackageReference Include="WindowsAzure.Storage" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
