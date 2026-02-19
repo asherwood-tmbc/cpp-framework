@@ -18,8 +18,9 @@ namespace CPP.Framework.Diagnostics.Testing
         public override sealed IDictionary Properties => this.InnerContext.Properties;
 
         public override sealed void AddResultFile(string fileName) => this.InnerContext.AddResultFile(fileName);
-        public override sealed void BeginTimer(string timerName) => this.InnerContext.BeginTimer(timerName);
-        public override sealed void EndTimer(string timerName) => this.InnerContext.EndTimer(timerName);
+        public override sealed void Write(string message) => this.InnerContext.Write(message);
+        public override sealed void Write(string format, params object[] args) => this.InnerContext.Write(format, args);
+        public override sealed void WriteLine(string message) => this.InnerContext.WriteLine(message);
         public override sealed void WriteLine(string format, params object[] args) => this.InnerContext.WriteLine(format, args);
     }
 }

@@ -419,7 +419,7 @@ No excluded files.
 
 ---
 
-### CPP.Framework.UnitTests
+### CPP.Framework.UnitTests — DONE
 
 | Field | Value |
 |-------|-------|
@@ -484,7 +484,7 @@ Same as CPP.Framework.Testing: remove `<Choose>` blocks and `Microsoft.TestTools
 6. ~~CPP.Framework.Web~~ — **Done**
 7. ~~CPP.Framework.WindowsAzure~~ — **Done**
 8. ~~CPP.Framework.Testing~~ — **Done**
-9. CPP.Framework.UnitTests — has MSTest + GAC reference + most project references; do last
+9. ~~CPP.Framework.UnitTests~~ — **Done**
 
 ---
 
