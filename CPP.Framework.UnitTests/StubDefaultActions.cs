@@ -58,8 +58,8 @@ namespace CPP.Framework
         {
             var configurationErrorsException = ReflectionHelper.CreateInstance<ConfigurationErrorsException>();
 
-            service.AppSettings.Returns(new NameValueCollection());
-            service.ConnectionStrings.Returns(new ConnectionStringSettingsCollection());
+            ConfigSettingsStubExtensions.GetOrCreateAppSettings(service);
+            ConfigSettingsStubExtensions.GetOrCreateConnectionStrings(service);
             service.GetSection(Arg.Any<string>()).Returns(null);
             service.OpenExeConfiguration(Arg.Any<ConfigurationUserLevel>()).Throws(configurationErrorsException);
             service.OpenExeConfiguration(Arg.Any<string>()).Throws(configurationErrorsException);
