@@ -1,0 +1,1017 @@
+
+╭─── Claude Code v2.1.47 ──────────────────────────────────────────────────────╮
+│                                                    │ Tips for getting        │
+│                 Welcome back Andy!                 │ started                 │
+│                                                    │ Run /init to create a … │
+│                                                    │ ─────────────────────── │
+│                          ✻                         │ Recent activity         │
+│                          |                         │ No recent activity      │
+│                         ▟█▙                        │                         │
+│                       ▐▛███▜▌                      │                         │
+│                      ▝▜█████▛▘                     │                         │
+│                        ▘▘ ▝▝                       │                         │
+│                                                    │                         │
+│     Sonnet 4.6 · Claude Pro ·                      │                         │
+│     asherwood@themyersbriggs.com's Organization    │                         │
+│                  G:\Framework\main                 │                         │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+❯ Take a look at the CPP.Framework.UnitTests project. It uses a custom unit 
+   testing framework named CPP.Framework.Testing, which can also be found   
+  in this solution/folder. It's based on MSTest v3. CPP.Framework.UnitTests 
+   also uses RhinoMocks as a mocking framework. Make a plan to replace      
+  CPP.Framework.Testing with MSTest v3 directly (there is already a         
+  reference to it in the project), and replace RhinoMocks with NSubstitute. 
+   You may also use AutoFixture v4, if needed. Consider using               
+  FluentAssertions v7.1 in place of any custom assertions. Write the plan   
+  to UnitTestMigration.md so I can review it.                               
+
+● Task(Explore project structure)
+  ⎿  Done (50 tool uses · 179.0k tokens · 4m 58s)
+  (ctrl+o to expand)
+
+● Now I have everything I need to write a comprehensive migration plan.
+
+● Write(UnitTestMigration.md)
+  ⎿  Wrote 525 lines to UnitTestMigration.md
+       1 # Unit Test Migration Plan
+       2 
+       3 **Scope:** `CPP.Framework.UnitTests`
+       4 **Goal:** Remove the dependency on `CPP.Framework.Testing` and `
+         RhinoMocks`; replace with MSTest v3 (already referenced), NSubst
+         itute, and FluentAssertions v7.1. AutoFixture v4 is available as
+          an optional supplement for test-data generation.
+       5 
+       6 ---
+       7 
+       8 ## 1. Package Changes
+       9 
+      10 ### CPP.Framework.UnitTests.csproj
+     … +515 lines (ctrl+o to expand)
+
+● The plan is written to UnitTestMigration.md. Here's a summary of what it
+  covers:
+
+  What's being replaced and with what:
+  - Verify.* assertions → FluentAssertions Should().* (full mapping table)
+  - [ExpectedArgumentException("paramName")] / [ExpectedArgumentNullException] /
+   [ExpectedArgumentOutOfRangeException] attributes → restructured test bodies
+  with act.Should().Throw<T>().WithParameterName("paramName")
+  - [TestGroup(TestGroupTarget.X)] → [TestCategory("X")] inline strings (or copy
+   the attribute into UnitTests unchanged)
+  - StubFactory.CreateStub<T>() → Substitute.For<T>()
+  - StubFactory.CreatePartial<T>() → Substitute.ForPartsOf<T>()
+  - All StubAction(...).Return/Throw/DoNothing/WhenCalled(...) chains →
+  NSubstitute's .Returns(), .Throws(), .When().Do() equivalents
+
+  Key architectural decisions in the plan:
+  - CPP.Framework.Testing.csproj itself is not deleted (other projects reference
+   it); only the UnitTests project reference is removed
+  - Non-RhinoMocks utilities (StubServiceRegistrationAttribute,
+  CreatePrincipal/claims helpers, TestMemoryStream, ReflectionHelper) are moved 
+  into a local Testing/ folder inside UnitTests
+  - ConfigSettingsStubExtensions is rewritten to use a real NameValueCollection
+  instead of a RhinoMocks proxy (since NameValueCollection.Get() is non-virtual
+  — a risk I flagged)
+  - A non-virtual member audit is recommended before migrating the concrete
+  service stubs
+
+  Notable risks flagged: non-virtual members on concrete service classes,
+  FluentAssertions v7 breaking changes, and the NameValueCollection stubbing
+  difference.
+
+✻ Sautéed for 9m 23s
+
+❯ /usage 
+  ⎿  Status dialog dismissed
+
+❯ Let's skip using AutoFixture. Please up the migration plan accordingly. 
+
+● Read 1 file (ctrl+o to expand)
+
+● Three spots to clean up: the goal line, the package table, and the entire §5.
+  Also need to remove the AutoFixture note in CompoundDictionaryTest.cs.
+
+● Update(UnitTestMigration.md)
+  ⎿  Added 1 line, removed 1 line
+      1  # Unit Test Migration Plan
+      2  
+      3  **Scope:** `CPP.Framework.UnitTests`
+      4 -**Goal:** Remove the dependency on `CPP.Framework.Testing` and `
+        -RhinoMocks`; replace with MSTest v3 (already referenced), NSubst
+        -itute, and FluentAssertions v7.1. AutoFixture v4 is available as
+        - an optional supplement for test-data generation.               
+      4 +**Goal:** Remove the dependency on `CPP.Framework.Testing` and `
+        +RhinoMocks`; replace with MSTest v3 (already referenced), NSubst
+        +itute, and FluentAssertions v7.1.                               
+      5  
+      6  ---
+      7  
+
+● Update(UnitTestMigration.md)
+  ⎿  Removed 2 lines
+      15  | Remove | Project reference → `CPP.Framework.Testing` |
+      16  | Add | `NSubstitute` (latest 5.x for net48) |
+      17  | Add | `FluentAssertions` v7.1 |
+      18 -| Add (optional) | `AutoFixture` v4 |                          
+      19 -| Add (optional) | `AutoFixture.AutoNSubstitute` v4 |          
+      18  | Keep | `MSTest.TestAdapter` v3.6.3 |
+      19  | Keep | `MSTest.TestFramework` v3.6.3 |
+      20  
+
+● Update(UnitTestMigration.md)
+  ⎿  Removed 3 lines
+      167     ```xml
+      168     <PackageReference Include="NSubstitute" Version="5.*" />
+      169     <PackageReference Include="FluentAssertions" Version="7.1.*
+           " />
+      170 -   <!-- Optional: -->                                         
+      171 -   <PackageReference Include="AutoFixture" Version="4.*" />   
+      172 -   <PackageReference Include="AutoFixture.AutoNSubstitute" Ver
+          -sion="4.*" />                                                 
+      170     ```
+      171  
+      172  ### 4.2 Create Local Helper Infrastructure
+
+● Update(UnitTestMigration.md)
+  ⎿  Removed 1 line
+      425  #### `CompoundDictionaryTest.cs`
+      426  - `Verify.*` → FluentAssertions.
+      427  - Collection equality assertions → `actual.Should().Equal(expe
+           cted)` or `BeEquivalentTo(expected)`.
+      428 -- **AutoFixture opportunity:** `[TestInitialize]` currently bu
+          -ilds test data arrays manually. Could use `new Fixture().Creat
+          -eMany<T>(n)` to generate test entities.                       
+      428  
+      429  #### `MultiAccessLockTests.cs`
+      430  - `Verify.IsInstanceOfType(token, typeof(ReaderAccessToken))` 
+           → `token.Should().BeOfType<ReaderAccessToken>()`.
+
+● Update(UnitTestMigration.md)
+  ⎿  Added 1 line, removed 23 lines
+      450  
+      451  ---
+      452  
+      453 -## 5. Using AutoFixture (Optional)                            
+      453 +## 5. Execution Order / Phasing                               
+      454  
+      455 -AutoFixture is most valuable in two scenarios in this codebase
+          -:                                                             
+      456 -                                                              
+      457 -1. **Test data creation in `CompoundDictionaryTest`** — replac
+          -e the manual `[TestInitialize]` data setup:                   
+      458 -   ```csharp                                                  
+      459 -   private IFixture _fixture;                                 
+      460 -                                                              
+      461 -   [TestInitialize]                                           
+      462 -   public void Initialize()                                   
+      463 -   {                                                          
+      464 -       _fixture = new Fixture().Customize(new AutoNSubstituteC
+          -ustomization());                                              
+      465 -       _testEntities = _fixture.CreateMany<MyEntity>(5).ToList
+          -();                                                           
+      466 -   }                                                          
+      467 -   ```                                                        
+      468 -                                                              
+      469 -2. **Reducing boilerplate in `ServiceLocatorTests` and `CodeSe
+          -rviceProviderTests`** — `_fixture.Create<string>()` produces r
+          -andom but valid strings for names and keys, making tests less 
+          -brittle.                                                      
+      470 -                                                              
+      471 -AutoFixture is **not** required by the migration itself; add i
+          -t only where the benefit is clear.                            
+      472 -                                                              
+      473 ----                                                           
+      474 -                                                              
+      475 -## 6. Execution Order / Phasing                               
+      476 -                                                              
+      455  Suggested order to keep the solution buildable throughout:
+      456  
+      457  | Phase | Work |
+
+● Update(UnitTestMigration.md)
+  ⎿  Added 1 line, removed 1 line
+      467  
+      468  ---
+      469  
+      470 -## 7. Risks and Considerations                                
+      470 +## 6. Risks and Considerations                                
+      471  
+      472  ### Non-Virtual Members on Concrete Service Classes
+      473  NSubstitute can only intercept `virtual` (or interface-backed)
+            members. If `ConfigurationManagerService`, `FileService`, `Ce
+           rtificateProvider`, or `RoleEnvironmentService` expose non-vir
+           tual properties/methods that are currently being stubbed via R
+           hinoMocks, those setups will **silently no-op or throw at runt
+           ime** with NSubstitute. Before Phase 3, audit each stubbed typ
+           e for virtual member coverage. If a member is non-virtual, opt
+           ions are:
+
+● Done. The four AutoFixture references have been removed:
+
+  - Goal statement — dropped the AutoFixture mention
+  - Package table — removed the two optional AutoFixture /
+  AutoFixture.AutoNSubstitute rows
+  - §4.1 package setup — removed the optional XML comment block
+  - CompoundDictionaryTest.cs notes — removed the AutoFixture suggestion
+  - Former §5 (Using AutoFixture) — section deleted entirely; subsequent
+  sections renumbered (§6 → §5, §7 → §6)
+
+✻ Churned for 51s
+
+❯ Before starting the migration, please make sure you can run the unit      
+  tests as-is. I've run them all in Visual Studio 2026 and they all pass.   
+
+● Searched for 1 pattern (ctrl+o to expand)
+
+● Bash(cd /g/Framework/main && dotnet test
+      CPP.Framework.UnitTests/CPP.Framework.UnitTests.csproj --no-build -v quiet
+       2>&1 | tail -20)
+  ⎿  (No output)
+
+● Bash(cd /g/Framework/main && dotnet test
+      CPP.Framework.UnitTests/CPP.Framework.UnitTests.csproj -v quiet 2>&1)
+  ⎿  (No output)
+
+● Bash(cd /g/Framework/main && dotnet test
+      CPP.Framework.UnitTests/CPP.Framework.UnitTests.csproj 2>&1; echo "EXIT:
+      $?")
+  ⎿    Determining projects to restore...
+       All projects are up-to-date for restore.
+     EXIT: 0
+  ⎿  (timeout 2m)
+
+● No test output at all — dotnet test is silently doing nothing, likely because
+  net48 requires a full MSBuild / VSTest runner on Windows. Let me build
+  properly and use vstest.console.exe directly.
+
+● Bash(cd /g/Framework/main && dotnet build
+      CPP.Framework.UnitTests/CPP.Framework.UnitTests.csproj -c Debug 2>&1; echo
+       "EXIT: $?")
+  ⎿    Determining projects to restore...
+       All projects are up-to-date for restore.
+       CPP.Framework.Core -> G:\Framework\main\CPP.Framework.Core\bin\Debug
+     … +40 lines (ctrl+o to expand)
+  ⎿  (timeout 2m)
+
+● Build succeeds. Now find and run vstest.console.exe.
+
+● Searched for 1 pattern (ctrl+o to expand)
+
+● Bash("/c/Program Files/Microsoft Visual Studio/18/Enterprise/Common7/IDE/Commo
+      nExtensions/Microsoft/TestWindow/vstest.console.exe" \
+        "G:/Framework/main/CPP.Framewo…)
+  ⎿  VSTest version 18.0.1 (x64)
+
+     Starting test execution, please wait...
+     … +356 lines (ctrl+o to expand)
+  ⎿  (timeout 2m)
+
+● All tests pass. Here's the baseline:
+
+  - 474 total tests
+  - 455 passed
+  - 19 skipped (pre-existing [Ignore]-marked tests — these were already excluded
+   before migration)
+  - 0 failed
+
+  The VS 2026 / vstest runner at Microsoft Visual Studio/18/ works correctly for
+   this net48 project. We have a solid baseline to compare against after each
+  migration phase.
+
+✻ Crunched for 1m 37s
+
+❯ Excellent. Please make a note of the test running strategy in             
+  UnitTestMigration.md.                                                     
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(UnitTestMigration.md)
+  ⎿  Added 20 lines
+      493  ### `[Ignore]`d Tests
+      494  Two tests in `CompoundDictionaryTest` are marked `[Ignore]`. L
+           eave them as-is during migration; they are already excluded fr
+           om the run.
+      495  
+      496 +### Test Running Strategy                                     
+      497 +                                                              
+      498 +`dotnet test` produces no output for net48 projects on Windows
+          + — use `vstest.console.exe` from the Visual Studio 2026 instal
+          +lation instead:                                               
+      499 +                                                              
+      500 +```                                                           
+      501 +"C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common
+          +7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe
+          +" ^                                                           
+      502 +  "G:\Framework\main\CPP.Framework.UnitTests\bin\Debug\net48\C
+          +PP.Framework.UnitTests.dll"                                   
+      503 +```                                                           
+      504 +                                                              
+      505 +Build first with:                                             
+      506 +```                                                           
+      507 +dotnet build CPP.Framework.UnitTests/CPP.Framework.UnitTests.c
+          +sproj -c Debug                                                
+      508 +```                                                           
+      509 +                                                              
+      510 +**Baseline (pre-migration, all passing in Visual Studio 2026):
+          +**                                                            
+      511 +- Total: 474 — Passed: 455, Skipped: 19, Failed: 0            
+      512 +- The 19 skipped tests are pre-existing `[Ignore]`-marked test
+          +s and are not a concern.                                      
+      513 +                                                              
+      514 +After each migration phase, the pass/skip counts should remain
+          + identical and failed should stay at 0.                       
+      515 +                                                              
+      516  ### `CS0618` Suppression
+      517  The project-level `<NoWarn>CS0618</NoWarn>` suppresses obsolet
+           e-member warnings. Review after migration whether this suppres
+           sion is still needed (some RhinoMocks APIs were marked obsolet
+           e; once removed, the suppression may be unnecessary).
+
+● Added a "Test Running Strategy" section to §6 (Risks and Considerations)
+  capturing:
+
+  - Why dotnet test doesn't work for net48
+  - The exact vstest.console.exe command to use
+  - The build command to run first
+  - The baseline numbers (474 total, 455 passed, 19 skipped, 0 failed) to
+  compare against after each phase
+
+❯ /usage 
+  ⎿  Status dialog dismissed
+
+❯ Begin Phase 1, please. 
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(CPP.Framework.UnitTests\CPP.Framework.UnitTests.csproj)
+  ⎿  Added 2 lines
+      28    <ItemGroup>
+      29      <PackageReference Include="JetBrains.Annotations" Version="
+          11.1.0" />
+      30      <PackageReference Include="Microsoft.WindowsAzure.Configura
+          tionManager" Version="3.2.1" />
+      31 +    <PackageReference Include="FluentAssertions" Version="7.1.*
+         +" />                                                           
+      32      <PackageReference Include="MSTest.TestAdapter" Version="3.6
+          .3" />
+      33      <PackageReference Include="MSTest.TestFramework" Version="3
+          .6.3" />
+      34 +    <PackageReference Include="NSubstitute" Version="5.*" />   
+      35      <PackageReference Include="RhinoMocks" Version="3.6.1" />
+      36    </ItemGroup>
+      37  
+
+● Bash(cd /g/Framework/main && dotnet build
+      CPP.Framework.UnitTests/CPP.Framework.UnitTests.csproj -c Debug 2>&1; echo
+       "EXIT: $?")
+  ⎿    Determining projects to restore...
+       All projects are up-to-date for restore.
+       CPP.Framework.Core -> G:\Framework\main\CPP.Framework.Core\bin\Debug
+     … +40 lines (ctrl+o to expand)
+  ⎿  (timeout 2m)
+
+● Build clean. Let me confirm the packages actually resolved to the expected
+  versions and run the tests to make sure nothing regressed.
+
+● Bash(cd /g/Framework/main && dotnet list
+      CPP.Framework.UnitTests/CPP.Framework.UnitTests.csproj package 2>&1 | grep
+       -E "FluentAssertions|NSubstitute")
+  ⎿     > FluentAssertions                                 7.1.*       7.1.
+     0
+        > NSubstitute                                      5.*         5.3.
+     0
+
+● Bash("/c/Program Files/Microsoft Visual Studio/18/Enterprise/Common7/IDE/Commo
+      nExtensions/Microsoft/TestWindow/vstest.console.exe" \
+        "G:/Framework/main/CPP.Framewo…)
+  ⎿    Passed CreateMockDerivedTypePropertyKeyTrait [1 ms]
+       Passed CreateMockDerivedTypePropertyKeyTraitWithBaseTypeItem [1 ms]
+     … +5 lines (ctrl+o to expand)
+
+● Phase 1 complete. Results:
+
+  - FluentAssertions 7.1.0 and NSubstitute 5.3.0 added and restored successfully
+  - Build: 0 errors, 1 pre-existing warning (unrelated
+  ApplicationInsights.config)
+  - Tests: 474 total — 455 passed, 19 skipped, 0 failed — identical to baseline
+
+✻ Churned for 1m 11s
+
+❯ /usage 
+  ⎿  Status dialog dismissed
+
+❯ Being phase 2, please. 
+
+● Phase 2 means creating the Testing/ helper infrastructure. Let me read all the
+   source files I need to copy or adapt before writing anything.
+
+● Read 5 files (ctrl+o to expand)
+
+● Good. Now I have everything I need. I'll create all seven files in a Testing/
+  folder. The namespace will be CPP.Framework.UnitTests.Testing (not
+  CPP.Framework.Diagnostics.Testing) to avoid type-name collisions with
+  CPP.Framework.Testing while it's still referenced.
+
+● Write(CPP.Framework.UnitTests\Testing\StubServiceRegistrationAttribute.cs)
+  ⎿  Wrote 23 lines to
+     CPP.Framework.UnitTests\Testing\StubServiceRegistrationAttribute.cs
+       1 using System;
+       2 using System.Diagnostics.CodeAnalysis;
+       3 using CPP.Framework.DependencyInjection;
+       4 
+       5 namespace CPP.Framework.UnitTests.Testing
+       6 {
+       7     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true
+         , Inherited = false)]
+       8     [ExcludeFromCodeCoverage]
+       9     public class StubServiceRegistrationAttribute : Attribute
+      10     {
+     … +13 lines (ctrl+o to expand)
+
+● Write(CPP.Framework.UnitTests\Testing\TestGroupTarget.cs)
+  ⎿  Wrote 11 lines to CPP.Framework.UnitTests\Testing\TestGroupTarget.cs
+       1 namespace CPP.Framework.UnitTests.Testing
+       2 {
+       3     public enum TestGroupTarget
+       4     {
+       5         Configuration,
+       6         Core,
+       7         DependencyInjection,
+       8         Validation,
+       9         Extentions,
+      10     }
+     … +1 line (ctrl+o to expand)
+
+● Write(CPP.Framework.UnitTests\Testing\TestGroupAttribute.cs)
+  ⎿  Wrote 21 lines to
+     CPP.Framework.UnitTests\Testing\TestGroupAttribute.cs
+       1 using System;
+       2 using System.Collections.Generic;
+       3 using System.Diagnostics.CodeAnalysis;
+       4 using Microsoft.VisualStudio.TestTools.UnitTesting;
+       5 
+       6 namespace CPP.Framework.UnitTests.Testing
+       7 {
+       8     [AttributeUsage(AttributeTargets.Method, AllowMultiple = tru
+         e)]
+       9     [ExcludeFromCodeCoverage]
+      10     public class TestGroupAttribute : TestCategoryBaseAttribute
+     … +11 lines (ctrl+o to expand)
+
+● Write(CPP.Framework.UnitTests\Testing\TestMemoryStream.cs)
+  ⎿  Wrote 16 lines to CPP.Framework.UnitTests\Testing\TestMemoryStream.cs
+       1 using System.Diagnostics.CodeAnalysis;
+       2 using System.IO;
+       3 
+       4 namespace CPP.Framework.UnitTests.Testing
+       5 {
+       6     [ExcludeFromCodeCoverage]
+       7     public class TestMemoryStream : MemoryStream
+       8     {
+       9         protected override void Dispose(bool disposing)
+      10         {
+     … +6 lines (ctrl+o to expand)
+
+● Write(CPP.Framework.UnitTests\Testing\ReflectionHelper.cs)
+  ⎿  Wrote 23 lines to CPP.Framework.UnitTests\Testing\ReflectionHelper.cs
+       1 using System.Diagnostics.CodeAnalysis;
+       2 using System.Linq;
+       3 using System.Reflection;
+       4 
+       5 namespace CPP.Framework.UnitTests.Testing
+       6 {
+       7     [ExcludeFromCodeCoverage]
+       8     internal static class ReflectionHelper
+       9     {
+      10         private const BindingFlags InternalBindingFlags =
+     … +13 lines (ctrl+o to expand)
+
+● Now the two more substantive files — ServiceStubHelper (adapted faithfully
+  from the real StubFactory registration logic) and
+  ClaimsPrincipalTestExtensions:
+
+● Write(CPP.Framework.UnitTests\Testing\ServiceStubHelper.cs)
+  ⎿  Wrote 73 lines to CPP.Framework.UnitTests\Testing\ServiceStubHelper.cs
+       1 using System;
+       2 using System.Diagnostics.CodeAnalysis;
+       3 using System.Linq;
+       4 using System.Security.Principal;
+       5 using CPP.Framework.DependencyInjection;
+       6 
+       7 namespace CPP.Framework.UnitTests.Testing
+       8 {
+       9     [ExcludeFromCodeCoverage]
+      10     internal static class ServiceStubHelper
+     … +63 lines (ctrl+o to expand)
+
+● Write(CPP.Framework.UnitTests\Testing\ClaimsPrincipalTestExtensions.cs)
+  ⎿  Wrote 69 lines to
+     CPP.Framework.UnitTests\Testing\ClaimsPrincipalTestExtensions.cs
+       1 using System.Diagnostics.CodeAnalysis;
+       2 using System.Linq;
+       3 using System.Security.Claims;
+       4 using CPP.Framework.DependencyInjection;
+       5 using CPP.Framework.Security;
+       6 using CPP.Framework.Security.Policies;
+       7 
+       8 namespace CPP.Framework.UnitTests.Testing
+       9 {
+      10     [ExcludeFromCodeCoverage]
+     … +59 lines (ctrl+o to expand)
+
+● Now build to verify everything compiles cleanly:
+
+● Bash(cd /g/Framework/main && dotnet build
+      CPP.Framework.UnitTests/CPP.Framework.UnitTests.csproj -c Debug 2>&1; echo
+       "EXIT: $?")
+  ⎿    Determining projects to restore...
+       All projects are up-to-date for restore.
+       CPP.Framework.Core -> G:\Framework\main\CPP.Framework.Core\bin\Debug
+     … +40 lines (ctrl+o to expand)
+  ⎿  (timeout 2m)
+
+● Bash("/c/Program Files/Microsoft Visual Studio/18/Enterprise/Common7/IDE/Commo
+      nExtensions/Microsoft/TestWindow/vstest.console.exe" \
+        "G:/Framework/main/CPP.Framewo…)
+  ⎿  Test Run Successful.
+     Total tests: 474
+          Passed: 455
+     … +2 lines (ctrl+o to expand)
+
+● Phase 2 complete. 7 files created in CPP.Framework.UnitTests/Testing/:
+
+  File: StubServiceRegistrationAttribute.cs
+  What it provides: Copied from CPP.Framework.Testing; namespace-scoped locally
+  ────────────────────────────────────────
+  File: TestGroupTarget.cs
+  What it provides: Enum of category names (with the original Extentions typo
+    preserved)
+  ────────────────────────────────────────
+  File: TestGroupAttribute.cs
+  What it provides: MSTest TestCategoryBaseAttribute wrapper, uses local
+    TestGroupTarget
+  ────────────────────────────────────────
+  File: TestMemoryStream.cs
+  What it provides: Non-disposing MemoryStream for serialisation tests
+  ────────────────────────────────────────
+  File: ReflectionHelper.cs
+  What it provides: CreateInstance<T>() for types with non-public constructors
+  ────────────────────────────────────────
+  File: ServiceStubHelper.cs
+  What it provides: All RegisterServiceStub overloads + RegisterInterfaceStub +
+    RegisterPrincipal, faithfully adapted from StubFactory
+  ────────────────────────────────────────
+  File: ClaimsPrincipalTestExtensions.cs
+  What it provides: CreatePrincipal,
+  GrantAccessRight/FeatureName/Claim/UserName,
+    RevokeAccessRight — all the claims helpers from StubFactory, with no
+    RhinoMocks dependency
+
+  Build: 0 errors, 1 pre-existing warning. Tests: 474 total — 455 passed, 19 
+  skipped, 0 failed — baseline unchanged.
+
+✻ Worked for 3m 17s
+
+❯ /usage 
+  ⎿  Status dialog dismissed
+
+❯ Begin Phase 3. 
+
+● Read 1 file (ctrl+o to expand)
+
+● Good. I can see the full picture now — RhinoMocks-specific fluent chains,
+  StubFactory calls, and Arg<T>.Is.Anything matchers throughout. Let me write
+  the replacement.
+
+● Write(CPP.Framework.UnitTests\StubDefaultActions.cs)
+  ⎿  Added 104 lines, removed 110 lines
+        1 -using System;                                                
+        2 -using System.Collections.Specialized;                        
+        3 -using System.Configuration;                                  
+        4 -using System.Diagnostics;                                    
+        5 -using System.Diagnostics.CodeAnalysis;                       
+        6 -using CPP.Framework.Configuration;                           
+        7 -using CPP.Framework.DependencyInjection;                     
+        8 -using CPP.Framework.Diagnostics.Testing;                     
+        9 -using CPP.Framework.IO;                                      
+       10 -using Microsoft.WindowsAzure.ServiceRuntime;                 
+       11 -using Rhino.Mocks;                                           
+       12 -                                                             
+       13 -namespace CPP.Framework                                      
+       14 -{                                                            
+       15 -    [ExcludeFromCodeCoverage]                                
+       16 -    internal static partial class StubDefaultActions         
+       17 -    {                                                        
+       18 -        /// <summary>                                        
+       19 -        /// Registers a stubbed service implementation with th
+          -e <see cref="ServiceLocator"/> for                           
+       20 -        /// consumption by a unit test.                      
+       21 -        /// </summary>                                       
+       22 -        /// <param name="service">The service implementation t
+          -o register.</param>                                          
+       23 -        /// <returns>The value of the <paramref name="service"
+          -/> parameter.</returns>                                      
+       24 -        internal static ConfigurationManagerService RegisterSe
+          -rviceStub(this ConfigurationManagerService service)          
+       25 -        {                                                    
+       26 -            return service.RegisterServiceStub(StubDefaultActi
+          -ons.SetupDefaultConfig);                                     
+       27 -        }                                                    
+       28 -                                                             
+       29 -        /// <summary>                                        
+       30 -        /// Registers a stubbed service implementation with th
+          -e <see cref="ServiceLocator"/> for                           
+       31 -        /// consumption by a unit test.                      
+       32 -        /// </summary>                                       
+       33 -        /// <param name="service">The service implementation t
+          -o register.</param>                                          
+       34 -        /// <returns>The value of the <paramref name="service"
+          -/> parameter.</returns>                                      
+       35 -        internal static FileService RegisterServiceStub(this F
+          -ileService service)                                          
+       36 -        {                                                    
+       37 -            return service.RegisterServiceStub(StubDefaultActi
+          -ons.SetupDefaultConfig);                                     
+       38 -        }                                                    
+       39 -                                                             
+       40 -        /// <summary>                                        
+       41 -        /// Registers a stubbed service implementation with th
+          -e <see cref="ServiceLocator"/> for                           
+       42 -        /// consumption by a unit test.                      
+       43 -        /// </summary>                                       
+       44 -        /// <param name="service">The service implementation t
+          -o register.</param>                                          
+       45 -        /// <returns>The value of the <paramref name="service"
+          -/> parameter.</returns>                                      
+       46 -        internal static RoleEnvironmentService RegisterService
+          -Stub(this RoleEnvironmentService service)                    
+       47 -        {                                                    
+       48 -            return service.RegisterServiceStub(StubDefaultActi
+          -ons.SetupDefaultConfig);                                     
+       49 -        }                                                    
+       50 -                                                             
+       51 -        /// <summary>                                        
+       52 -        /// Configures a stub object with the default actions 
+          -required for testing methods that                            
+       53 -        /// access the default <see cref="ConfigSettingProvide
+          -r"/>.                                                        
+       54 -        /// </summary>                                       
+       55 -        /// <param name="service">The stub object to register.
+          -</param>                                                     
+       56 -        internal static void SetupDefaultConfig(ConfigurationM
+          -anagerService service)                                       
+       57 -        {                                                    
+       58 -            var configurationErrorsException = StubFactory.Cre
+          -ateInstance<ConfigurationErrorsException>();                 
+       59 -                                                             
+       60 -            service                                          
+       61 -                .StubAction(svc => svc.AppSettings).Return(new
+          - NameValueCollection())                                      
+       62 -                .StubAction(svc => svc.ConnectionStrings).Retu
+          -rn(new ConnectionStringSettingsCollection());                
+       63 -                                                             
+       64 -            service                                          
+       65 -                .StubAction(svc => svc.GetSection(Arg<string>.
+          -Is.Anything)).Return(null)                                   
+       66 -                .StubAction(svc => svc.OpenExeConfiguration(Ar
+          -g<ConfigurationUserLevel>.Is.Anything)).Throw(configurationErr
+          -orsException)                                                
+       67 -                .StubAction(svc => svc.OpenExeConfiguration(Ar
+          -g<string>.Is.Anything)).Throw(configurationErrorsException)  
+       68 -                .StubAction(svc => svc.OpenMachineConfiguratio
+          -n()).Throw(configurationErrorsException)                     
+       69 -                .StubAction(svc => svc.OpenMappedExeConfigurat
+          -ion(Arg<ExeConfigurationFileMap>.Is.Anything, Arg<Configuratio
+          -nUserLevel>.Is.Anything)).Throw(configurationErrorsException)
+       70 -                .StubAction(svc => svc.OpenMappedExeConfigurat
+          -ion(Arg<ExeConfigurationFileMap>.Is.Anything, Arg<Configuratio
+          -nUserLevel>.Is.Anything, Arg<bool>.Is.Anything)).Throw(configu
+          -rationErrorsException)                                       
+       71 -                .StubAction(svc => svc.OpenMappedMachineConfig
+          -uration(Arg<ConfigurationFileMap>.Is.Anything)).Throw(configur
+          -ationErrorsException)                                        
+       72 -                .StubAction(svc => svc.RefreshSection(Arg<stri
+          -ng>.Is.Anything)).Throw(configurationErrorsException);       
+       73 -        }                                                    
+       74 -                                                             
+       75 -        /// <summary>                                        
+       76 -        /// Configures a stub object with the default actions 
+          -required for testing methods that                            
+       77 -        /// access the <see cref="FileService"/>.            
+       78 -        /// </summary>                                       
+       79 -        /// <param name="service">The stub object to configure
+          -.</param>                                                    
+       80 -        internal static void SetupDefaultConfig(FileService se
+          -rvice)                                                       
+       81 -        {                                                    
+       82 -            service.StubAction(svc => svc.Exists(Arg<string>.I
+          -s.Anything)).Return(false);                                  
+       83 -        }                                                    
+       84 -                                                             
+       85 -        /// <summary>                                        
+       86 -        /// Configures a stub object with the default actions 
+          -required for testing methods that                            
+       87 -        /// access the <see cref="RoleConfigProvider"/>.     
+       88 -        /// </summary>                                       
+       89 -        /// <param name="service">The stub object to configure
+          -.</param>                                                    
+       90 -        internal static void SetupDefaultConfig(RoleEnvironmen
+          -tService service)                                            
+       91 -        {                                                    
+       92 -            var invalidOperationException = new InvalidOperati
+          -onException();                                               
+       93 -            var roleEnvironmentException = StubFactory.CreateI
+          -nstance<RoleEnvironmentException>();                         
+       94 -                                                             
+       95 -            service                                          
+       96 -                .StubAction(svc => svc.CurrentRoleInstance).Th
+          -row(invalidOperationException)                               
+       97 -                .StubAction(svc => svc.DeloymentId).Throw(inva
+          -lidOperationException)                                       
+       98 -                .StubAction(svc => svc.IsAvailable).Return(fal
+          -se)                                                          
+       99 -                .StubAction(svc => svc.IsEmulated).Throw(inval
+          -idOperationException)                                        
+      100 -                .StubAction(svc => svc.IsAzureStorageEmulatorA
+          -ctive).Return(false)                                         
+      101 -                .StubAction(svc => svc.Roles).Throw(invalidOpe
+          -rationException)                                             
+      102 -                .StubAction(svc => svc.TraceSource).Return(new
+          - TraceSource(typeof(RoleEnvironment).FullName, SourceLevels.In
+          -formation));                                                 
+      103 -                                                             
+      104 -            service                                          
+      105 -                .StubAction(svc => svc.GetConfigurationSetting
+          -Value(Arg<string>.Is.Anything)).Throw(roleEnvironmentException
+          -)                                                            
+      106 -                .StubAction(svc => svc.GetLocalResource(Arg<st
+          -ring>.Is.Anything)).Throw(roleEnvironmentException)          
+      107 -                .StubAction(svc => svc.RequestRecycle()).Throw
+          -(roleEnvironmentException);                                  
+      108 -        }                                                    
+      109 -    }                                                        
+      110 -}                                                            
+        1 +using System;                                                 
+        2 +using System.Collections.Specialized;                         
+        3 +using System.Configuration;                                   
+        4 +using System.Diagnostics;                                     
+        5 +using System.Diagnostics.CodeAnalysis;                        
+        6 +using CPP.Framework.Configuration;                            
+        7 +using CPP.Framework.DependencyInjection;                      
+        8 +using CPP.Framework.IO;                                       
+        9 +using CPP.Framework.UnitTests.Testing;                        
+       10 +using Microsoft.WindowsAzure.ServiceRuntime;                  
+       11 +using NSubstitute;                                            
+       12 +                                                              
+       13 +namespace CPP.Framework                                       
+       14 +{                                                             
+       15 +    [ExcludeFromCodeCoverage]                                 
+       16 +    internal static partial class StubDefaultActions          
+       17 +    {                                                         
+       18 +        /// <summary>                                         
+       19 +        /// Registers a stubbed service implementation with th
+          +e <see cref="ServiceLocator"/> for                            
+       20 +        /// consumption by a unit test.                       
+       21 +        /// </summary>                                        
+       22 +        /// <param name="service">The service implementation t
+          +o register.</param>                                           
+       23 +        /// <returns>The value of the <paramref name="service"
+          +/> parameter.</returns>                                       
+       24 +        internal static ConfigurationManagerService RegisterSe
+          +rviceStub(this ConfigurationManagerService service)           
+       25 +        {                                                     
+       26 +            return ServiceStubHelper.RegisterServiceStub(servi
+          +ce, StubDefaultActions.SetupDefaultConfig);                   
+       27 +        }                                                     
+       28 +                                                              
+       29 +        /// <summary>                                         
+       30 +        /// Registers a stubbed service implementation with th
+          +e <see cref="ServiceLocator"/> for                            
+       31 +        /// consumption by a unit test.                       
+       32 +        /// </summary>                                        
+       33 +        /// <param name="service">The service implementation t
+          +o register.</param>                                           
+       34 +        /// <returns>The value of the <paramref name="service"
+          +/> parameter.</returns>                                       
+       35 +        internal static FileService RegisterServiceStub(this F
+          +ileService service)                                           
+       36 +        {                                                     
+       37 +            return ServiceStubHelper.RegisterServiceStub(servi
+          +ce, StubDefaultActions.SetupDefaultConfig);                   
+       38 +        }                                                     
+       39 +                                                              
+       40 +        /// <summary>                                         
+       41 +        /// Registers a stubbed service implementation with th
+          +e <see cref="ServiceLocator"/> for                            
+       42 +        /// consumption by a unit test.                       
+       43 +        /// </summary>                                        
+       44 +        /// <param name="service">The service implementation t
+          +o register.</param>                                           
+       45 +        /// <returns>The value of the <paramref name="service"
+          +/> parameter.</returns>                                       
+       46 +        internal static RoleEnvironmentService RegisterService
+          +Stub(this RoleEnvironmentService service)                     
+       47 +        {                                                     
+       48 +            return ServiceStubHelper.RegisterServiceStub(servi
+          +ce, StubDefaultActions.SetupDefaultConfig);                   
+       49 +        }                                                     
+       50 +                                                              
+       51 +        /// <summary>                                         
+       52 +        /// Configures a stub object with the default actions 
+          +required for testing methods that                             
+       53 +        /// access the default <see cref="ConfigSettingProvide
+          +r"/>.                                                         
+       54 +        /// </summary>                                        
+       55 +        /// <param name="service">The stub object to register.
+          +</param>                                                      
+       56 +        internal static void SetupDefaultConfig(ConfigurationM
+          +anagerService service)                                        
+       57 +        {                                                     
+       58 +            var configurationErrorsException = ReflectionHelpe
+          +r.CreateInstance<ConfigurationErrorsException>();             
+       59 +                                                              
+       60 +            service.AppSettings.Returns(new NameValueCollectio
+          +n());                                                         
+       61 +            service.ConnectionStrings.Returns(new ConnectionSt
+          +ringSettingsCollection());                                    
+       62 +            service.GetSection(Arg.Any<string>()).Returns(null
+          +);                                                            
+       63 +            service.OpenExeConfiguration(Arg.Any<Configuration
+          +UserLevel>()).Throws(configurationErrorsException);           
+       64 +            service.OpenExeConfiguration(Arg.Any<string>()).Th
+          +rows(configurationErrorsException);                           
+       65 +            service.OpenMachineConfiguration().Throws(configur
+          +ationErrorsException);                                        
+       66 +            service.OpenMappedExeConfiguration(Arg.Any<ExeConf
+          +igurationFileMap>(), Arg.Any<ConfigurationUserLevel>()).Throws
+          +(configurationErrorsException);                               
+       67 +            service.OpenMappedExeConfiguration(Arg.Any<ExeConf
+          +igurationFileMap>(), Arg.Any<ConfigurationUserLevel>(), Arg.An
+          +y<bool>()).Throws(configurationErrorsException);              
+       68 +            service.OpenMappedMachineConfiguration(Arg.Any<Con
+          +figurationFileMap>()).Throws(configurationErrorsException);   
+       69 +            service.When(svc => svc.RefreshSection(Arg.Any<str
+          +ing>())).Throw(configurationErrorsException);                 
+       70 +        }                                                     
+       71 +                                                              
+       72 +        /// <summary>                                         
+       73 +        /// Configures a stub object with the default actions 
+          +required for testing methods that                             
+       74 +        /// access the <see cref="FileService"/>.             
+       75 +        /// </summary>                                        
+       76 +        /// <param name="service">The stub object to configure
+          +.</param>                                                     
+       77 +        internal static void SetupDefaultConfig(FileService se
+          +rvice)                                                        
+       78 +        {                                                     
+       79 +            service.Exists(Arg.Any<string>()).Returns(false); 
+       80 +        }                                                     
+       81 +                                                              
+       82 +        /// <summary>                                         
+       83 +        /// Configures a stub object with the default actions 
+          +required for testing methods that                             
+       84 +        /// access the <see cref="RoleConfigProvider"/>.      
+       85 +        /// </summary>                                        
+       86 +        /// <param name="service">The stub object to configure
+          +.</param>                                                     
+       87 +        internal static void SetupDefaultConfig(RoleEnvironmen
+          +tService service)                                             
+       88 +        {                                                     
+       89 +            var invalidOperationException = new InvalidOperati
+          +onException();                                                
+       90 +            var roleEnvironmentException = ReflectionHelper.Cr
+          +eateInstance<RoleEnvironmentException>();                     
+       91 +                                                              
+       92 +            service.CurrentRoleInstance.Throws(invalidOperatio
+          +nException);                                                  
+       93 +            service.DeloymentId.Throws(invalidOperationExcepti
+          +on);                                                          
+       94 +            service.IsAvailable.Returns(false);               
+       95 +            service.IsEmulated.Throws(invalidOperationExceptio
+          +n);                                                           
+       96 +            service.IsAzureStorageEmulatorActive.Returns(false
+          +);                                                            
+       97 +            service.Roles.Throws(invalidOperationException);  
+       98 +            service.TraceSource.Returns(new TraceSource(typeof
+          +(RoleEnvironment).FullName, SourceLevels.Information));       
+       99 +            service.GetConfigurationSettingValue(Arg.Any<strin
+          +g>()).Throws(roleEnvironmentException);                       
+      100 +            service.GetLocalResource(Arg.Any<string>()).Throws
+          +(roleEnvironmentException);                                   
+      101 +            service.When(svc => svc.RequestRecycle()).Throw(ro
+          +leEnvironmentException);                                      
+      102 +        }                                                     
+      103 +    }                                                         
+      104 +}                                                             
+
+● Bash(cd /g/Framework/main && dotnet build
+      CPP.Framework.UnitTests/CPP.Framework.UnitTests.csproj -c Debug 2>&1; echo
+       "EXIT: $?")
+  ⎿    Determining projects to restore...
+       All projects are up-to-date for restore.
+       CPP.Framework.Core -> G:\Framework\main\CPP.Framework.Core\bin\Debug
+     … +173 lines (ctrl+o to expand)
+  ⎿  (timeout 2m)
+
+● The issue is clear — NSubstitute's Throws extension method lives in a separate
+   namespace. I need to add using NSubstitute.ExceptionExtensions;.
+
+● Update(CPP.Framework.UnitTests\StubDefaultActions.cs)
+  ⎿  Added 1 line
+       9  using CPP.Framework.UnitTests.Testing;
+      10  using Microsoft.WindowsAzure.ServiceRuntime;
+      11  using NSubstitute;
+      12 +using NSubstitute.ExceptionExtensions;                         
+      13  
+      14  namespace CPP.Framework
+      15  {
+
+● Bash(cd /g/Framework/main && dotnet build
+      CPP.Framework.UnitTests/CPP.Framework.UnitTests.csproj -c Debug 2>&1; echo
+       "EXIT: $?")
+  ⎿    Determining projects to restore...
+       All projects are up-to-date for restore.
+       CPP.Framework.Core -> G:\Framework\main\CPP.Framework.Core\bin\Debug
+     … +27 lines (ctrl+o to expand)
+  ⎿  (timeout 2m)
+
+● Bash("/c/Program Files/Microsoft Visual Studio/18/Enterprise/Common7/IDE/Commo
+      nExtensions/Microsoft/TestWindow/vstest.console.exe" \
+        "G:/Framework/main/CPP.Framewo…)
+  ⎿  Test Run Failed.
+     Total tests: 474
+          Passed: 428
+     … +3 lines (ctrl+o to expand)
+
+● 27 failures. That's expected — the tests that call
+  StubDefaultActions.RegisterServiceStub now pass a NSubstitute setup action to
+  a RhinoMocks stub, which doesn't work. Let me confirm this is exactly the set
+  of tests using those code paths.
+
+● Bash("/c/Program Files/Microsoft Visual Studio/18/Enterprise/Common7/IDE/Commo
+      nExtensions/Microsoft/TestWindow/vstest.console.exe" \
+        "G:/Framework/main/CPP.Framewo…)
+  ⎿    Failed DecryptValueWithAesCryptBundle [100 ms]
+       Failed DecryptValueWithLegacyBundle [8 ms]
+       Failed EncryptValueWithLatestBundle [5 ms]
+     … +17 lines (ctrl+o to expand)
+  ⎿  (timeout 2m)
+
+● Exactly as expected. All 27 failures are from the three test files that call
+  through StubDefaultActions:
+  - CryptographyServiceTests (5) — uses
+  CreateStub<ConfigurationManagerService>().RegisterServiceStub()
+  - ConfigSettingProviderTests (7) — same
+  - RoleConfigProviderTests (15) — same plus
+  CreateStub<RoleEnvironmentService>().RegisterServiceStub()
+
+  The build is clean. The failures are a predictable consequence of
+  StubDefaultActions now calling NSubstitute setup methods on stubs that are
+  still RhinoMocks objects. They will all be resolved in Phase 5 when those
+  three test files are migrated to Substitute.For<T>(). Let me note this in the
+  plan.
+
+● Update(UnitTestMigration.md)
+  ⎿  Added 3 lines
+      513  
+      514  After each migration phase, the pass/skip counts should remain
+            identical and failed should stay at 0.
+      515  
+      516 +**Exception — transitional failure after Phase 3:**           
+      517 +Rewriting `StubDefaultActions.cs` to use NSubstitute in Phase 
+          +3 causes 27 tests to fail temporarily. These are the tests in 
+          +`CryptographyServiceTests`, `ConfigSettingProviderTests`, and 
+          +`RoleConfigProviderTests` — all of which call `StubDefaultActi
+          +ons.RegisterServiceStub` on a RhinoMocks stub created by `Stub
+          +Factory.CreateStub<T>()`. NSubstitute's setup methods have no 
+          +effect on RhinoMocks proxies. All 27 failures are resolved in 
+          +Phase 5 when those three files are migrated to `Substitute.For
+          +<T>()`.                                                       
+      518 +                                                              
+      519  ### `CS0618` Suppression
+      520  The project-level `<NoWarn>CS0618</NoWarn>` suppresses obsolet
+           e-member warnings. Review after migration whether this suppres
+           sion is still needed (some RhinoMocks APIs were marked obsolet
+           e; once removed, the suppression may be unnecessary).
+
+● Phase 3 complete. Summary:
+
+  - StubDefaultActions.cs fully rewritten — all RhinoMocks/StubFactory usage
+  replaced with NSubstitute
+  - Key changes:
+    - StubFactory.CreateInstance<T>() → ReflectionHelper.CreateInstance<T>()
+    - service.RegisterServiceStub(setupAction) (via StubFactory) →
+  ServiceStubHelper.RegisterServiceStub(service, setupAction)
+    - All .StubAction(...).Return(v) chains → service.Member(...).Returns(v)
+    - All .StubAction(...).Throw(ex) chains → service.Member(...).Throws(ex)
+  (non-void) / service.When(...).Throw(ex) (void RefreshSection, RequestRecycle)
+    - Added using NSubstitute.ExceptionExtensions; — required for Throws to
+  resolve; this is a useful lesson to note for Phase 5
+  - Build: 0 errors
+  - Tests: 428 passed, 27 failing (expected — documented in plan), 19 skipped
+
+✻ Churned for 3m 50s
+
+❯ /usage 
+  ⎿  Status dialog dismissed
