@@ -50,10 +50,5 @@
   </ItemGroup>
 
   <!-- Content files -->
-  <ItemGroup>
-    <None Update="CPPEncryption.pfx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 
 </Project>

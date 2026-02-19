@@ -26,7 +26,39 @@ namespace CPP.Framework.Cryptography
         [ClassInitialize]
         public static void OnCaseStartup(TestContext context)
         {
-            _certificate = new X509Certificate2("CPPEncryption.pfx", "PASSword2012");
+            string certBase64 =
+                "MIIGyAIBAzCCBoQGCSqGSIb3DQEHAaCCBnUEggZxMIIGbTCCA74GCSqGSIb3DQEHAaCCA68EggOrMIIDpz" +
+                "CCA6MGCyqGSIb3DQEMCgECoIICtjCCArIwHAYKKoZIhvcNAQwBAzAOBAgtcF4e4YYM8QICB9AEggKQB+U0" +
+                "kugkYIQ0j3mnl1ktTGouOYhTbkCjg5saQTPQ0MCmRlOxBUUw1pSjyGlwlfX7TvDDagFd7t4aTKC3ipMl0q" +
+                "LFAA62b7Eo8wLfAMLDWaPRbI9h2mpUJq9sIIOugFTAg3mgx0t9pO8exMyc0nFOpAUZMpiS1IEkKQbPc+Ee" +
+                "7y08S7ouvTjqYIDJvRY62bbqcmFXCmUhp2hcPQNUAp6jVybvsWGulrbbeUiLOs4It3N+eMvQYXALVZqo4w" +
+                "iRNDYRRhBMpMNcQRyn3hOFztS2dbxPUecGExy+n26W+2S75Q+UJlYTYcvmeq3S0NGDunvDKRoP3c90QkFv" +
+                "JB+Y03fmGDc9yPiHC91vw+rOqBCIv1UUVjpFmtko7AsHzxZzl9lfeh+DL5R3Szw+OHDvR510fjxwt5yOD6" +
+                "drdlvw30FcQXhvU6N8UcJGkVAFSAuxmGKRf2Ph0BeWfJ+aX64OJYSs8WYPj4lowoWRtwVlLI5ZwFh8ZdIc" +
+                "Yk7StPoHCwHNMh4DBsFAIWcQPBd0Yt+F9acs8DWz6iHa3SGKNyUy2/dLv5BTyhhIvtJDYdjT9Tnbc1jfxj" +
+                "SXvfKrsStAcmghHXAv4bCXtAWEoXUA51uLeJDmnWG2/BvC6rEdg/mbGRxxpkN3iXrHFfwej32/Oy1fzopT" +
+                "msN2kFj8ub28J5SYKRwCMhcr25Cj90E/7BXeEGddQS2u7ZRtRHs08vVrekWbo5SNR3kCkxNbgeUx2Y9T+G" +
+                "f16d1NAEmOxn/5LyqFiRdpM6OvAZZRvyPP+9LseaFdWIhUhegYbn3DTGMFBfXNxesoTQnJzMlxrKjqabGZ" +
+                "rHU5pDn7cp4zUf00iyWAuyKchS7sM/DaG8xLutP8eNhr2JPW5nAxgdkwEwYJKoZIhvcNAQkVMQYEBAEAAA" +
+                "AwVwYJKoZIhvcNAQkUMUoeSAAzADgAZgA1ADIAMQA5ADAALQAyAGMANAA4AC0ANABmADIAZAAtADkAMgBj" +
+                "ADkALQA3AGQAZgA4ADUAYwA1AGEAMQA3ADEAMTBpBgkrBgEEAYI3EQExXB5aAE0AaQBjAHIAbwBzAG8AZg" +
+                "B0ACAAUgBTAEEAIABTAEMAaABhAG4AbgBlAGwAIABDAHIAeQBwAHQAbwBnAHIAYQBwAGgAaQBjACAAUABy" +
+                "AG8AdgBpAGQAZQByMIICpwYJKoZIhvcNAQcGoIICmDCCApQCAQAwggKNBgkqhkiG9w0BBwEwHAYKKoZIhv" +
+                "cNAQwBBjAOBAiudY4qywy9DAICB9CAggJg5hIQT9AvjwapQUg6m9Bdi0i3AH06Ok2FyGHuyLDlcZN8Q3Ip" +
+                "pTbQy8GXqY0MgMar9NfVxCnKml7E/vE3Xketd6ha9of/pxSiahHaIeoC935VEh0cnXX6ob0yq75YJYtwub" +
+                "uIuVhFvocaXmSBFd/j+gL3IzZcBOVIUnATCubWGRffjigFB6VkbIQHdOF4oXc6eV6I2x5tv8GaUIcR6GuJ" +
+                "lSXwOWeLmTP1CZPn612Tb/fYTW4qnVGxZTA8ZCavWDpjzGQNOBCYf5YNGcVduqNXSsS5P8MvehS8wRsNzZ" +
+                "8PyIGCP9ijB1ApsBme/27uFQRPbMvoMkt/+heozOSrueZD+cq242MaktLfZtFOQboZMC+8r+XgGO+wYtYF" +
+                "nhU8Xnm0+B975w3EPpSRKsX2EXmrtVYWZ0M7bIZm/iGDq9WW3SDNMrJL/aF+GLLE+U16a/3fceQ961GJHT" +
+                "bmtywLuplz2x90v3fIql8vu7+XaK1RAD8+HgpNL80twbA0VDrZS7WJV+Z/F/ktFcgNUHwD1bLuG52dyh1K" +
+                "p/Gmy9/Df+ozeKHiE7bW4DxPDzMTlo33GjTKsY3tCs8HqhjqZys/QG20G+QsgvIv5tpB2rebGULCmm8RsP" +
+                "blDTOQBzCECORyHLrGOpMFNfnkp5vR4aORqCKMo/HJ5pRBETBgy1keSUcZxBREzudDr6OAEQst6tez0QTM" +
+                "LpS0B+RmUxa0CaTWnqxptnIOL/PKKPBY4crPMnncaXbXHVJJnk1kljlqJbYRAh1SsGKAnrnVh+uZVq9Ef4" +
+                "aqcbrnT3j5vzSe+PsrnSO7t78wOzAfMAcGBSsOAwIaBBQ57UmlHpKkaN41tzsuurxJ8hoGLgQUOv+UuNtF" +
+                "rEZFE6btHOB4+k+BGJ4CAgfQ";
+            byte[] certBytes = Convert.FromBase64String(certBase64);
+
+            _certificate = new X509Certificate2(certBytes, "PASSword2012");
         }
 
         [TestCleanup]

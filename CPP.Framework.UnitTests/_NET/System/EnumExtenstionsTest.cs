@@ -19,7 +19,6 @@ namespace System
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void GetDescriptionInvalidEnumTest()
         {
-            var expected = "Test Value 1";
             var actual = ((TestEnum) (-1)).GetDescription();
         }
 
