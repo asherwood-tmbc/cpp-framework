@@ -493,5 +493,25 @@ This class extends MSTest's `TestContext` abstract class. It has no testing-fram
 ### `[Ignore]`d Tests
 Two tests in `CompoundDictionaryTest` are marked `[Ignore]`. Leave them as-is during migration; they are already excluded from the run.
 
+### Test Running Strategy
+
+`dotnet test` produces no output for net48 projects on Windows — use `vstest.console.exe` from the Visual Studio 2026 installation instead:
+
+```
+"C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe" ^
+  "G:\Framework\main\CPP.Framework.UnitTests\bin\Debug\net48\CPP.Framework.UnitTests.dll"
+```
+
+Build first with:
+```
+dotnet build CPP.Framework.UnitTests/CPP.Framework.UnitTests.csproj -c Debug
+```
+
+**Baseline (pre-migration, all passing in Visual Studio 2026):**
+- Total: 474 — Passed: 455, Skipped: 19, Failed: 0
+- The 19 skipped tests are pre-existing `[Ignore]`-marked tests and are not a concern.
+
+After each migration phase, the pass/skip counts should remain identical and failed should stay at 0.
+
 ### `CS0618` Suppression
 The project-level `<NoWarn>CS0618</NoWarn>` suppresses obsolete-member warnings. Review after migration whether this suppression is still needed (some RhinoMocks APIs were marked obsolete; once removed, the suppression may be unnecessary).

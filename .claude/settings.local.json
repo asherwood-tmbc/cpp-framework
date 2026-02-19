@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(cmd /c:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(dotnet test:*)",
+      "Bash(\"/c/Program Files/Microsoft Visual Studio/18/Enterprise/Common7/IDE/CommonExtensions/Microsoft/TestWindow/vstest.console.exe\" \"G:/Framework/main/CPP.Framework.UnitTests/bin/Debug/net48/CPP.Framework.UnitTests.dll\" --logger:console)"
     ]
   }
 }
