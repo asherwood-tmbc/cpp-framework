@@ -513,5 +513,8 @@ dotnet build CPP.Framework.UnitTests/CPP.Framework.UnitTests.csproj -c Debug
 
 After each migration phase, the pass/skip counts should remain identical and failed should stay at 0.
 
+**Exception — transitional failure after Phase 3:**
+Rewriting `StubDefaultActions.cs` to use NSubstitute in Phase 3 causes 27 tests to fail temporarily. These are the tests in `CryptographyServiceTests`, `ConfigSettingProviderTests`, and `RoleConfigProviderTests` — all of which call `StubDefaultActions.RegisterServiceStub` on a RhinoMocks stub created by `StubFactory.CreateStub<T>()`. NSubstitute's setup methods have no effect on RhinoMocks proxies. All 27 failures are resolved in Phase 5 when those three files are migrated to `Substitute.For<T>()`.
+
 ### `CS0618` Suppression
 The project-level `<NoWarn>CS0618</NoWarn>` suppresses obsolete-member warnings. Review after migration whether this suppression is still needed (some RhinoMocks APIs were marked obsolete; once removed, the suppression may be unnecessary).
