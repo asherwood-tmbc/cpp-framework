@@ -4,7 +4,7 @@ An enterprise utility framework targeting .NET Framework 4.8 (C# 7.3). It provid
 
 ## Solution Structure
 
-The solution contains six production libraries, a testing utilities library, and a unit test project.
+The solution contains six production libraries and a unit test project.
 
 ```
 CPP.Framework.Libraries.sln
@@ -15,7 +15,6 @@ CPP.Framework.Libraries.sln
   CPP.Framework.Web                               REST clients, MVC / Web API security
   CPP.Framework.WindowsAzure                      Azure Storage, Service Bus, WebJobs
   CPP.Framework.WindowsAzure.ApplicationInsights  Application Insights diagnostics
-  CPP.Framework.Testing                           Test base classes and assertion helpers
   CPP.Framework.UnitTests                         Unit test suite
 ```
 
@@ -27,7 +26,6 @@ Core  <──  EntityData
       <──  Serialization
       <──  Web
       <──  WindowsAzure  <──  WindowsAzure.ApplicationInsights
-      <──  Testing (also references EntityData)
 ```
 
 ## Projects
@@ -96,16 +94,6 @@ Application Insights integration.
 
 - Journal listener that routes framework events to Application Insights as traces and exceptions.
 - Configurable `TelemetryClient` wrapper and configuration extensions.
-
-### CPP.Framework.Testing
-
-Test infrastructure and helpers.
-
-- `TestSuite` base class with `TestGroupAttribute` for organizing tests by category.
-- `StubFactory` — Rhino Mocks-based helpers for creating stubs and mocks.
-- `Verify` — Assertion extensions for collections, dictionaries, and dynamic objects.
-- Declarative expected-exception attributes (`ExpectedArgumentExceptionAttribute`, etc.).
-- `ConfigSettingsStubExtensions` for stubbing configuration in tests.
 
 ### CPP.Framework.UnitTests
 

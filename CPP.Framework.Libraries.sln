@@ -1,3 +1,4 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.2.11408.102
@@ -7,14 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4A12280A-8CA6-4406-92E3-E2A3FBBEC2EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPP.Framework.UnitTests", "CPP.Framework.UnitTests\CPP.Framework.UnitTests.csproj", "{C4996E22-6B15-477F-B7B2-A693142C3750}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPP.Framework.Testing", "CPP.Framework.Testing\CPP.Framework.Testing.csproj", "{ACE6BA4A-5CE9-4650-96CD-0269943A828D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C95441E2-A700-4E3A-9EC6-1A9E25939E8A}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPP.Framework.EntityData", "CPP.Framework.EntityData\CPP.Framework.EntityData.csproj", "{4028DC9C-CC54-4CD3-8FAA-EE6596EF9082}"
 EndProject
@@ -26,16 +19,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPP.Framework.Messaging", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPP.Framework.Web", "CPP.Framework.Web\CPP.Framework.Web.csproj", "{3EEC7884-DAA4-4984-B774-868DBCDA1471}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StyleCop", "StyleCop", "{205260D5-9282-4AB3-9231-5BD5789DF9D8}"
-	ProjectSection(SolutionItems) = preProject
-		Settings.StyleCop = Settings.StyleCop
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CPP.Framework.WindowsAzure.ApplicationInsights", "CPP.Framework.WindowsAzure.ApplicationInsights\CPP.Framework.WindowsAzure.ApplicationInsights.csproj", "{E266114C-8CAA-468D-92D0-4C00BCFF75B0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{90B8BC1E-D359-4B78-88AD-0AC282863CE9}"
 	ProjectSection(SolutionItems) = preProject
 		prereleasebuild.ps1 = prereleasebuild.ps1
+		README.md = README.md
 		SDKProjectUpgrade.md = SDKProjectUpgrade.md
 		UnitTestMigration.md = UnitTestMigration.md
 	EndProjectSection
@@ -79,18 +68,6 @@ Global
 		{C4996E22-6B15-477F-B7B2-A693142C3750}.PDP QA|Any CPU.Build.0 = Release|Any CPU
 		{C4996E22-6B15-477F-B7B2-A693142C3750}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4996E22-6B15-477F-B7B2-A693142C3750}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.PDP Demo|Any CPU.ActiveCfg = PDP Demo|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.PDP Demo|Any CPU.Build.0 = PDP Demo|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.PDP Dev|Any CPU.ActiveCfg = PDP Dev|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.PDP Dev|Any CPU.Build.0 = PDP Dev|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.PDP Prod|Any CPU.ActiveCfg = PDP Prod|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.PDP Prod|Any CPU.Build.0 = PDP Prod|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.PDP QA|Any CPU.ActiveCfg = PDP QA|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.PDP QA|Any CPU.Build.0 = PDP QA|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ACE6BA4A-5CE9-4650-96CD-0269943A828D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4028DC9C-CC54-4CD3-8FAA-EE6596EF9082}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4028DC9C-CC54-4CD3-8FAA-EE6596EF9082}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4028DC9C-CC54-4CD3-8FAA-EE6596EF9082}.PDP Demo|Any CPU.ActiveCfg = PDP Demo|Any CPU
