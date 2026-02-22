@@ -1,16 +1,15 @@
-﻿using System;
-using System.Configuration;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography.X509Certificates;
-
 using CPP.Framework.Configuration;
 using CPP.Framework.Cryptography.Bundles;
 using CPP.Framework.DependencyInjection;
-using CPP.Framework.Diagnostics.Testing;
-
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Rhino.Mocks;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using NSubstitute.Extensions;
 
 namespace CPP.Framework.Cryptography
 {
@@ -90,16 +89,10 @@ namespace CPP.Framework.Cryptography
                 "Morbi consectetur sem sit amet imperdiet placerat. Aenean vel nibh rhoncus, varius " +
                 "nulla ut massa nunc.";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
-                .StubConfigSetting("EncryptionCertificate", EncryptionCertificateThumbprint)
-                .RegisterServiceStub();
-            StubFactory.CreateStub<CertificateProvider>()
-                .StubAction(stub => stub.GetCertificate(Arg.Is(EncryptionCertificateThumbprint))).Return(_certificate)
-                .StubAction(stub => stub.GetCertificate(Arg<string>.Is.Anything)).Throw<NotImplementedException>()
-                .RegisterServiceStub();
+            SetupCryptoStubs();
             var actual = CryptographyService.Decrypt(SourceValue);
 
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [TestMethod]
@@ -108,16 +101,10 @@ namespace CPP.Framework.Cryptography
             const string SourceValue = "tYiib2xZSTyqlYZtpNsER/PUjRLhseLylj7S9kOPuVxg7cwmCd0GqaJcJnAxsid/VpaCknw9awcxdgUi7yHcQGus1AiFy+1wHobIuS2Ee1NA9YdNNTSSc/SybTKEOQkCDOXRQyAzUH8ejtI5N6FlrdJ9/u499hX6nGyMNIgEojc=";
             const string expect = "rhoy@cpp.com";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
-                .StubConfigSetting("EncryptionCertificate", EncryptionCertificateThumbprint)
-                .RegisterServiceStub();
-            StubFactory.CreateStub<CertificateProvider>()
-                .StubAction(stub => stub.GetCertificate(Arg.Is(EncryptionCertificateThumbprint))).Return(_certificate)
-                .StubAction(stub => stub.GetCertificate(Arg<string>.Is.Anything)).Throw<NotImplementedException>()
-                .RegisterServiceStub();
+            SetupCryptoStubs();
             var actual = CryptographyService.Decrypt(SourceValue);
-            
-            Verify.AreEqual(expect, actual);
+
+            actual.Should().Be(expect);
         }
 
         [TestMethod]
@@ -125,26 +112,20 @@ namespace CPP.Framework.Cryptography
         {
             const string expect =
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In volutpat in purus et " +
-                "sodales. Integer rutrum justo sapien, ut pharetra mauris efficitur vitae. Mauris " + 
-                "laoreet, tellus id bibendum facilisis, orci velit volutpat neque, tempor congue " + 
+                "sodales. Integer rutrum justo sapien, ut pharetra mauris efficitur vitae. Mauris " +
+                "laoreet, tellus id bibendum facilisis, orci velit volutpat neque, tempor congue " +
                 "nibh lacus vitae tellus. Pellentesque in massa erat. Donec tempus, eros in " +
                 "vulputate vehicula, enim dui elementum ligula, in euismod eros magna eget nisl. " +
                 "Morbi consectetur sem sit amet imperdiet placerat. Aenean vel nibh rhoncus, varius " +
                 "nulla ut massa nunc.";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
-                .StubConfigSetting("EncryptionCertificate", EncryptionCertificateThumbprint)
-                .RegisterServiceStub();
-            StubFactory.CreateStub<CertificateProvider>()
-                .StubAction(stub => stub.GetCertificate(Arg.Is(EncryptionCertificateThumbprint))).Return(_certificate)
-                .StubAction(stub => stub.GetCertificate(Arg<string>.Is.Anything)).Throw<NotImplementedException>()
-                .RegisterServiceStub();
+            SetupCryptoStubs();
             var actual = CryptographyService.Encrypt(expect);
 
-            Verify.IsFalse(string.IsNullOrWhiteSpace(actual));
-            Verify.IsTrue(actual?.StartsWith($"{CryptoBundle.CryptoBundleTokenChar}") ?? false);
-            Verify.AreNotEqual(expect, actual);
-            Verify.AreEqual(expect, CryptographyService.Decrypt(actual));
+            actual.Should().NotBeNullOrWhiteSpace();
+            actual.Should().StartWith($"{CryptoBundle.CryptoBundleTokenChar}");
+            actual.Should().NotBe(expect);
+            CryptographyService.Decrypt(actual).Should().Be(expect);
         }
 
         [TestMethod]
@@ -152,19 +133,13 @@ namespace CPP.Framework.Cryptography
         {
             const string expect = "rhoy@cpp.com";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
-                .StubConfigSetting("EncryptionCertificate", EncryptionCertificateThumbprint)
-                .RegisterServiceStub();
-            StubFactory.CreateStub<CertificateProvider>()
-                .StubAction(stub => stub.GetCertificate(Arg.Is(EncryptionCertificateThumbprint))).Return(_certificate)
-                .StubAction(stub => stub.GetCertificate(Arg<string>.Is.Anything)).Throw<NotImplementedException>()
-                .RegisterServiceStub();
+            SetupCryptoStubs();
             var actual = CryptographyService.Encrypt(expect);
-            
-            Verify.IsFalse(string.IsNullOrWhiteSpace(actual));
-            Verify.IsFalse(actual?.StartsWith($"{CryptoBundle.CryptoBundleTokenChar}") ?? false);
-            Verify.AreNotEqual(expect, actual);
-            Verify.AreEqual(expect, CryptographyService.Decrypt(actual));
+
+            actual.Should().NotBeNullOrWhiteSpace();
+            actual.Should().NotStartWith($"{CryptoBundle.CryptoBundleTokenChar}");
+            actual.Should().NotBe(expect);
+            CryptographyService.Decrypt(actual).Should().Be(expect);
         }
 
         [TestMethod]
@@ -172,19 +147,32 @@ namespace CPP.Framework.Cryptography
         {
             const string expect = "rhoy@cpp.com";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
-                .StubConfigSetting("EncryptionCertificate", EncryptionCertificateThumbprint)
-                .RegisterServiceStub();
-            StubFactory.CreateStub<CertificateProvider>()
-                .StubAction(stub => stub.GetCertificate(Arg.Is(EncryptionCertificateThumbprint))).Return(_certificate)
-                .StubAction(stub => stub.GetCertificate(Arg<string>.Is.Anything)).Throw<NotImplementedException>()
-                .RegisterServiceStub();
+            SetupCryptoStubs();
             var actual = CryptographyService.Encrypt(expect, false);
 
-            Verify.IsFalse(string.IsNullOrWhiteSpace(actual));
-            Verify.IsTrue(actual?.StartsWith($"{CryptoBundle.CryptoBundleTokenChar}") ?? false);
-            Verify.AreNotEqual(expect, actual);
-            Verify.AreEqual(expect, CryptographyService.Decrypt(actual));
+            actual.Should().NotBeNullOrWhiteSpace();
+            actual.Should().StartWith($"{CryptoBundle.CryptoBundleTokenChar}");
+            actual.Should().NotBe(expect);
+            CryptographyService.Decrypt(actual).Should().Be(expect);
         }
+
+        #region Test Class Helper Methods
+
+        private void SetupCryptoStubs()
+        {
+            Substitute.For<ConfigurationManagerService>()
+                .StubConfigSetting("EncryptionCertificate", EncryptionCertificateThumbprint)
+                .RegisterServiceStub();
+
+            // NSubstitute uses last-wins for matching setups, so wildcard must be set up
+            // BEFORE the specific argument match.
+            var certProvider = Substitute.For<CertificateProvider>();
+            certProvider.GetCertificate(Arg.Any<string>()).Throws<NotImplementedException>();
+            // Use Configure() to suppress the wildcard Throws during this setup call.
+            certProvider.Configure().GetCertificate(EncryptionCertificateThumbprint).Returns(_certificate);
+            certProvider.RegisterServiceStub();
+        }
+
+        #endregion // Test Class Helper Methods
     }
 }

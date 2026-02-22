@@ -1,13 +1,11 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using CPP.Framework.DependencyInjection;
-using CPP.Framework.Diagnostics.Testing;
-using CPP.Framework.IO;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.WindowsAzure.ServiceRuntime;
-using Rhino.Mocks;
+using NSubstitute;
 
 namespace CPP.Framework.Configuration
 {
@@ -31,16 +29,16 @@ namespace CPP.Framework.Configuration
         {
             const string expected = "UseDevelopmentStorage=true";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
-                .StubConfigSetting(ConfigSettingKey.ServiceBusConnectionString, expected)
-                .RegisterServiceStub();
+            Substitute.For<RoleEnvironmentService>()
+                .RegisterServiceStub()
+                .StubConfigSetting(ConfigSettingKey.ServiceBusConnectionString, expected);
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetServiceBusConnectionString();
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -50,17 +48,17 @@ namespace CPP.Framework.Configuration
         {
             const string expected = "UseDevelopmentStorage=true";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
+            Substitute.For<RoleEnvironmentService>()
+                .RegisterServiceStub()
                 .StubConfigSetting(ConfigSettingKey.ServiceBusConnectionString, String.Empty)
-                .StubConfigSetting(AzureConfigProviderExtensions.MSServiceBusConnectionStringSettingName, expected)
-                .RegisterServiceStub();
+                .StubConfigSetting(AzureConfigProviderExtensions.MSServiceBusConnectionStringSettingName, expected);
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetServiceBusConnectionString();
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -70,33 +68,33 @@ namespace CPP.Framework.Configuration
         {
             const string expected = "UseDevelopmentStorage=true";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .StubConfigSetting(ConfigSettingKey.ServiceBusConnectionString, expected)
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
-                .StubConfigSetting(ConfigSettingKey.ServiceBusConnectionString, () => StubFactory.CreateInstance<RoleEnvironmentException>())
-                .RegisterServiceStub();
+            Substitute.For<RoleEnvironmentService>()
+                .RegisterServiceStub()
+                .StubConfigSetting(ConfigSettingKey.ServiceBusConnectionString, () => ReflectionHelper.CreateInstance<Microsoft.WindowsAzure.ServiceRuntime.RoleEnvironmentException>());
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetServiceBusConnectionString();
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Configuration)]
-        [ExpectedException(typeof(ConfigurationErrorsException))]
         public void GetServiceBusConnectionStringWithNoValue()
         {
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
+            Substitute.For<RoleEnvironmentService>()
+                .RegisterServiceStub()
                 .StubConfigSetting(ConfigSettingKey.ServiceBusConnectionString, String.Empty)
-                .StubConfigSetting(AzureConfigProviderExtensions.MSServiceBusConnectionStringSettingName, String.Empty)
-                .RegisterServiceStub();
+                .StubConfigSetting(AzureConfigProviderExtensions.MSServiceBusConnectionStringSettingName, String.Empty);
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
-            ConfigSettingProvider.Current.GetServiceBusConnectionString();
+            Action act = () => ConfigSettingProvider.Current.GetServiceBusConnectionString();
+            act.Should().Throw<ConfigurationErrorsException>();
         }
 
         [TestMethod]
@@ -106,16 +104,16 @@ namespace CPP.Framework.Configuration
         {
             const string expected = "Critical";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
-                .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, expected)
-                .RegisterServiceStub();
+            Substitute.For<RoleEnvironmentService>()
+                .RegisterServiceStub()
+                .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, expected);
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetSetting(ConfigSettingKey.CurrentTraceLevel);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -125,17 +123,17 @@ namespace CPP.Framework.Configuration
         {
             const string expected = "Critical";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, expected)
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
-                .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, () => new ConfigurationErrorsException())
-                .RegisterServiceStub();
+            Substitute.For<RoleEnvironmentService>()
+                .RegisterServiceStub()
+                .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, () => new ConfigurationErrorsException());
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetSetting(ConfigSettingKey.CurrentTraceLevel);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -145,17 +143,17 @@ namespace CPP.Framework.Configuration
         {
             const string expected = "Critical";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, expected)
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
-                .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, String.Empty)
-                .RegisterServiceStub();
+            Substitute.For<RoleEnvironmentService>()
+                .RegisterServiceStub()
+                .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, String.Empty);
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetSetting(ConfigSettingKey.CurrentTraceLevel);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -165,17 +163,17 @@ namespace CPP.Framework.Configuration
         {
             const string expected = "Critical";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, expected)
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
-                .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, () => StubFactory.CreateInstance<RoleEnvironmentException>())
-                .RegisterServiceStub();
+            Substitute.For<RoleEnvironmentService>()
+                .RegisterServiceStub()
+                .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, () => ReflectionHelper.CreateInstance<Microsoft.WindowsAzure.ServiceRuntime.RoleEnvironmentException>());
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetSetting(ConfigSettingKey.CurrentTraceLevel);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -185,16 +183,16 @@ namespace CPP.Framework.Configuration
         {
             var expected = ConfigSettingKey.CurrentTraceLevel.GetDefaultValue();
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
-                .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, () => StubFactory.CreateInstance<RoleEnvironmentException>())
-                .RegisterServiceStub();
+            Substitute.For<RoleEnvironmentService>()
+                .RegisterServiceStub()
+                .StubConfigSetting(ConfigSettingKey.CurrentTraceLevel, () => ReflectionHelper.CreateInstance<Microsoft.WindowsAzure.ServiceRuntime.RoleEnvironmentException>());
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetSetting(ConfigSettingKey.CurrentTraceLevel);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -204,16 +202,15 @@ namespace CPP.Framework.Configuration
         {
             const int expected = 12;
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
-                .StubConfigSetting(ConfigSettingKey.MaxProcessingThreads, expected.ToString("D"))
-                .RegisterServiceStub();
+            Substitute.For<RoleEnvironmentService>()
+                .RegisterServiceStub()
+                .StubConfigSetting(ConfigSettingKey.MaxProcessingThreads, expected.ToString("D"));
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetSetting(ConfigSettingKey.MaxProcessingThreads, Convert.ToInt32);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -223,43 +220,43 @@ namespace CPP.Framework.Configuration
         {
             const string expected = "SampleValue";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
+            Substitute.For<RoleEnvironmentService>()
                 .RegisterServiceStub();
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetSetting("SomeSetting", expected);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Configuration)]
-        [ExpectedException(typeof(ConfigurationErrorsException))]
         public void GetSettingWithInvalidName()
         {
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
+            Substitute.For<RoleEnvironmentService>()
                 .RegisterServiceStub();
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
-            ConfigSettingProvider.Current.GetSetting(InvalidSettingName);
+            Action act = () => ConfigSettingProvider.Current.GetSetting(InvalidSettingName);
+            act.Should().Throw<ConfigurationErrorsException>();
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Configuration)]
-        [ExpectedException(typeof(ConfigurationErrorsException))]
         public void GetSettingWithMissingConfigKey()
         {
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
+            Substitute.For<RoleEnvironmentService>()
                 .RegisterServiceStub();
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
-            ConfigSettingProvider.Current.GetSetting(ConfigSettingKey.CPP_Elevate_ReportProcessing_ServiceBus_IssuerSecret);
+            Action act = () => ConfigSettingProvider.Current.GetSetting(ConfigSettingKey.CPP_Elevate_ReportProcessing_ServiceBus_IssuerSecret);
+            act.Should().Throw<ConfigurationErrorsException>();
         }
 
         [TestMethod]
@@ -269,15 +266,15 @@ namespace CPP.Framework.Configuration
         {
             const string expected = "SomeValue";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
+            Substitute.For<RoleEnvironmentService>()
                 .RegisterServiceStub();
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetSetting(ConfigSettingKey.CPP_Elevate_ReportProcessing_ServiceBus_IssuerSecret, expected);
-            
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -287,15 +284,15 @@ namespace CPP.Framework.Configuration
         {
             const string expected = "TestValue";
 
-            StubFactory.CreateStub<ConfigurationManagerService>()
+            Substitute.For<ConfigurationManagerService>()
                 .RegisterServiceStub();
-            StubFactory.CreateStub<RoleEnvironmentService>()
-                .StubConfigSetting(StringSettingName, expected)
-                .RegisterServiceStub();
+            Substitute.For<RoleEnvironmentService>()
+                .RegisterServiceStub()
+                .StubConfigSetting(StringSettingName, expected);
             ServiceLocator.Register<ConfigSettingProvider, RoleConfigProvider>();
             var actual = ConfigSettingProvider.Current.GetSetting(StringSettingName);
 
-            Verify.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
         #region Test Class Helper Methods

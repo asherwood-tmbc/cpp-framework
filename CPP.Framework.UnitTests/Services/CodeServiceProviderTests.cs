@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using CPP.Framework.DependencyInjection;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -24,7 +25,6 @@ namespace CPP.Framework.Services
         [TestCleanup]
         public void OnTestCleanup() => ServiceLocator.Unload();
 
-        [ExpectedException(typeof(MissingServiceRegistrationException))]
         [TestMethod]
         public void GetServiceWithInvalidRegistrationName()
         {
@@ -33,18 +33,19 @@ namespace CPP.Framework.Services
 
             var expect = CodeServiceProvider.GetService<ITestService1>();
             var actual = CodeServiceProvider.GetService<ITestService2>();
-            Verify.AreSame(expect, actual);
-            Verify.AreEqual(expect.Name, actual.Name);
+            actual.Should().BeSameAs(expect);
+            actual.Name.Should().Be(expect.Name);
 
-            actual = CodeServiceProvider.GetService<ITestService2>(ServiceName2);
+            Action act = () => CodeServiceProvider.GetService<ITestService2>(ServiceName2);
+            act.Should().Throw<MissingServiceRegistrationException>();
         }
 
         [TestMethod]
         public void RegisterWithAutoAttributeAndImpl()
         {
             var actual = CodeServiceProvider.GetService<AutoRegisteredService>();
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(ImplRegisteredService));
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<ImplRegisteredService>();
 
             CodeServiceProvider.Release<AutoRegisteredService>();
         }
@@ -53,8 +54,8 @@ namespace CPP.Framework.Services
         public void RegisterWithAutoAttributeAndSelf()
         {
             var actual = CodeServiceProvider.GetService<SelfRegisteredService>();
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(SelfRegisteredService));
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<SelfRegisteredService>();
 
             CodeServiceProvider.Release<SelfRegisteredService>();
         }
@@ -75,36 +76,36 @@ namespace CPP.Framework.Services
 
             created.Add(expect = CodeServiceProvider.GetService<ITestService1>());
             created.Add(actual = CodeServiceProvider.GetService<ITestService2>());
-            Verify.AreNotSame(expect, actual);
-            Verify.AreNotEqual(expect.Name, actual.Name);
+            actual.Should().NotBeSameAs(expect);
+            actual.Name.Should().NotBe(expect.Name);
 
             expect = CodeServiceProvider.GetService<ITestService1>();
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName1);
-            Verify.AreNotSame(expect, actual);
-            Verify.IsFalse(created.Contains(expect));
-            Verify.IsFalse(created.Contains(actual));
+            actual.Should().NotBeSameAs(expect);
+            created.Contains(expect).Should().BeFalse();
+            created.Contains(actual).Should().BeFalse();
 
             created.Add(expect);
             created.Add(actual);
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName1);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName2);
-            Verify.AreNotSame(expect, actual);
-            Verify.IsFalse(created.Contains(expect));
-            Verify.IsFalse(created.Contains(actual));
+            actual.Should().NotBeSameAs(expect);
+            created.Contains(expect).Should().BeFalse();
+            created.Contains(actual).Should().BeFalse();
 
             created.Add(expect);
             created.Add(actual);
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName1);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName1);
-            Verify.AreNotSame(expect, actual);
-            Verify.IsFalse(created.Contains(expect));
-            Verify.IsFalse(created.Contains(actual));
+            actual.Should().NotBeSameAs(expect);
+            created.Contains(expect).Should().BeFalse();
+            created.Contains(actual).Should().BeFalse();
 
             created.Add(expect);
             created.Add(actual);
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName2);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName2);
-            Verify.AreNotSame(expect, actual);
+            actual.Should().NotBeSameAs(expect);
 
             CodeServiceProvider.Release<ITestService1>();
             CodeServiceProvider.Release<ITestService1>(ServiceName1);
@@ -126,28 +127,28 @@ namespace CPP.Framework.Services
 
             var expect = CodeServiceProvider.GetService<ITestService1>();
             var actual = CodeServiceProvider.GetService<ITestService2>();
-            Verify.AreSame(expect, actual);
-            Verify.IsInstanceOfType(actual, typeof(BasicSingletonService));
+            actual.Should().BeSameAs(expect);
+            actual.Should().BeOfType<BasicSingletonService>();
 
             expect = CodeServiceProvider.GetService<ITestService1>();
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName1);
-            Verify.AreSame(expect, actual);
-            Verify.IsInstanceOfType(actual, typeof(BasicSingletonService));
+            actual.Should().BeSameAs(expect);
+            actual.Should().BeOfType<BasicSingletonService>();
 
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName1);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName2);
-            Verify.AreSame(expect, actual);
-            Verify.IsInstanceOfType(actual, typeof(BasicSingletonService));
+            actual.Should().BeSameAs(expect);
+            actual.Should().BeOfType<BasicSingletonService>();
 
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName1);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName1);
-            Verify.AreSame(expect, actual);
-            Verify.IsInstanceOfType(actual, typeof(BasicSingletonService));
+            actual.Should().BeSameAs(expect);
+            actual.Should().BeOfType<BasicSingletonService>();
 
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName2);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName2);
-            Verify.AreSame(expect, actual);
-            Verify.IsInstanceOfType(actual, typeof(BasicSingletonService));
+            actual.Should().BeSameAs(expect);
+            actual.Should().BeOfType<BasicSingletonService>();
 
             CodeServiceProvider.Release<ITestService1>();
             CodeServiceProvider.Release<ITestService1>(ServiceName1);
@@ -157,11 +158,11 @@ namespace CPP.Framework.Services
             CodeServiceProvider.Release<ITestService2>(ServiceName2);
         }
 
-        [ExpectedException(typeof(InvalidServiceRegistrationException))]
         [TestMethod]
         public void RegisterWithInvalidServiceClass()
         {
-            CodeServiceProvider.Register<ITestService1, InvalidServiceClass>();
+            Action act = () => CodeServiceProvider.Register<ITestService1, InvalidServiceClass>();
+            act.Should().Throw<InvalidServiceRegistrationException>();
         }
 
         [TestMethod]
@@ -176,30 +177,30 @@ namespace CPP.Framework.Services
 
             var expect = CodeServiceProvider.GetService<ITestService1>();
             var actual = CodeServiceProvider.GetService<ITestService2>();
-            Verify.AreNotSame(expect, actual);
-            Verify.AreEqual(expect.Name, actual.Name);
+            actual.Should().NotBeSameAs(expect);
+            actual.Name.Should().Be(expect.Name);
 
             expect = CodeServiceProvider.GetService<ITestService1>();
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName1);
-            Verify.AreNotSame(expect, actual);
-            Verify.AreEqual(string.Empty, expect.Name);
-            Verify.AreEqual(ServiceName1, actual.Name);
+            actual.Should().NotBeSameAs(expect);
+            expect.Name.Should().Be(string.Empty);
+            actual.Name.Should().Be(ServiceName1);
 
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName1);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName2);
-            Verify.AreNotSame(expect, actual);
-            Verify.AreEqual(ServiceName1, expect.Name);
-            Verify.AreEqual(ServiceName2, actual.Name);
+            actual.Should().NotBeSameAs(expect);
+            expect.Name.Should().Be(ServiceName1);
+            actual.Name.Should().Be(ServiceName2);
 
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName1);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName1);
-            Verify.AreNotSame(expect, actual);
-            Verify.AreEqual(expect.Name, actual.Name);
+            actual.Should().NotBeSameAs(expect);
+            actual.Name.Should().Be(expect.Name);
 
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName2);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName2);
-            Verify.AreNotSame(expect, actual);
-            Verify.AreEqual(expect.Name, actual.Name);
+            actual.Should().NotBeSameAs(expect);
+            actual.Name.Should().Be(expect.Name);
 
             CodeServiceProvider.Release<ITestService1>();
             CodeServiceProvider.Release<ITestService1>(ServiceName1);
@@ -221,30 +222,30 @@ namespace CPP.Framework.Services
 
             var expect = CodeServiceProvider.GetService<ITestService1>();
             var actual = CodeServiceProvider.GetService<ITestService2>();
-            Verify.AreSame(expect, actual);
-            Verify.AreEqual(expect.Name, actual.Name);
+            actual.Should().BeSameAs(expect);
+            actual.Name.Should().Be(expect.Name);
 
             expect = CodeServiceProvider.GetService<ITestService1>();
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName1);
-            Verify.AreNotSame(expect, actual);
-            Verify.AreEqual(string.Empty, expect.Name);
-            Verify.AreEqual(ServiceName1, actual.Name);
+            actual.Should().NotBeSameAs(expect);
+            expect.Name.Should().Be(string.Empty);
+            actual.Name.Should().Be(ServiceName1);
 
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName1);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName2);
-            Verify.AreNotSame(expect, actual);
-            Verify.AreEqual(ServiceName1, expect.Name);
-            Verify.AreEqual(ServiceName2, actual.Name);
+            actual.Should().NotBeSameAs(expect);
+            expect.Name.Should().Be(ServiceName1);
+            actual.Name.Should().Be(ServiceName2);
 
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName1);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName1);
-            Verify.AreSame(expect, actual);
-            Verify.AreEqual(expect.Name, actual.Name);
+            actual.Should().BeSameAs(expect);
+            actual.Name.Should().Be(expect.Name);
 
             expect = CodeServiceProvider.GetService<ITestService1>(ServiceName2);
             actual = CodeServiceProvider.GetService<ITestService2>(ServiceName2);
-            Verify.AreSame(expect, actual);
-            Verify.AreEqual(expect.Name, actual.Name);
+            actual.Should().BeSameAs(expect);
+            actual.Name.Should().Be(expect.Name);
 
             CodeServiceProvider.Release<ITestService1>();
             CodeServiceProvider.Release<ITestService1>(ServiceName1);
@@ -266,30 +267,30 @@ namespace CPP.Framework.Services
 
             var expect = ServiceLocator.GetInstance<ITestService1>();
             var actual = ServiceLocator.GetInstance<ITestService2>();
-            Verify.AreSame(expect, actual);
-            Verify.AreEqual(expect.Name, actual.Name);
+            actual.Should().BeSameAs(expect);
+            actual.Name.Should().Be(expect.Name);
 
             expect = ServiceLocator.GetInstance<ITestService1>();
             actual = ServiceLocator.GetInstance<ITestService2>(ServiceName1);
-            Verify.AreNotSame(expect, actual);
-            Verify.AreEqual(string.Empty, expect.Name);
-            Verify.AreEqual(ServiceName1, actual.Name);
+            actual.Should().NotBeSameAs(expect);
+            expect.Name.Should().Be(string.Empty);
+            actual.Name.Should().Be(ServiceName1);
 
             expect = ServiceLocator.GetInstance<ITestService1>(ServiceName1);
             actual = ServiceLocator.GetInstance<ITestService2>(ServiceName2);
-            Verify.AreNotSame(expect, actual);
-            Verify.AreEqual(ServiceName1, expect.Name);
-            Verify.AreEqual(ServiceName2, actual.Name);
+            actual.Should().NotBeSameAs(expect);
+            expect.Name.Should().Be(ServiceName1);
+            actual.Name.Should().Be(ServiceName2);
 
             expect = ServiceLocator.GetInstance<ITestService1>(ServiceName1);
             actual = ServiceLocator.GetInstance<ITestService2>(ServiceName1);
-            Verify.AreSame(expect, actual);
-            Verify.AreEqual(expect.Name, actual.Name);
+            actual.Should().BeSameAs(expect);
+            actual.Name.Should().Be(expect.Name);
 
             expect = ServiceLocator.GetInstance<ITestService1>(ServiceName2);
             actual = ServiceLocator.GetInstance<ITestService2>(ServiceName2);
-            Verify.AreSame(expect, actual);
-            Verify.AreEqual(expect.Name, actual.Name);
+            actual.Should().BeSameAs(expect);
+            actual.Name.Should().Be(expect.Name);
 
             CodeServiceProvider.Release<ITestService1>();
             CodeServiceProvider.Release<ITestService1>(ServiceName1);
@@ -304,7 +305,7 @@ namespace CPP.Framework.Services
         {
             var expect = ServiceLocator.GetInstance<AutoRegisteredSingleton>();
             var actual = CodeServiceProvider.GetService<AutoRegisteredSingleton>();
-            Verify.AreSame(expect, actual);
+            actual.Should().BeSameAs(expect);
         }
 
         #region ITestService1 Interface Declaration

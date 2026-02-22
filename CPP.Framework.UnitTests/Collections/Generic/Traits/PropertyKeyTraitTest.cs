@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -88,10 +89,13 @@ namespace CPP.Framework.Collections.Generic.Traits
         #region Test with missing ID field
 
         [TestMethod]
-        [ExpectedArgumentException("propertyName")]
         public void CreatePropertyKeyTraitWithNoId()
         {
-            var trait = new MockLongPropertyKeyTrait<MockNoIdItem>();
+            Action act = () =>
+            {
+                var trait = new MockLongPropertyKeyTrait<MockNoIdItem>();
+            };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("propertyName");
         }
 
         #endregion
@@ -103,37 +107,43 @@ namespace CPP.Framework.Collections.Generic.Traits
         {
             var trait = new MockLongPropertyKeyTrait<MockLongItem>();
 
-            Verify.IsNotNull(trait);
-            Verify.AreEqual("KeyId", trait.PropertyName);
-            Verify.AreEqual("GenericEqualityComparer`1", trait.Comparer.GetType().Name);
-            Verify.IsTrue( trait.Comparer.GetType().IsGenericType);
-            Verify.AreEqual(typeof(long), trait.Comparer.GetType().GenericTypeArguments[0]);
+            trait.Should().NotBeNull();
+            trait.PropertyName.Should().Be("KeyId");
+            trait.Comparer.GetType().Name.Should().Be("GenericEqualityComparer`1");
+            trait.Comparer.GetType().IsGenericType.Should().BeTrue();
+            trait.Comparer.GetType().GenericTypeArguments[0].Should().Be(typeof(long));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void CreateMockLongPropertyKeyTraitWithIntItem()
         {
-            var trait = new MockLongPropertyKeyTrait<MockIntItem>();
+            Action act = () =>
+            {
+                var trait = new MockLongPropertyKeyTrait<MockIntItem>();
+            };
+            act.Should().Throw<ArgumentException>();
         }
-        
+
         [TestMethod]
         public void CreateMockIntPropertyKeyTrait()
         {
             var trait = new MockIntPropertyKeyTrait<MockIntItem>();
 
-            Verify.IsNotNull(trait);
-            Verify.AreEqual("KeyId", trait.PropertyName);
-            Verify.AreEqual("GenericEqualityComparer`1", trait.Comparer.GetType().Name);
-            Verify.IsTrue(trait.Comparer.GetType().IsGenericType);
-            Verify.AreEqual(typeof(int), trait.Comparer.GetType().GenericTypeArguments[0]);
+            trait.Should().NotBeNull();
+            trait.PropertyName.Should().Be("KeyId");
+            trait.Comparer.GetType().Name.Should().Be("GenericEqualityComparer`1");
+            trait.Comparer.GetType().IsGenericType.Should().BeTrue();
+            trait.Comparer.GetType().GenericTypeArguments[0].Should().Be(typeof(int));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void CreateMockIntPropertyKeyTraitWithLongtem()
         {
-            var trait = new MockIntPropertyKeyTrait<MockLongItem>();
+            Action act = () =>
+            {
+                var trait = new MockIntPropertyKeyTrait<MockLongItem>();
+            };
+            act.Should().Throw<ArgumentException>();
         }
 
         #endregion
@@ -143,11 +153,11 @@ namespace CPP.Framework.Collections.Generic.Traits
         {
             var trait = new MockBaseTypePropertyKeyTrait<MockBaseTypeItem>();
 
-            Verify.IsNotNull(trait);
-            Verify.AreEqual("KeyId", trait.PropertyName);
-            Verify.AreEqual("ObjectEqualityComparer`1", trait.Comparer.GetType().Name);
-            Verify.IsTrue(trait.Comparer.GetType().IsGenericType);
-            Verify.AreEqual(typeof(BaseType), trait.Comparer.GetType().GenericTypeArguments[0]);
+            trait.Should().NotBeNull();
+            trait.PropertyName.Should().Be("KeyId");
+            trait.Comparer.GetType().Name.Should().Be("ObjectEqualityComparer`1");
+            trait.Comparer.GetType().IsGenericType.Should().BeTrue();
+            trait.Comparer.GetType().GenericTypeArguments[0].Should().Be(typeof(BaseType));
         }
 
         /// <summary>
@@ -157,11 +167,11 @@ namespace CPP.Framework.Collections.Generic.Traits
         public void CreateMockBaseTypePropertyKeyTraitWithDerivedTypeItem()
         {
             var trait = new MockBaseTypePropertyKeyTrait<MockDerivedTypeItem>();
-            Verify.IsNotNull(trait);
-            Verify.AreEqual("KeyId", trait.PropertyName);
-            Verify.AreEqual("ObjectEqualityComparer`1", trait.Comparer.GetType().Name);
-            Verify.IsTrue(trait.Comparer.GetType().IsGenericType);
-            Verify.AreEqual(typeof(BaseType), trait.Comparer.GetType().GenericTypeArguments[0]);
+            trait.Should().NotBeNull();
+            trait.PropertyName.Should().Be("KeyId");
+            trait.Comparer.GetType().Name.Should().Be("ObjectEqualityComparer`1");
+            trait.Comparer.GetType().IsGenericType.Should().BeTrue();
+            trait.Comparer.GetType().GenericTypeArguments[0].Should().Be(typeof(BaseType));
         }
 
         [TestMethod]
@@ -169,18 +179,21 @@ namespace CPP.Framework.Collections.Generic.Traits
         {
             var trait = new MockIDerivedTypePropertyKeyTrait<MockDerivedTypeItem>();
 
-            Verify.IsNotNull(trait);
-            Verify.AreEqual("KeyId", trait.PropertyName);
-            Verify.AreEqual("ObjectEqualityComparer`1", trait.Comparer.GetType().Name);
-            Verify.IsTrue(trait.Comparer.GetType().IsGenericType);
-            Verify.AreEqual(typeof(DerivedType), trait.Comparer.GetType().GenericTypeArguments[0]);
+            trait.Should().NotBeNull();
+            trait.PropertyName.Should().Be("KeyId");
+            trait.Comparer.GetType().Name.Should().Be("ObjectEqualityComparer`1");
+            trait.Comparer.GetType().IsGenericType.Should().BeTrue();
+            trait.Comparer.GetType().GenericTypeArguments[0].Should().Be(typeof(DerivedType));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
         public void CreateMockDerivedTypePropertyKeyTraitWithBaseTypeItem()
         {
-            var trait = new MockIDerivedTypePropertyKeyTrait<MockBaseTypeItem>();
+            Action act = () =>
+            {
+                var trait = new MockIDerivedTypePropertyKeyTrait<MockBaseTypeItem>();
+            };
+            act.Should().Throw<ArgumentException>();
         }
 
 

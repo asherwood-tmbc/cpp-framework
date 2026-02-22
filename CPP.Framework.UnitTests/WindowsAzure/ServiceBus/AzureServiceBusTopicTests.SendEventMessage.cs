@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
@@ -7,15 +7,19 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
 using CPP.Framework.WindowsAzure.Storage;
+
+using FluentAssertions;
 
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Newtonsoft.Json;
 
-using Rhino.Mocks;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using NSubstitute.Extensions;
 
 [assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
 
@@ -38,16 +42,16 @@ namespace CPP.Framework.WindowsAzure.ServiceBus
         {
             var expect = new SampleMessageModel();
 
-            StubFactory.CreatePartial<AzureStorageAccount>()
-                .StubAction(stub => stub.LoadAzureAccountName()).Return(TestAccountName)
-                .StubAction(stub => stub.LoadConnectionString()).Throw<InvalidOperationException>()
-                .StubAction(stub => stub.GetServiceBus()).Return(CreateServiceBusStub)
-                .StubAction(stub => stub.GetServiceBus(Arg<string>.Is.Anything)).Throw<InvalidOperationException>()
-                .RegisterServiceStub(TestAccountName);
+            var account = Substitute.For<AzureStorageAccount>();
+            account.Configure().LoadAzureAccountName().Returns(TestAccountName);
+            account.Configure().LoadConnectionString().Throws<InvalidOperationException>();
+            account.Configure().GetServiceBus().Returns(callInfo => CreateServiceBusStub(account));
+            account.Configure().GetServiceBus(Arg.Any<string>()).Throws<InvalidOperationException>();
+            account.RegisterServiceStub(TestAccountName);
             AzureServiceBusTopic.SendEventMessage(expect);
 
-            Verify.AreEqual(1, this.CustomContext.Received.Count);
-            Verify.IsTrue(this.CustomContext.Received.Contains(expect));
+            this.CustomContext.Received.Count.Should().Be(1);
+            this.CustomContext.Received.Contains(expect).Should().BeTrue();
         }
 
         [TestMethod]
@@ -55,65 +59,58 @@ namespace CPP.Framework.WindowsAzure.ServiceBus
         {
             var expect = new SampleMessageModelWithProperties();
 
-            StubFactory.CreatePartial<AzureStorageAccount>()
-                .StubAction(stub => stub.LoadAzureAccountName()).Return(TestAccountName)
-                .StubAction(stub => stub.LoadConnectionString()).Throw<InvalidOperationException>()
-                .StubAction(stub => stub.GetServiceBus()).Return(CreateServiceBusStub)
-                .StubAction(stub => stub.GetServiceBus(Arg<string>.Is.Anything)).Throw<InvalidOperationException>()
-                .RegisterServiceStub(TestAccountName);
+            var account = Substitute.For<AzureStorageAccount>();
+            account.Configure().LoadAzureAccountName().Returns(TestAccountName);
+            account.Configure().LoadConnectionString().Throws<InvalidOperationException>();
+            account.Configure().GetServiceBus().Returns(callInfo => CreateServiceBusStub(account));
+            account.Configure().GetServiceBus(Arg.Any<string>()).Throws<InvalidOperationException>();
+            account.RegisterServiceStub(TestAccountName);
             AzureServiceBusTopic.SendEventMessage(expect);
 
-            Verify.AreEqual(1, this.CustomContext.Received.Count);
-            Verify.IsTrue(this.CustomContext.Received.Contains(expect));
-            Verify.IsInstanceOfType(this.CustomContext.Received.First(), typeof(SampleMessageModelWithProperties));
+            this.CustomContext.Received.Count.Should().Be(1);
+            this.CustomContext.Received.Contains(expect).Should().BeTrue();
+            this.CustomContext.Received.First().Should().BeOfType<SampleMessageModelWithProperties>();
 
-            Verify.AreEqual(1, this.CustomContext.Messages.Count);
-            Verify.IsTrue(this.CustomContext.Messages[0].Properties.ContainsKey(SampleGuidValueName));
-            Verify.AreEqual(expect.GuidValue.ToString("B"), this.CustomContext.Messages[0].Properties[SampleGuidValueName]);
-            Verify.IsTrue(this.CustomContext.Messages[0].Properties.ContainsKey(SampleLongValueName));
-            Verify.AreEqual(expect.LongValue, this.CustomContext.Messages[0].Properties[SampleLongValueName]);
-            Verify.IsTrue(this.CustomContext.Messages[0].Properties.ContainsKey(SampleStaticValName));
-            Verify.AreEqual(SampleStaticVal, this.CustomContext.Messages[0].Properties[SampleStaticValName]);
+            this.CustomContext.Messages.Count.Should().Be(1);
+            this.CustomContext.Messages[0].Properties.ContainsKey(SampleGuidValueName).Should().BeTrue();
+            this.CustomContext.Messages[0].Properties[SampleGuidValueName].Should().Be(expect.GuidValue.ToString("B"));
+            this.CustomContext.Messages[0].Properties.ContainsKey(SampleLongValueName).Should().BeTrue();
+            this.CustomContext.Messages[0].Properties[SampleLongValueName].Should().Be(expect.LongValue);
+            this.CustomContext.Messages[0].Properties.ContainsKey(SampleStaticValName).Should().BeTrue();
+            this.CustomContext.Messages[0].Properties[SampleStaticValName].Should().Be(SampleStaticVal);
         }
 
         #region Internal Helper Functions
 
         private AzureServiceBus CreateServiceBusStub(AzureStorageAccount account)
         {
-            var instance = StubFactory.CreatePartial<AzureServiceBus>(account, "ignored");
-            instance.StubAction(stub => stub.GetTopic(Arg.Is(TargetTopicName)))
-                .WhenCalled(
-                    (mi) =>
-                    {
-                        mi.ReturnValue = CreateServiceBusTopicStub(instance, ((string)mi.Arguments[0]));
-                    })
-                .StubAction(stub => stub.GetQueue(Arg<string>.Is.Anything)).Throw<InvalidOperationException>();
+            var instance = Substitute.For<AzureServiceBus>(account, "ignored");
+            instance.Configure().GetTopic(Arg.Is(TargetTopicName))
+                .Returns(callInfo => CreateServiceBusTopicStub(instance, callInfo.ArgAt<string>(0)));
+            instance.Configure().GetQueue(Arg.Any<string>()).Throws<InvalidOperationException>();
             return instance;
         }
 
         private AzureServiceBusTopic CreateServiceBusTopicStub(AzureServiceBus serviceBus, string topicName)
         {
-            var instance = StubFactory.CreatePartial<AzureServiceBusTopic>(serviceBus, topicName)
-                .StubAction(stub => stub.SendEventMessage(Arg.Is(TargetEventName), Arg<SampleMessageModel>.Is.Anything, Arg<DateTime?>.Is.Anything))
-                .WhenCalled(
-                    (mi, sbt) =>
-                        {
-                            this.CustomContext.Received.Add(mi.Arguments[1]);
-                            mi.CallOriginalMethod(sbt);
-                        })
-                .StubAction(stub => stub.SendEventMessage(Arg.Is(TargetEventName), Arg<SampleMessageModelWithProperties>.Is.Anything, Arg<DateTime?>.Is.Anything))
-                .WhenCalled(
-                    (mi, sbt) =>
-                        {
-                            this.CustomContext.Received.Add(mi.Arguments[1]);
-                            mi.CallOriginalMethod(sbt);
-                        })
-                .StubAction(stub => stub.SendMessage(Arg<BrokeredMessage>.Is.Anything))
-                .WhenCalled(
-                    (mi, sbt) =>
-                        {
-                            this.CustomContext.Messages.Add((BrokeredMessage)mi.Arguments[0]);
-                        });
+            var instance = Substitute.ForPartsOf<AzureServiceBusTopic>(serviceBus, topicName);
+            instance.Configure().CreateIfNotExists().Returns(true);
+            instance.When(stub => stub.SendEventMessage(Arg.Is(TargetEventName), Arg.Any<SampleMessageModel>(), Arg.Any<DateTime?>()))
+                .Do(callInfo =>
+                    {
+                        this.CustomContext.Received.Add(callInfo.ArgAt<SampleMessageModel>(1));
+                    });
+            instance.When(stub => stub.SendEventMessage(Arg.Is(TargetEventName), Arg.Any<SampleMessageModelWithProperties>(), Arg.Any<DateTime?>()))
+                .Do(callInfo =>
+                    {
+                        this.CustomContext.Received.Add(callInfo.ArgAt<SampleMessageModelWithProperties>(1));
+                    });
+            instance.When(stub => stub.SendMessage(Arg.Any<BrokeredMessage>())).DoNotCallBase();
+            instance.When(stub => stub.SendMessage(Arg.Any<BrokeredMessage>()))
+                .Do(callInfo =>
+                    {
+                        this.CustomContext.Messages.Add(callInfo.ArgAt<BrokeredMessage>(0));
+                    });
             return instance;
         }
 
@@ -139,7 +136,7 @@ namespace CPP.Framework.WindowsAzure.ServiceBus
         #endregion // SampleMessageModel Class Declaration
 
         #region SampleMessageModelWithProperties Class Delcaration
-        
+
         [AzureAccountName(TestAccountName)]
         [AzureMessageProperty(SampleGuidValueName, "{" + nameof(GuidValue) + "}", FormatString = "{0:B}")]
         [AzureMessageProperty(SampleLongValueName, "{" + nameof(LongValue) + "}")]

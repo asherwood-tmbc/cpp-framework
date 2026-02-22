@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CPP.Framework.Collections.Generic
@@ -50,7 +51,7 @@ namespace CPP.Framework.Collections.Generic
         {
             var comparer = InlineEqualityComparer<MockItem>.Create(null);
 
-            Verify.AreEqual(_defaultHashCode, comparer.GetHashCode(_mockValue));
+            comparer.GetHashCode(_mockValue).Should().Be(_defaultHashCode);
         }
 
         /// <summary>
@@ -61,7 +62,7 @@ namespace CPP.Framework.Collections.Generic
         {
             var comparer = InlineEqualityComparer<MockItem>.Create(null, x => x.GuidValue.ToByteArray().Length);
 
-            Verify.AreEqual(_mockValue.GuidValue.ToByteArray().Length, comparer.GetHashCode(_mockValue));
+            comparer.GetHashCode(_mockValue).Should().Be(_mockValue.GuidValue.ToByteArray().Length);
         }
 
 
@@ -73,7 +74,7 @@ namespace CPP.Framework.Collections.Generic
         {
             var comparer = InlineEqualityComparer<MockItem>.Create((x, y) => x.GuidValue == y.GuidValue);
 
-            Verify.AreEqual(_defaultHashCode, comparer.GetHashCode(_mockValue));
+            comparer.GetHashCode(_mockValue).Should().Be(_defaultHashCode);
         }
 
         /// <summary>
@@ -84,8 +85,8 @@ namespace CPP.Framework.Collections.Generic
         {
             var comparer = InlineEqualityComparer<MockItem>.Create((x, y) => x.GuidValue == y.GuidValue, x => x.GuidValue.ToByteArray().Length);
 
-            Verify.AreEqual(_mockValue.GuidValue.ToByteArray().Length, comparer.GetHashCode(_mockValue));
+            comparer.GetHashCode(_mockValue).Should().Be(_mockValue.GuidValue.ToByteArray().Length);
         }
-       
+
     }
 }

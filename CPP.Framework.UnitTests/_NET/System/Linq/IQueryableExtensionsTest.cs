@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -28,10 +29,10 @@ namespace System.Linq
             source.UnionWith(random);
             var actual = IQueryableExtensions.WhereAnyOf(source.AsQueryable(), obj => obj.GuidValue, filter).ToArray();
 
-            Verify.AreEqual(expect.Count, actual.Length);
-            Verify.IsTrue(expect.SetEquals(actual));
-            Verify.IsTrue(source.IsProperSupersetOf(actual));
-            Verify.IsFalse(random.Overlaps(actual));
+            actual.Length.Should().Be(expect.Count);
+            expect.SetEquals(actual).Should().BeTrue();
+            source.IsProperSupersetOf(actual).Should().BeTrue();
+            random.Overlaps(actual).Should().BeFalse();
         }
 
         #region Internal Helper Functions

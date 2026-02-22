@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CPP.Framework.Threading
@@ -71,7 +72,7 @@ namespace CPP.Framework.Threading
             var target = new MultiAccessLock();
             using (var token = target.GetReaderAccess())
             {
-                Verify.IsInstanceOfType(token, typeof(MultiAccessLock.ReaderAccessToken));
+                token.Should().BeOfType<MultiAccessLock.ReaderAccessToken>();
             }
         }
 
@@ -82,11 +83,11 @@ namespace CPP.Framework.Threading
             var target = new MultiAccessLock();
             using (var token = target.GetReaderAccess())
             {
-                Verify.IsInstanceOfType(token, typeof(MultiAccessLock.ReaderAccessToken));
+                token.Should().BeOfType<MultiAccessLock.ReaderAccessToken>();
             }
             using (var token = target.GetWriterAccess())
             {
-                Verify.IsInstanceOfType(token, typeof(MultiAccessLock.WriterAccessToken));
+                token.Should().BeOfType<MultiAccessLock.WriterAccessToken>();
             }
         }
 
@@ -97,7 +98,7 @@ namespace CPP.Framework.Threading
             var target = new NoLockAccessImpl();
             using (var token = target.GetReaderAccess())
             {
-                Verify.IsInstanceOfType(token, typeof(MultiAccessLock.NoLockAccessToken));
+                token.Should().BeOfType<MultiAccessLock.NoLockAccessToken>();
             }
         }
 
@@ -109,7 +110,7 @@ namespace CPP.Framework.Threading
             using (target.GetReaderAccess())
             using (var token = target.GetReaderAccess())
             {
-                Verify.IsInstanceOfType(token, typeof(MultiAccessLock.ReaderAccessToken));
+                token.Should().BeOfType<MultiAccessLock.ReaderAccessToken>();
             }
         }
 
@@ -169,7 +170,7 @@ namespace CPP.Framework.Threading
             var target = new MultiAccessLock();
             using (var token = target.GetWriterAccess())
             {
-                Verify.IsInstanceOfType(token, typeof(MultiAccessLock.WriterAccessToken));
+                token.Should().BeOfType<MultiAccessLock.WriterAccessToken>();
             }
         }
 
@@ -180,7 +181,7 @@ namespace CPP.Framework.Threading
             var target = new NoLockAccessImpl();
             using (var token = target.GetWriterAccess())
             {
-                Verify.IsInstanceOfType(token, typeof(MultiAccessLock.NoLockAccessToken));
+                token.Should().BeOfType<MultiAccessLock.NoLockAccessToken>();
             }
         }
 
@@ -192,7 +193,7 @@ namespace CPP.Framework.Threading
             using (target.GetWriterAccess())
             using (var token = target.GetReaderAccess())
             {
-                Verify.IsInstanceOfType(token, typeof(MultiAccessLock.ReaderAccessToken));
+                token.Should().BeOfType<MultiAccessLock.ReaderAccessToken>();
             }
         }
 
@@ -214,7 +215,7 @@ namespace CPP.Framework.Threading
             using (target.GetWriterAccess())
             using (var token = target.GetWriterAccess())
             {
-                Verify.IsInstanceOfType(token, typeof(MultiAccessLock.WriterAccessToken));
+                token.Should().BeOfType<MultiAccessLock.WriterAccessToken>();
             }
         }
 
@@ -265,7 +266,7 @@ namespace CPP.Framework.Threading
             var target = new MultiAccessLock();
             using (var token = target.GetWriterAccess(0))
             {
-                Verify.IsInstanceOfType(token, typeof(MultiAccessLock.WriterAccessToken));
+                token.Should().BeOfType<MultiAccessLock.WriterAccessToken>();
             }
         }
 

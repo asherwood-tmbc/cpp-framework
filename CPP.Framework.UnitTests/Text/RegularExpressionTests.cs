@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Text.RegularExpressions;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 
 namespace CPP.Framework.Text
 {
@@ -15,7 +16,7 @@ namespace CPP.Framework.Text
         public void EmailFormatPlain()
         {
             var email = "test@cpp.com";
-            Assert.IsTrue(Regex.IsMatch(email, RegularExpression.EmailFormat));
+            Regex.IsMatch(email, RegularExpression.EmailFormat).Should().BeTrue();
         }
 
         [TestMethod]
@@ -23,7 +24,7 @@ namespace CPP.Framework.Text
         public void EmailFormatNumber()
         {
             var email = "test1@cpp.com";
-            Assert.IsTrue(Regex.IsMatch(email, RegularExpression.EmailFormat));
+            Regex.IsMatch(email, RegularExpression.EmailFormat).Should().BeTrue();
         }
 
         [TestMethod]
@@ -31,7 +32,7 @@ namespace CPP.Framework.Text
         public void EmailFormatSpecialCharacter()
         {
             var email = "test!#$%&'*+/=?^_`{|}~-@cpp.com";
-            Assert.IsTrue(Regex.IsMatch(email, RegularExpression.EmailFormat));
+            Regex.IsMatch(email, RegularExpression.EmailFormat).Should().BeTrue();
         }
 
         [TestMethod]
@@ -39,7 +40,7 @@ namespace CPP.Framework.Text
         public void EmailFormatNoAt()
         {
             var email = "testcpp.com";
-            Assert.IsFalse(Regex.IsMatch(email, RegularExpression.EmailFormat));
+            Regex.IsMatch(email, RegularExpression.EmailFormat).Should().BeFalse();
         }
 
         [TestMethod]
@@ -47,7 +48,7 @@ namespace CPP.Framework.Text
         public void EmailFormatNoLeftHandSide()
         {
             var email = "@cpp.com";
-            Assert.IsFalse(Regex.IsMatch(email, RegularExpression.EmailFormat));
+            Regex.IsMatch(email, RegularExpression.EmailFormat).Should().BeFalse();
         }
 
         [TestMethod]
@@ -55,7 +56,7 @@ namespace CPP.Framework.Text
         public void EmailFormatNoRightHandSide()
         {
             var email = "test@";
-            Assert.IsFalse(Regex.IsMatch(email, RegularExpression.EmailFormat));
+            Regex.IsMatch(email, RegularExpression.EmailFormat).Should().BeFalse();
         }
 
         [TestMethod]
@@ -63,7 +64,7 @@ namespace CPP.Framework.Text
         public void EmailFormatNoAtNoDot()
         {
             var email = "testcppcom";
-            Assert.IsFalse(Regex.IsMatch(email, RegularExpression.EmailFormat));
+            Regex.IsMatch(email, RegularExpression.EmailFormat).Should().BeFalse();
         }
 
         [TestMethod]
@@ -71,7 +72,7 @@ namespace CPP.Framework.Text
         public void EmailFormatNoDot()
         {
             var email = "test@cppcom";
-            Assert.IsFalse(Regex.IsMatch(email, RegularExpression.EmailFormat));
+            Regex.IsMatch(email, RegularExpression.EmailFormat).Should().BeFalse();
         }
 
         [TestMethod]
@@ -79,7 +80,7 @@ namespace CPP.Framework.Text
         public void EmailFormatNoTLD()
         {
             var email = "test@cppcom";
-            Assert.IsFalse(Regex.IsMatch(email, RegularExpression.EmailFormat));
+            Regex.IsMatch(email, RegularExpression.EmailFormat).Should().BeFalse();
         }
 
         #endregion
@@ -91,7 +92,7 @@ namespace CPP.Framework.Text
         public void CreditCardSecurityCodeThreeDigit()
         {
             var code = "123";
-            Assert.IsTrue(Regex.IsMatch(code, RegularExpression.CreditCardSecurityCode));
+            Regex.IsMatch(code, RegularExpression.CreditCardSecurityCode).Should().BeTrue();
         }
 
         [TestMethod]
@@ -99,7 +100,7 @@ namespace CPP.Framework.Text
         public void CreditCardSecurityCodeFourDigit()
         {
             var code = "1234";
-            Assert.IsTrue(Regex.IsMatch(code, RegularExpression.CreditCardSecurityCode));
+            Regex.IsMatch(code, RegularExpression.CreditCardSecurityCode).Should().BeTrue();
         }
 
         [TestMethod]
@@ -107,7 +108,7 @@ namespace CPP.Framework.Text
         public void CreditCardSecurityCodeTwoDigit()
         {
             var code = "12";
-            Assert.IsFalse(Regex.IsMatch(code, RegularExpression.CreditCardSecurityCode));
+            Regex.IsMatch(code, RegularExpression.CreditCardSecurityCode).Should().BeFalse();
         }
 
         [TestMethod]
@@ -115,7 +116,7 @@ namespace CPP.Framework.Text
         public void CreditCardSecurityCodeFiveDigit()
         {
             var code = "12345";
-            Assert.IsFalse(Regex.IsMatch(code, RegularExpression.CreditCardSecurityCode));
+            Regex.IsMatch(code, RegularExpression.CreditCardSecurityCode).Should().BeFalse();
         }
 
         [TestMethod]
@@ -123,7 +124,7 @@ namespace CPP.Framework.Text
         public void CreditCardSecurityCodeTwoDigitOneCharacter()
         {
             var code = "12a";
-            Assert.IsFalse(Regex.IsMatch(code, RegularExpression.CreditCardSecurityCode));
+            Regex.IsMatch(code, RegularExpression.CreditCardSecurityCode).Should().BeFalse();
         }
 
         #endregion
@@ -135,7 +136,7 @@ namespace CPP.Framework.Text
         public void CreditCard()
         {
             var code = "4556356311967950";
-            Assert.IsTrue(Regex.IsMatch(code, RegularExpression.CreditCardNumber));
+            Regex.IsMatch(code, RegularExpression.CreditCardNumber).Should().BeTrue();
         }
 
         #endregion
@@ -147,7 +148,7 @@ namespace CPP.Framework.Text
         public void SharedProductCode()
         {
             var code = "4556356311967950";
-            Assert.IsTrue(Regex.IsMatch(code, RegularExpression.SharedProductCode));
+            Regex.IsMatch(code, RegularExpression.SharedProductCode).Should().BeTrue();
         }
 
         #endregion
@@ -159,7 +160,7 @@ namespace CPP.Framework.Text
         public void PasswordFormatUpperLowerNumberSpecialTenLong()
         {
             var password = "Password1!";
-            Assert.IsTrue(Regex.IsMatch(password, RegularExpression.PasswordFormat));
+            Regex.IsMatch(password, RegularExpression.PasswordFormat).Should().BeTrue();
         }
 
         [TestMethod]
@@ -167,7 +168,7 @@ namespace CPP.Framework.Text
         public void PasswordFormatUpperLowerNumberSpecialSevenLong()
         {
             var password = "Pword1!";
-            Assert.IsFalse(Regex.IsMatch(password, RegularExpression.PasswordFormat));
+            Regex.IsMatch(password, RegularExpression.PasswordFormat).Should().BeFalse();
         }
 
         [TestMethod]
@@ -175,7 +176,7 @@ namespace CPP.Framework.Text
         public void PasswordFormatLowerNumberSpecialTenLong()
         {
             var password = "password1!";
-            Assert.IsFalse(Regex.IsMatch(password, RegularExpression.PasswordFormat));
+            Regex.IsMatch(password, RegularExpression.PasswordFormat).Should().BeFalse();
         }
 
         [TestMethod]
@@ -183,7 +184,7 @@ namespace CPP.Framework.Text
         public void PasswordFormatUpperNumberSpecialTenLong()
         {
             var password = "PASSWORD1!";
-            Assert.IsFalse(Regex.IsMatch(password, RegularExpression.PasswordFormat));
+            Regex.IsMatch(password, RegularExpression.PasswordFormat).Should().BeFalse();
         }
 
         [TestMethod]
@@ -191,7 +192,7 @@ namespace CPP.Framework.Text
         public void PasswordFormatUpperLowerSpecialNineLong()
         {
             var password = "Password!";
-            Assert.IsFalse(Regex.IsMatch(password, RegularExpression.PasswordFormat));
+            Regex.IsMatch(password, RegularExpression.PasswordFormat).Should().BeFalse();
         }
 
         [TestMethod]
@@ -199,7 +200,7 @@ namespace CPP.Framework.Text
         public void PasswordFormatUpperLowerNumberNineLong()
         {
             var password = "Password1";
-            Assert.IsFalse(Regex.IsMatch(password, RegularExpression.PasswordFormat));
+            Regex.IsMatch(password, RegularExpression.PasswordFormat).Should().BeFalse();
         }
 
         #endregion

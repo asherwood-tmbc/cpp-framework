@@ -1,14 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CPP.Framework.DependencyInjection;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
 using CPP.Framework.WindowsAzure.Storage.Entities;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using NSubstitute;
 
 namespace CPP.Framework.WindowsAzure.Storage
 {
@@ -34,51 +35,50 @@ namespace CPP.Framework.WindowsAzure.Storage
 
         private static AzureStorageAccount CreateStorageAccountStub(bool register)
         {
-            var account = StubFactory.CreateStub<AzureStorageAccount>("UseDevelopmentStorage=true", "TestStorageAccount")
-                .CreateDependentStubs(parent =>
+            var account = Substitute.For<AzureStorageAccount>("UseDevelopmentStorage=true", "TestStorageAccount");
+
+            void InitMetadataTable<TValue>()
+            {
+                var existing = default(AzureStorageTableTests.MetadataPropertyTableStub<SampleEntity, TValue>);
+                if (!ServiceLocator.IsRegistered<AzureStorageTableTests.MetadataPropertyTableStub<SampleEntity, TValue>>())
                 {
-                    void InitMetadataTable<TValue>()
-                    {
-                        var existing = default(AzureStorageTableTests.MetadataPropertyTableStub<SampleEntity, TValue>);
-                        if (!ServiceLocator.IsRegistered<AzureStorageTableTests.MetadataPropertyTableStub<SampleEntity, TValue>>())
-                        {
-                            existing = new AzureStorageTableTests.MetadataPropertyTableStub<SampleEntity, TValue>(parent)
-                            {
-                                Exists = true,
-                            };
-                            ServiceLocator.Register(existing);
-                        }
-                        else ServiceLocator.TryGetInstance(out existing);
-
-                        if (!ServiceLocator.IsRegistered<AzureStorageTable<AzureStorageTable<SampleEntity>.MetadataPropertyEntity<TValue>>>())
-                        {
-                            ServiceLocator.Register<AzureStorageTable<AzureStorageTable<SampleEntity>.MetadataPropertyEntity<TValue>>>(existing);
-                            parent.StubAction(stub => stub.GetStorageTable<AzureStorageTable<SampleEntity>.MetadataPropertyEntity<TValue>>()).Return(existing);
-                        }
-                    }
-
-                    InitMetadataTable<Guid>();
-                    InitMetadataTable<bool>();
-                    InitMetadataTable<byte>();
-                    InitMetadataTable<sbyte>();
-                    InitMetadataTable<char>();
-                    InitMetadataTable<decimal>();
-                    InitMetadataTable<double>();
-                    InitMetadataTable<float>();
-                    InitMetadataTable<int>();
-                    InitMetadataTable<uint>();
-                    InitMetadataTable<long>();
-                    InitMetadataTable<ulong>();
-                    InitMetadataTable<short>();
-                    InitMetadataTable<ushort>();
-                    InitMetadataTable<string>();
-
-                    var table = new AzureStorageTableStub<SampleEntity>(parent)
+                    existing = new AzureStorageTableTests.MetadataPropertyTableStub<SampleEntity, TValue>(account)
                     {
                         Exists = true,
                     };
-                    parent.StubAction(stub => stub.GetStorageTable<SampleEntity>()).Return(table);
-                });
+                    ServiceLocator.Register(existing);
+                }
+                else ServiceLocator.TryGetInstance(out existing);
+
+                if (!ServiceLocator.IsRegistered<AzureStorageTable<AzureStorageTable<SampleEntity>.MetadataPropertyEntity<TValue>>>())
+                {
+                    ServiceLocator.Register<AzureStorageTable<AzureStorageTable<SampleEntity>.MetadataPropertyEntity<TValue>>>(existing);
+                    account.GetStorageTable<AzureStorageTable<SampleEntity>.MetadataPropertyEntity<TValue>>().Returns(existing);
+                }
+            }
+
+            InitMetadataTable<Guid>();
+            InitMetadataTable<bool>();
+            InitMetadataTable<byte>();
+            InitMetadataTable<sbyte>();
+            InitMetadataTable<char>();
+            InitMetadataTable<decimal>();
+            InitMetadataTable<double>();
+            InitMetadataTable<float>();
+            InitMetadataTable<int>();
+            InitMetadataTable<uint>();
+            InitMetadataTable<long>();
+            InitMetadataTable<ulong>();
+            InitMetadataTable<short>();
+            InitMetadataTable<ushort>();
+            InitMetadataTable<string>();
+
+            var table = new AzureStorageTableStub<SampleEntity>(account)
+            {
+                Exists = true,
+            };
+            account.GetStorageTable<SampleEntity>().Returns(table);
+
             return (register ? account.RegisterServiceStub() : account);
         }
 

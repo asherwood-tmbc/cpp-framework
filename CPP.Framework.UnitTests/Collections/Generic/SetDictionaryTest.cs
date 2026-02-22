@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CPP.Framework.Collections.Generic
@@ -75,7 +76,7 @@ namespace CPP.Framework.Collections.Generic
 
             _mockKeysSubset = new MockKey[3];
             _mockKeys2Subset = new MockKey[3];
-            
+
             _mockKeysSuperset = new MockKey[8];
             _mockKeys2Superset = new MockKey[8];
 
@@ -99,7 +100,7 @@ namespace CPP.Framework.Collections.Generic
 
             for (int i = 5; i < 8; i++)
             {
-                var guid = Guid.NewGuid(); 
+                var guid = Guid.NewGuid();
                 _mockKeysSuperset[i] = new MockKey(guid);
                 _mockKeys2Superset[i] = new MockKey(guid);
             }
@@ -137,11 +138,11 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
             }
 
-            Verify.AreEqual(5, dict.Count);
+            dict.Count.Should().Be(5);
 
             dict.Clear();
 
-            Verify.AreEqual(0, dict.Count);
+            dict.Count.Should().Be(0);
         }
 
         #region Constructor options tests
@@ -163,16 +164,16 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey2, item2);
             }
 
-            Verify.AreEqual(10, dict.Count);
+            dict.Count.Should().Be(10);
 
-            // _mockKeys and _mockKeys2 are considered to be completely different set, and therefore the 
+            // _mockKeys and _mockKeys2 are considered to be completely different set, and therefore the
             // dictionary should have 10 items, even though _mockKey[i] and _mockKey2[i] contains the same Guid.
             for (var i = 0; i < _mockKeys.Length; i++)
             {
-                Verify.AreEqual(_mockItems[i], dict[_mockKeys[i]]);
-                Verify.AreNotEqual(_mockItems[i], dict[_mockKeys2[i]]);
-                Verify.AreEqual(_mockItems2[i], dict[_mockKeys2[i]]);
-                Verify.AreNotEqual(dict[_mockKeys[i]], dict[_mockKeys2[i]]);
+                dict[_mockKeys[i]].Should().Be(_mockItems[i]);
+                dict[_mockKeys2[i]].Should().NotBe(_mockItems[i]);
+                dict[_mockKeys2[i]].Should().Be(_mockItems2[i]);
+                dict[_mockKeys2[i]].Should().NotBe(dict[_mockKeys[i]]);
             }
         }
 
@@ -194,16 +195,16 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey2, item2);
             }
 
-            Verify.AreEqual(5, dict.Count);
+            dict.Count.Should().Be(5);
 
             // Second set of keys are considered the same as the first, therefore, the insertion of mockItems2 never happened,
             // and _mockKey2[i] resolves to _mockKey[i], and the dictionary has only 5 entries.
             for (var i = 0; i < _mockKeys.Length; i++)
             {
-                Verify.AreEqual(_mockItems[i], dict[_mockKeys[i]]);
-                Verify.AreEqual(_mockItems[i], dict[_mockKeys2[i]]);
-                Verify.AreNotEqual(_mockItems2[i], dict[_mockKeys2[i]]);
-                Verify.AreEqual(dict[_mockKeys[i]], dict[_mockKeys2[i]]);
+                dict[_mockKeys[i]].Should().Be(_mockItems[i]);
+                dict[_mockKeys2[i]].Should().Be(_mockItems[i]);
+                dict[_mockKeys2[i]].Should().NotBe(_mockItems2[i]);
+                dict[_mockKeys2[i]].Should().Be(dict[_mockKeys[i]]);
             }
         }
 
@@ -225,16 +226,16 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey2.KeyValue, item2);
             }
 
-            Verify.AreEqual(5, dict.Count);
+            dict.Count.Should().Be(5);
 
             // Second set of keys are considered the same as the first, therefore, the insertion of mockItems2 never happened,
             // and _mockKey2[i] resolves to _mockKey[i], and the dictionary has only 5 entries.
             for (var i = 0; i < _mockKeys.Length; i++)
             {
-                Verify.AreEqual(_mockItems[i], dict[_mockKeys[i].KeyValue]);
-                Verify.AreEqual(_mockItems[i], dict[_mockKeys2[i].KeyValue]);
-                Verify.AreNotEqual(_mockItems2[i], dict[_mockKeys2[i].KeyValue]);
-                Verify.AreEqual(dict[_mockKeys[i].KeyValue], dict[_mockKeys2[i].KeyValue]);
+                dict[_mockKeys[i].KeyValue].Should().Be(_mockItems[i]);
+                dict[_mockKeys2[i].KeyValue].Should().Be(_mockItems[i]);
+                dict[_mockKeys2[i].KeyValue].Should().NotBe(_mockItems2[i]);
+                dict[_mockKeys2[i].KeyValue].Should().Be(dict[_mockKeys[i].KeyValue]);
             }
         }
 
@@ -261,10 +262,10 @@ namespace CPP.Framework.Collections.Generic
 
             var actual = dict.Values;
 
-            Verify.AreEqual(5, dict.Count);
-            Verify.AreEqual(actual.Count, dict.Count);
+            dict.Count.Should().Be(5);
+            actual.Count.Should().Be(dict.Count);
 
-            Verify.IsTrue(actual.SequenceEqual(_mockItems));
+            actual.SequenceEqual(_mockItems).Should().BeTrue();
         }
 
 
@@ -288,10 +289,10 @@ namespace CPP.Framework.Collections.Generic
 
             var actual = dict.Keys;
 
-            Verify.AreEqual(5, dict.Count);
-            Verify.AreEqual(actual.Count, dict.Count);
+            dict.Count.Should().Be(5);
+            actual.Count.Should().Be(dict.Count);
 
-            Verify.IsTrue(actual.SequenceEqual(_mockKeys));
+            actual.SequenceEqual(_mockKeys).Should().BeTrue();
         }
 
         #endregion
@@ -302,7 +303,6 @@ namespace CPP.Framework.Collections.Generic
         /// Test IntersectWith() on an empty dictionary.  No exception is expected from using non-existing keys
         /// </summary>
         [TestMethod]
-        [ExpectedArgumentNullException("other")]
         public void ExceptWithNullParameterTest()
         {
             var dict = new SetDictionary<MockKey, MockItem>();
@@ -319,10 +319,11 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey2, item2);
             }
 
-            Verify.AreEqual(10, dict.Count);
+            dict.Count.Should().Be(10);
 
             // throws exception
-            var actual = dict.ExceptWith(null);
+            Action act = () => { var actual = dict.ExceptWith(null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("other");
         }
 
         /// <summary>
@@ -333,17 +334,17 @@ namespace CPP.Framework.Collections.Generic
         {
             var dict = new SetDictionary<MockKey, MockItem>();
 
-            Verify.AreEqual(0, dict.Count);
+            dict.Count.Should().Be(0);
 
             var actual = dict.ExceptWith(_mockKeys2);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(0, actual.Count());
+            actual.Should().NotBeNull();
+            actual.Count().Should().Be(0);
         }
 
         /// <summary>
-        /// Test ExceptWith() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has 
-        /// different references even though their GuidKey field values are the same, and therefore, they are treated as 
+        /// Test ExceptWith() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has
+        /// different references even though their GuidKey field values are the same, and therefore, they are treated as
         /// different keys for the dictionary.  The ExceptWith() call should only remove the 2nd set of items (item2).
         /// </summary>
         [TestMethod]
@@ -362,29 +363,29 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
                 dict.Add(mockKey2, item2);
             }
-            
-            Verify.AreEqual(10, dict.Count);
+
+            dict.Count.Should().Be(10);
 
             var actual = dict.ExceptWith(_mockKeys2);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(5, actual.Count());
+            actual.Should().NotBeNull();
+            actual.Count().Should().Be(5);
 
-            Verify.IsTrue(actual.SequenceEqual(_mockItems));
-            Verify.IsFalse(actual.SequenceEqual(_mockItems2));
+            actual.SequenceEqual(_mockItems).Should().BeTrue();
+            actual.SequenceEqual(_mockItems2).Should().BeFalse();
 
 //            using (var e = actual.GetEnumerator()) {
 //                while (e.MoveNext())
 //                {
-//                    Verify.IsTrue(_mockItems.Contains(e.Current));
-//                    Verify.IsFalse(_mockItems2.Contains(e.Current));
+//                    _mockItems.Contains(e.Current).Should().BeTrue();
+//                    _mockItems2.Contains(e.Current).Should().BeFalse();
 //                }
 //            }
         }
 
         /// <summary>
         /// Test ExceptWith() with reference type MockKey.  Guids for _mockKeys[i] and _mockKeys2[i] are the same
-        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The 
+        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The
         /// dictionary should be empty after ExceptWith() call.
         /// </summary>
         [TestMethod]
@@ -405,12 +406,12 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey2, item2);
             }
 
-            Verify.AreEqual(5, dict.Count);
+            dict.Count.Should().Be(5);
 
             var actual = dict.ExceptWith(_mockKeys2);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(0, actual.Count());
+            actual.Should().NotBeNull();
+            actual.Count().Should().Be(0);
         }
 
         /// <summary>
@@ -435,12 +436,12 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey2.KeyValue, item2);
             }
 
-            Verify.AreEqual(5, dict.Count);
+            dict.Count.Should().Be(5);
 
             var actual = dict.ExceptWith(_mockKeys2.Select(x=>x.KeyValue));
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(0, actual.Count());
+            actual.Should().NotBeNull();
+            actual.Count().Should().Be(0);
         }
 
         #endregion
@@ -451,13 +452,13 @@ namespace CPP.Framework.Collections.Generic
         /// Test IntersectWith() on an empty dictionary.  No exception is expected from using non-existing keys
         /// </summary>
         [TestMethod]
-        [ExpectedArgumentNullException("other")]
         public void IntersectWithNullParameterTest()
         {
             var dict = new SetDictionary<MockKey, MockItem>();
-         
+
             // throws exception
-            var actual = dict.IntersectWith(null);
+            Action act = () => { var actual = dict.IntersectWith(null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("other");
         }
 
         /// <summary>
@@ -468,17 +469,17 @@ namespace CPP.Framework.Collections.Generic
         {
             var dict = new SetDictionary<MockKey, MockItem>();
 
-            Verify.AreEqual(0, dict.Count);
+            dict.Count.Should().Be(0);
 
             var actual = dict.IntersectWith(_mockKeys2);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(0, actual.Count());
+            actual.Should().NotBeNull();
+            actual.Count().Should().Be(0);
         }
 
         /// <summary>
-        /// Test IntersectWith() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has 
-        /// different references even though their GuidKey field values are the same, and therefore, they are treated as 
+        /// Test IntersectWith() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has
+        /// different references even though their GuidKey field values are the same, and therefore, they are treated as
         /// different keys for the dictionary.  The IntersectWith() call should only remove the 2nd set of items (item2).
         /// </summary>
         [TestMethod]
@@ -498,26 +499,26 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey2, item2);
             }
 
-            Verify.AreEqual(10, dict.Count);
+            dict.Count.Should().Be(10);
 
             var actual = dict.IntersectWith(_mockKeys2);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(5, actual.Count());
+            actual.Should().NotBeNull();
+            actual.Count().Should().Be(5);
 
             using (var e = actual.GetEnumerator())
             {
                 while (e.MoveNext())
                 {
-                    Verify.IsFalse(_mockItems.Contains(e.Current));
-                    Verify.IsTrue(_mockItems2.Contains(e.Current));
+                    _mockItems.Contains(e.Current).Should().BeFalse();
+                    _mockItems2.Contains(e.Current).Should().BeTrue();
                 }
             }
         }
 
         /// <summary>
         /// Test IntersectWith() with reference type MockKey.  Guids for _mockKeys[i] and _mockKeys2[i] are the same
-        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The 
+        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The
         /// dictionary should be empty after IntersectWith() call.
         /// </summary>
         [TestMethod]
@@ -538,19 +539,19 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey2, item2);
             }
 
-            Verify.AreEqual(5, dict.Count);
+            dict.Count.Should().Be(5);
 
             var actual = dict.IntersectWith(_mockKeys2);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(5, actual.Count());
+            actual.Should().NotBeNull();
+            actual.Count().Should().Be(5);
 
             using (var e = actual.GetEnumerator())
             {
                 while (e.MoveNext())
                 {
-                    Verify.IsTrue(_mockItems.Contains(e.Current));
-                    Verify.IsFalse(_mockItems2.Contains(e.Current));
+                    _mockItems.Contains(e.Current).Should().BeTrue();
+                    _mockItems2.Contains(e.Current).Should().BeFalse();
                 }
             }
         }
@@ -577,19 +578,19 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey2.KeyValue, item2);
             }
 
-            Verify.AreEqual(5, dict.Count);
+            dict.Count.Should().Be(5);
 
             var actual = dict.IntersectWith(_mockKeys2.Select(x => x.KeyValue));
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(5, actual.Count());
+            actual.Should().NotBeNull();
+            actual.Count().Should().Be(5);
 
             using (var e = actual.GetEnumerator())
             {
                 while (e.MoveNext())
                 {
-                    Verify.IsTrue(_mockItems.Contains(e.Current));
-                    Verify.IsFalse(_mockItems2.Contains(e.Current));
+                    _mockItems.Contains(e.Current).Should().BeTrue();
+                    _mockItems2.Contains(e.Current).Should().BeFalse();
                 }
             }
         }
@@ -602,13 +603,13 @@ namespace CPP.Framework.Collections.Generic
         /// Test IsSubsetOf() with null parameter.  ArgumentmentNullException is expected
         /// </summary>
         [TestMethod]
-        [ExpectedArgumentNullException("other")]
         public void IsSubsetOfNullParameterTest()
         {
             var dict = new SetDictionary<MockKey, MockItem>();
 
             // throws exception
-            var actual = dict.IsSubsetOf(null);
+            Action act = () => { var actual = dict.IsSubsetOf(null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("other");
         }
 
         /// <summary>
@@ -619,15 +620,15 @@ namespace CPP.Framework.Collections.Generic
         {
             var dict = new SetDictionary<MockKey, MockItem>();
 
-            Verify.AreEqual(0, dict.Count);
+            dict.Count.Should().Be(0);
 
-            Verify.IsTrue(dict.IsSubsetOf(_mockKeys2));
-            Verify.IsTrue(dict.IsSubsetOf(new SetDictionary<MockKey, MockItem>().Keys));
+            dict.IsSubsetOf(_mockKeys2).Should().BeTrue();
+            dict.IsSubsetOf(new SetDictionary<MockKey, MockItem>().Keys).Should().BeTrue();
         }
 
         /// <summary>
-        /// Test IsSubsetOf() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has 
-        /// different references even though their GuidKey field values are the same, and therefore, they are treated as 
+        /// Test IsSubsetOf() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has
+        /// different references even though their GuidKey field values are the same, and therefore, they are treated as
         /// different keys for the dictionary.  The IsSubsetOf() call should match the superset of _mockKeys (i.e. _mockKeysSuperset)
         /// </summary>
         [TestMethod]
@@ -644,18 +645,18 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
             }
 
-            Verify.IsTrue(dict.IsSubsetOf(_mockKeys));
-            Verify.IsFalse(dict.IsSubsetOf(_mockKeysSubset));
-            Verify.IsTrue(dict.IsSubsetOf(_mockKeysSuperset));
+            dict.IsSubsetOf(_mockKeys).Should().BeTrue();
+            dict.IsSubsetOf(_mockKeysSubset).Should().BeFalse();
+            dict.IsSubsetOf(_mockKeysSuperset).Should().BeTrue();
 
-            Verify.IsFalse(dict.IsSubsetOf(_mockKeys2));
-            Verify.IsFalse(dict.IsSubsetOf(_mockKeys2Subset));
-            Verify.IsFalse(dict.IsSubsetOf(_mockKeys2Superset));
+            dict.IsSubsetOf(_mockKeys2).Should().BeFalse();
+            dict.IsSubsetOf(_mockKeys2Subset).Should().BeFalse();
+            dict.IsSubsetOf(_mockKeys2Superset).Should().BeFalse();
         }
 
         /// <summary>
         /// Test IsSubsetOf() with reference type MockKey.  Guids for _mockKeys[i] and _mockKeys2[i] are the same
-        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The 
+        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The
         /// IsSubsetOf() call should match the superset of _mockKeys by Guid KeyValue (i.e. _mockKeysSuperset, _mockKeys2
         /// and _mockKeys2Superset)
         /// </summary>
@@ -673,13 +674,13 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
             }
 
-            Verify.IsTrue(dict.IsSubsetOf(_mockKeys));
-            Verify.IsFalse(dict.IsSubsetOf(_mockKeysSubset));
-            Verify.IsTrue(dict.IsSubsetOf(_mockKeysSuperset));
+            dict.IsSubsetOf(_mockKeys).Should().BeTrue();
+            dict.IsSubsetOf(_mockKeysSubset).Should().BeFalse();
+            dict.IsSubsetOf(_mockKeysSuperset).Should().BeTrue();
 
-            Verify.IsTrue(dict.IsSubsetOf(_mockKeys2));
-            Verify.IsFalse(dict.IsSubsetOf(_mockKeys2Subset));
-            Verify.IsTrue(dict.IsSubsetOf(_mockKeys2Superset));
+            dict.IsSubsetOf(_mockKeys2).Should().BeTrue();
+            dict.IsSubsetOf(_mockKeys2Subset).Should().BeFalse();
+            dict.IsSubsetOf(_mockKeys2Superset).Should().BeTrue();
         }
 
         /// <summary>
@@ -700,13 +701,13 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey.KeyValue, item);
             }
 
-            Verify.IsTrue(dict.IsSubsetOf(_mockKeys.Select(x => x.KeyValue)));
-            Verify.IsFalse(dict.IsSubsetOf(_mockKeysSubset.Select(x => x.KeyValue)));
-            Verify.IsTrue(dict.IsSubsetOf(_mockKeysSuperset.Select(x => x.KeyValue)));
+            dict.IsSubsetOf(_mockKeys.Select(x => x.KeyValue)).Should().BeTrue();
+            dict.IsSubsetOf(_mockKeysSubset.Select(x => x.KeyValue)).Should().BeFalse();
+            dict.IsSubsetOf(_mockKeysSuperset.Select(x => x.KeyValue)).Should().BeTrue();
 
-            Verify.IsTrue(dict.IsSubsetOf(_mockKeys2.Select(x => x.KeyValue)));
-            Verify.IsFalse(dict.IsSubsetOf(_mockKeys2Subset.Select(x => x.KeyValue)));
-            Verify.IsTrue(dict.IsSubsetOf(_mockKeys2Superset.Select(x => x.KeyValue)));
+            dict.IsSubsetOf(_mockKeys2.Select(x => x.KeyValue)).Should().BeTrue();
+            dict.IsSubsetOf(_mockKeys2Subset.Select(x => x.KeyValue)).Should().BeFalse();
+            dict.IsSubsetOf(_mockKeys2Superset.Select(x => x.KeyValue)).Should().BeTrue();
 
         }
 
@@ -718,13 +719,13 @@ namespace CPP.Framework.Collections.Generic
         /// Test IsSupersetOf() with null parameter.  ArgumentmentNullException is expected
         /// </summary>
         [TestMethod]
-        [ExpectedArgumentNullException("other")]
         public void IsSupersetOfNullParameterTest()
         {
             var dict = new SetDictionary<MockKey, MockItem>();
 
             // throws exception
-            var actual = dict.IsSupersetOf(null);
+            Action act = () => { var actual = dict.IsSupersetOf(null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("other");
         }
 
         /// <summary>
@@ -735,15 +736,15 @@ namespace CPP.Framework.Collections.Generic
         {
             var dict = new SetDictionary<MockKey, MockItem>();
 
-            Verify.AreEqual(0, dict.Count);
+            dict.Count.Should().Be(0);
 
-            Verify.IsFalse(dict.IsSupersetOf(_mockKeys2));
-            Verify.IsTrue(dict.IsSupersetOf(new SetDictionary<MockKey, MockItem>().Keys));
+            dict.IsSupersetOf(_mockKeys2).Should().BeFalse();
+            dict.IsSupersetOf(new SetDictionary<MockKey, MockItem>().Keys).Should().BeTrue();
         }
 
         /// <summary>
-        /// Test IsSupersetOf() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has 
-        /// different references even though their GuidKey field values are the same, and therefore, they are treated as 
+        /// Test IsSupersetOf() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has
+        /// different references even though their GuidKey field values are the same, and therefore, they are treated as
         /// different keys for the dictionary.  The IsSupersetOf() call should match the superset of _mockKeys (i.e. _mockKeysSuperset)
         /// </summary>
         [TestMethod]
@@ -760,18 +761,18 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
             }
 
-            Verify.IsTrue(dict.IsSupersetOf(_mockKeys));
-            Verify.IsTrue(dict.IsSupersetOf(_mockKeysSubset));
-            Verify.IsFalse(dict.IsSupersetOf(_mockKeysSuperset));
+            dict.IsSupersetOf(_mockKeys).Should().BeTrue();
+            dict.IsSupersetOf(_mockKeysSubset).Should().BeTrue();
+            dict.IsSupersetOf(_mockKeysSuperset).Should().BeFalse();
 
-            Verify.IsFalse(dict.IsSupersetOf(_mockKeys2));
-            Verify.IsFalse(dict.IsSupersetOf(_mockKeys2Subset));
-            Verify.IsFalse(dict.IsSupersetOf(_mockKeys2Superset));
+            dict.IsSupersetOf(_mockKeys2).Should().BeFalse();
+            dict.IsSupersetOf(_mockKeys2Subset).Should().BeFalse();
+            dict.IsSupersetOf(_mockKeys2Superset).Should().BeFalse();
         }
 
         /// <summary>
         /// Test IsSupersetOf() with reference type MockKey.  Guids for _mockKeys[i] and _mockKeys2[i] are the same
-        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The 
+        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The
         /// IsSupersetOf() call should match the superset of _mockKeys by Guid KeyValue (i.e. _mockKeysSuperset, _mockKeys2
         /// and _mockKeys2Superset)
         /// </summary>
@@ -789,13 +790,13 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
             }
 
-            Verify.IsTrue(dict.IsSupersetOf(_mockKeys));
-            Verify.IsTrue(dict.IsSupersetOf(_mockKeysSubset));
-            Verify.IsFalse(dict.IsSupersetOf(_mockKeysSuperset));
+            dict.IsSupersetOf(_mockKeys).Should().BeTrue();
+            dict.IsSupersetOf(_mockKeysSubset).Should().BeTrue();
+            dict.IsSupersetOf(_mockKeysSuperset).Should().BeFalse();
 
-            Verify.IsTrue(dict.IsSupersetOf(_mockKeys2));
-            Verify.IsTrue(dict.IsSupersetOf(_mockKeys2Subset));
-            Verify.IsFalse(dict.IsSupersetOf(_mockKeys2Superset));
+            dict.IsSupersetOf(_mockKeys2).Should().BeTrue();
+            dict.IsSupersetOf(_mockKeys2Subset).Should().BeTrue();
+            dict.IsSupersetOf(_mockKeys2Superset).Should().BeFalse();
         }
 
         /// <summary>
@@ -816,13 +817,13 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey.KeyValue, item);
             }
 
-            Verify.IsTrue(dict.IsSupersetOf(_mockKeys.Select(x => x.KeyValue)));
-            Verify.IsTrue(dict.IsSupersetOf(_mockKeysSubset.Select(x => x.KeyValue)));
-            Verify.IsFalse(dict.IsSupersetOf(_mockKeysSuperset.Select(x => x.KeyValue)));
+            dict.IsSupersetOf(_mockKeys.Select(x => x.KeyValue)).Should().BeTrue();
+            dict.IsSupersetOf(_mockKeysSubset.Select(x => x.KeyValue)).Should().BeTrue();
+            dict.IsSupersetOf(_mockKeysSuperset.Select(x => x.KeyValue)).Should().BeFalse();
 
-            Verify.IsTrue(dict.IsSupersetOf(_mockKeys2.Select(x => x.KeyValue)));
-            Verify.IsTrue(dict.IsSupersetOf(_mockKeys2Subset.Select(x => x.KeyValue)));
-            Verify.IsFalse(dict.IsSupersetOf(_mockKeys2Superset.Select(x => x.KeyValue)));
+            dict.IsSupersetOf(_mockKeys2.Select(x => x.KeyValue)).Should().BeTrue();
+            dict.IsSupersetOf(_mockKeys2Subset.Select(x => x.KeyValue)).Should().BeTrue();
+            dict.IsSupersetOf(_mockKeys2Superset.Select(x => x.KeyValue)).Should().BeFalse();
 
         }
 
@@ -834,13 +835,13 @@ namespace CPP.Framework.Collections.Generic
         /// Test IsProperSubsetOf() with null parameter.  ArgumentmentNullException is expected
         /// </summary>
         [TestMethod]
-        [ExpectedArgumentNullException("other")]
         public void IsProperSubsetOfNullParameterTest()
         {
             var dict = new SetDictionary<MockKey, MockItem>();
 
             // throws exception
-            var actual = dict.IsProperSubsetOf(null);
+            Action act = () => { var actual = dict.IsProperSubsetOf(null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("other");
         }
 
         /// <summary>
@@ -851,15 +852,15 @@ namespace CPP.Framework.Collections.Generic
         {
             var dict = new SetDictionary<MockKey, MockItem>();
 
-            Verify.AreEqual(0, dict.Count);
+            dict.Count.Should().Be(0);
 
-            Verify.IsTrue(dict.IsProperSubsetOf(_mockKeys2));
-            Verify.IsFalse(dict.IsProperSubsetOf(new SetDictionary<MockKey, MockItem>().Keys));
+            dict.IsProperSubsetOf(_mockKeys2).Should().BeTrue();
+            dict.IsProperSubsetOf(new SetDictionary<MockKey, MockItem>().Keys).Should().BeFalse();
         }
 
         /// <summary>
-        /// Test IsProperSubsetOf() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has 
-        /// different references even though their GuidKey field values are the same, and therefore, they are treated as 
+        /// Test IsProperSubsetOf() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has
+        /// different references even though their GuidKey field values are the same, and therefore, they are treated as
         /// different keys for the dictionary.  The IsProperSubsetOf() call should match the superset of _mockKeys (i.e. _mockKeysSuperset)
         /// </summary>
         [TestMethod]
@@ -876,18 +877,18 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
             }
 
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeys));
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeysSubset));
-            Verify.IsTrue(dict.IsProperSubsetOf(_mockKeysSuperset));
+            dict.IsProperSubsetOf(_mockKeys).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeysSubset).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeysSuperset).Should().BeTrue();
 
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeys2));
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeys2Subset));
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeys2Superset));
+            dict.IsProperSubsetOf(_mockKeys2).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeys2Subset).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeys2Superset).Should().BeFalse();
         }
 
         /// <summary>
         /// Test IsProperSubsetOf() with reference type MockKey.  Guids for _mockKeys[i] and _mockKeys2[i] are the same
-        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The 
+        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The
         /// IsProperSubsetOf() call should match the superset of _mockKeys by Guid KeyValue (i.e. _mockKeysSuperset, _mockKeys2
         /// and _mockKeys2Superset)
         /// </summary>
@@ -905,13 +906,13 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
             }
 
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeys));
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeysSubset));
-            Verify.IsTrue(dict.IsProperSubsetOf(_mockKeysSuperset));
+            dict.IsProperSubsetOf(_mockKeys).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeysSubset).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeysSuperset).Should().BeTrue();
 
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeys2));
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeys2Subset));
-            Verify.IsTrue(dict.IsProperSubsetOf(_mockKeys2Superset));
+            dict.IsProperSubsetOf(_mockKeys2).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeys2Subset).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeys2Superset).Should().BeTrue();
         }
 
         /// <summary>
@@ -932,13 +933,13 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey.KeyValue, item);
             }
 
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeys.Select(x => x.KeyValue)));
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeysSubset.Select(x => x.KeyValue)));
-            Verify.IsTrue(dict.IsProperSubsetOf(_mockKeysSuperset.Select(x => x.KeyValue)));
+            dict.IsProperSubsetOf(_mockKeys.Select(x => x.KeyValue)).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeysSubset.Select(x => x.KeyValue)).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeysSuperset.Select(x => x.KeyValue)).Should().BeTrue();
 
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeys2.Select(x => x.KeyValue)));
-            Verify.IsFalse(dict.IsProperSubsetOf(_mockKeys2Subset.Select(x => x.KeyValue)));
-            Verify.IsTrue(dict.IsProperSubsetOf(_mockKeys2Superset.Select(x => x.KeyValue)));
+            dict.IsProperSubsetOf(_mockKeys2.Select(x => x.KeyValue)).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeys2Subset.Select(x => x.KeyValue)).Should().BeFalse();
+            dict.IsProperSubsetOf(_mockKeys2Superset.Select(x => x.KeyValue)).Should().BeTrue();
 
         }
 
@@ -950,13 +951,13 @@ namespace CPP.Framework.Collections.Generic
         /// Test IsProperSupersetOf() with null parameter.  ArgumentmentNullException is expected
         /// </summary>
         [TestMethod]
-        [ExpectedArgumentNullException("other")]
         public void IsProperSupersetOfNullParameterTest()
         {
             var dict = new SetDictionary<MockKey, MockItem>();
 
             // throws exception
-            var actual = dict.IsProperSupersetOf(null);
+            Action act = () => { var actual = dict.IsProperSupersetOf(null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("other");
         }
 
         /// <summary>
@@ -967,15 +968,15 @@ namespace CPP.Framework.Collections.Generic
         {
             var dict = new SetDictionary<MockKey, MockItem>();
 
-            Verify.AreEqual(0, dict.Count);
+            dict.Count.Should().Be(0);
 
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeys2));
-            Verify.IsFalse(dict.IsProperSupersetOf(new SetDictionary<MockKey, MockItem>().Keys));
+            dict.IsProperSupersetOf(_mockKeys2).Should().BeFalse();
+            dict.IsProperSupersetOf(new SetDictionary<MockKey, MockItem>().Keys).Should().BeFalse();
         }
 
         /// <summary>
-        /// Test IsProperSupersetOf() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has 
-        /// different references even though their GuidKey field values are the same, and therefore, they are treated as 
+        /// Test IsProperSupersetOf() with reference type MockKey and default comparer.  _mockKeys[i] and _mockKeys2[i] has
+        /// different references even though their GuidKey field values are the same, and therefore, they are treated as
         /// different keys for the dictionary.  The IsProperSupersetOf() call should match the superset of _mockKeys (i.e. _mockKeysSuperset)
         /// </summary>
         [TestMethod]
@@ -992,18 +993,18 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
             }
 
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeys));
-            Verify.IsTrue(dict.IsProperSupersetOf(_mockKeysSubset));
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeysSuperset));
+            dict.IsProperSupersetOf(_mockKeys).Should().BeFalse();
+            dict.IsProperSupersetOf(_mockKeysSubset).Should().BeTrue();
+            dict.IsProperSupersetOf(_mockKeysSuperset).Should().BeFalse();
 
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeys2));
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeys2Subset));
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeys2Superset));
+            dict.IsProperSupersetOf(_mockKeys2).Should().BeFalse();
+            dict.IsProperSupersetOf(_mockKeys2Subset).Should().BeFalse();
+            dict.IsProperSupersetOf(_mockKeys2Superset).Should().BeFalse();
         }
 
         /// <summary>
         /// Test IsProperSupersetOf() with reference type MockKey.  Guids for _mockKeys[i] and _mockKeys2[i] are the same
-        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The 
+        /// at the corresponding positions, and since MockKeyComparer is used, only the Guid value matters.  The
         /// IsProperSupersetOf() call should match the superset of _mockKeys by Guid KeyValue (i.e. _mockKeysSuperset, _mockKeys2
         /// and _mockKeys2Superset)
         /// </summary>
@@ -1021,13 +1022,13 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
             }
 
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeys));
-            Verify.IsTrue(dict.IsProperSupersetOf(_mockKeysSubset));
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeysSuperset));
+            dict.IsProperSupersetOf(_mockKeys).Should().BeFalse();
+            dict.IsProperSupersetOf(_mockKeysSubset).Should().BeTrue();
+            dict.IsProperSupersetOf(_mockKeysSuperset).Should().BeFalse();
 
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeys2));
-            Verify.IsTrue(dict.IsProperSupersetOf(_mockKeys2Subset));
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeys2Superset));
+            dict.IsProperSupersetOf(_mockKeys2).Should().BeFalse();
+            dict.IsProperSupersetOf(_mockKeys2Subset).Should().BeTrue();
+            dict.IsProperSupersetOf(_mockKeys2Superset).Should().BeFalse();
         }
 
         /// <summary>
@@ -1048,13 +1049,13 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey.KeyValue, item);
             }
 
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeys.Select(x => x.KeyValue)));
-            Verify.IsTrue(dict.IsProperSupersetOf(_mockKeysSubset.Select(x => x.KeyValue)));
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeysSuperset.Select(x => x.KeyValue)));
+            dict.IsProperSupersetOf(_mockKeys.Select(x => x.KeyValue)).Should().BeFalse();
+            dict.IsProperSupersetOf(_mockKeysSubset.Select(x => x.KeyValue)).Should().BeTrue();
+            dict.IsProperSupersetOf(_mockKeysSuperset.Select(x => x.KeyValue)).Should().BeFalse();
 
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeys2.Select(x => x.KeyValue)));
-            Verify.IsTrue(dict.IsProperSupersetOf(_mockKeys2Subset.Select(x => x.KeyValue)));
-            Verify.IsFalse(dict.IsProperSupersetOf(_mockKeys2Superset.Select(x => x.KeyValue)));
+            dict.IsProperSupersetOf(_mockKeys2.Select(x => x.KeyValue)).Should().BeFalse();
+            dict.IsProperSupersetOf(_mockKeys2Subset.Select(x => x.KeyValue)).Should().BeTrue();
+            dict.IsProperSupersetOf(_mockKeys2Superset.Select(x => x.KeyValue)).Should().BeFalse();
 
         }
 
@@ -1075,13 +1076,13 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
             }
 
-            Verify.AreEqual(5, dict.Count);
+            dict.Count.Should().Be(5);
 
             // _mockKeys and _mockKeys2 are considered to be completely different with default equality comparer
             for (var i = 0; i < _mockKeys.Length; i++)
             {
-                Verify.IsTrue(dict.ContainsKey(_mockKeys[i]));
-                Verify.IsFalse(dict.ContainsKey(_mockKeys2[i]));
+                dict.ContainsKey(_mockKeys[i]).Should().BeTrue();
+                dict.ContainsKey(_mockKeys2[i]).Should().BeFalse();
             }
         }
 
@@ -1098,13 +1099,13 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey, item);
             }
 
-            Verify.AreEqual(5, dict.Count);
+            dict.Count.Should().Be(5);
 
             // _mockKeys and _mockKeys2 are considered to be completely different with default equality comparer
             for (var i = 0; i < _mockKeys.Length; i++)
             {
-                Verify.IsTrue(dict.ContainsKey(_mockKeys[i]));
-                Verify.IsTrue(dict.ContainsKey(_mockKeys2[i]));
+                dict.ContainsKey(_mockKeys[i]).Should().BeTrue();
+                dict.ContainsKey(_mockKeys2[i]).Should().BeTrue();
             }
         }
 
@@ -1129,16 +1130,16 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey2, item2);
             }
 
-            Verify.AreEqual(10, dict.Count);
+            dict.Count.Should().Be(10);
 
-            // _mockKeys and _mockKeys2 are considered to be completely different set, and therefore the 
+            // _mockKeys and _mockKeys2 are considered to be completely different set, and therefore the
             // dictionary should have 10 items, even though _mockKey[i] and _mockKey2[i] contains the same Guid.
             for (var i = 0; i < _mockKeys.Length; i++)
             {
-                Verify.IsTrue(dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys[i], _mockItems[i])));
-                Verify.IsTrue(dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys2[i], _mockItems2[i])));
-                Verify.IsFalse(dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys[i], _mockItems2[i])));
-                Verify.IsFalse(dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys2[i], _mockItems[i])));
+                dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys[i], _mockItems[i])).Should().BeTrue();
+                dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys2[i], _mockItems2[i])).Should().BeTrue();
+                dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys[i], _mockItems2[i])).Should().BeFalse();
+                dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys2[i], _mockItems[i])).Should().BeFalse();
             }
         }
 
@@ -1160,16 +1161,16 @@ namespace CPP.Framework.Collections.Generic
                 dict.Add(mockKey2, item2);
             }
 
-            Verify.AreEqual(5, dict.Count);
+            dict.Count.Should().Be(5);
 
             // Second set of keys are considered the same as the first, therefore, the insertion of mockItems2 never happened,
             // and _mockKey2[i] resolves to _mockKey[i], and the dictionary has only 5 entries.
             for (var i = 0; i < _mockKeys.Length; i++)
             {
-                Verify.IsTrue(dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys[i], _mockItems[i])));
-                Verify.IsFalse(dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys2[i], _mockItems2[i])));
-                Verify.IsFalse(dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys[i], _mockItems2[i])));
-                Verify.IsTrue(dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys2[i], _mockItems[i])));
+                dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys[i], _mockItems[i])).Should().BeTrue();
+                dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys2[i], _mockItems2[i])).Should().BeFalse();
+                dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys[i], _mockItems2[i])).Should().BeFalse();
+                dict.Contains(new KeyValuePair<MockKey, MockItem>(_mockKeys2[i], _mockItems[i])).Should().BeTrue();
             }
         }
 

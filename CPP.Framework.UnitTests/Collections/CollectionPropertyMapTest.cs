@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CPP.Framework.Collections
@@ -30,7 +31,7 @@ namespace CPP.Framework.Collections
                 }
                 catch (Exception ex)
                 {
-                    Verify.IsInstanceOfType(ex, typeof(KeyNotFoundException));
+                    ex.Should().BeOfType<KeyNotFoundException>();
                 }
         }
 
@@ -51,9 +52,8 @@ namespace CPP.Framework.Collections
 
             foreach (var propertyName in expectedPropertyTypes.Keys)
             {
-                Verify.IsNotNull(actual[propertyName]);
-                Verify.AreEqual(expectedPropertyTypes[propertyName],
-                    actual[propertyName].GetType().GetGenericArguments()[0]);
+                actual[propertyName].Should().NotBeNull();
+                actual[propertyName].GetType().GetGenericArguments()[0].Should().Be(expectedPropertyTypes[propertyName]);
             }
         }
 
@@ -81,9 +81,8 @@ namespace CPP.Framework.Collections
 
             foreach (var propertyName in expectedPropertyTypes.Keys)
             {
-                Verify.IsNotNull(actual[propertyName]);
-                Verify.AreEqual(expectedPropertyTypes[propertyName],
-                    actual[propertyName].GetType().GetGenericArguments()[0]);
+                actual[propertyName].Should().NotBeNull();
+                actual[propertyName].GetType().GetGenericArguments()[0].Should().Be(expectedPropertyTypes[propertyName]);
             }
         }
 

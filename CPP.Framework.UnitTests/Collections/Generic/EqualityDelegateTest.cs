@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CPP.Framework.Collections.Generic
@@ -34,22 +35,22 @@ namespace CPP.Framework.Collections.Generic
         {
             var comparer = InlineEqualityComparer<MockComparable>.Create(null);
 
-            Verify.IsTrue(comparer.Equals(_value11, _value11));
-            Verify.IsTrue(comparer.Equals(_value22, _value22));
+            comparer.Equals(_value11, _value11).Should().BeTrue();
+            comparer.Equals(_value22, _value22).Should().BeTrue();
 
-            Verify.IsFalse(comparer.Equals(_value11, new MockComparable(_value11.IntValue, _value11.GuidValue)));
-            Verify.IsFalse(comparer.Equals(_value22, new MockComparable(_value22.IntValue, _value22.GuidValue)));
+            comparer.Equals(_value11, new MockComparable(_value11.IntValue, _value11.GuidValue)).Should().BeFalse();
+            comparer.Equals(_value22, new MockComparable(_value22.IntValue, _value22.GuidValue)).Should().BeFalse();
 
-            Verify.IsFalse(comparer.Equals(_value11, _value22));
-            Verify.IsFalse(comparer.Equals(_value22, _value11));
-            Verify.IsFalse(comparer.Equals(_value21, _value22));
-            Verify.IsFalse(comparer.Equals(_value22, _value21));
-            Verify.IsFalse(comparer.Equals(_value11, _value12));
-            Verify.IsFalse(comparer.Equals(_value12, _value11));
-            Verify.IsFalse(comparer.Equals(_value21, _value11));
-            Verify.IsFalse(comparer.Equals(_value22, _value12));
-            Verify.IsFalse(comparer.Equals(_value11, _value21));
-            Verify.IsFalse(comparer.Equals(_value12, _value22));
+            comparer.Equals(_value11, _value22).Should().BeFalse();
+            comparer.Equals(_value22, _value11).Should().BeFalse();
+            comparer.Equals(_value21, _value22).Should().BeFalse();
+            comparer.Equals(_value22, _value21).Should().BeFalse();
+            comparer.Equals(_value11, _value12).Should().BeFalse();
+            comparer.Equals(_value12, _value11).Should().BeFalse();
+            comparer.Equals(_value21, _value11).Should().BeFalse();
+            comparer.Equals(_value22, _value12).Should().BeFalse();
+            comparer.Equals(_value11, _value21).Should().BeFalse();
+            comparer.Equals(_value12, _value22).Should().BeFalse();
         }
 
         /// <summary>
@@ -62,23 +63,23 @@ namespace CPP.Framework.Collections.Generic
                 InlineEqualityComparer<MockComparable>.Create(
                     (x, y) => x.GuidValue == y.GuidValue && x.IntValue == y.IntValue);
 
-            Verify.IsTrue(comparer.Equals(_value11, _value11));
-            Verify.IsTrue(comparer.Equals(_value22, _value22));
+            comparer.Equals(_value11, _value11).Should().BeTrue();
+            comparer.Equals(_value22, _value22).Should().BeTrue();
 
-            Verify.IsTrue(comparer.Equals(_value11, new MockComparable(_value11.IntValue, _value11.GuidValue)));
-            Verify.IsTrue(comparer.Equals(_value22, new MockComparable(_value22.IntValue, _value22.GuidValue)));
+            comparer.Equals(_value11, new MockComparable(_value11.IntValue, _value11.GuidValue)).Should().BeTrue();
+            comparer.Equals(_value22, new MockComparable(_value22.IntValue, _value22.GuidValue)).Should().BeTrue();
 
-            Verify.IsFalse(comparer.Equals(_value11, _value22));
-            Verify.IsFalse(comparer.Equals(_value22, _value11));
-            Verify.IsFalse(comparer.Equals(_value21, _value22));
-            Verify.IsFalse(comparer.Equals(_value22, _value21));
-            Verify.IsFalse(comparer.Equals(_value11, _value12));
-            Verify.IsFalse(comparer.Equals(_value12, _value11));
+            comparer.Equals(_value11, _value22).Should().BeFalse();
+            comparer.Equals(_value22, _value11).Should().BeFalse();
+            comparer.Equals(_value21, _value22).Should().BeFalse();
+            comparer.Equals(_value22, _value21).Should().BeFalse();
+            comparer.Equals(_value11, _value12).Should().BeFalse();
+            comparer.Equals(_value12, _value11).Should().BeFalse();
 
-            Verify.IsFalse(comparer.Equals(_value21, _value11));
-            Verify.IsFalse(comparer.Equals(_value22, _value12));
-            Verify.IsFalse(comparer.Equals(_value11, _value21));
-            Verify.IsFalse(comparer.Equals(_value12, _value22));
+            comparer.Equals(_value21, _value11).Should().BeFalse();
+            comparer.Equals(_value22, _value12).Should().BeFalse();
+            comparer.Equals(_value11, _value21).Should().BeFalse();
+            comparer.Equals(_value12, _value22).Should().BeFalse();
         }
 
         /// <summary>
@@ -89,23 +90,23 @@ namespace CPP.Framework.Collections.Generic
         {
             var comparer = InlineEqualityComparer<MockComparable>.Create((x, y) => x.GuidValue == y.GuidValue);
 
-            Verify.IsTrue(comparer.Equals(_value11, _value11));
-            Verify.IsTrue(comparer.Equals(_value22, _value22));
+            comparer.Equals(_value11, _value11).Should().BeTrue();
+            comparer.Equals(_value22, _value22).Should().BeTrue();
 
-            Verify.IsTrue(comparer.Equals(_value11, new MockComparable(_value11.IntValue, _value11.GuidValue)));
-            Verify.IsTrue(comparer.Equals(_value22, new MockComparable(_value22.IntValue, _value22.GuidValue)));
+            comparer.Equals(_value11, new MockComparable(_value11.IntValue, _value11.GuidValue)).Should().BeTrue();
+            comparer.Equals(_value22, new MockComparable(_value22.IntValue, _value22.GuidValue)).Should().BeTrue();
 
-            Verify.IsFalse(comparer.Equals(_value11, _value22));
-            Verify.IsFalse(comparer.Equals(_value22, _value11));
-            Verify.IsFalse(comparer.Equals(_value21, _value22));
-            Verify.IsFalse(comparer.Equals(_value22, _value21));
-            Verify.IsFalse(comparer.Equals(_value11, _value12));
-            Verify.IsFalse(comparer.Equals(_value12, _value11));
+            comparer.Equals(_value11, _value22).Should().BeFalse();
+            comparer.Equals(_value22, _value11).Should().BeFalse();
+            comparer.Equals(_value21, _value22).Should().BeFalse();
+            comparer.Equals(_value22, _value21).Should().BeFalse();
+            comparer.Equals(_value11, _value12).Should().BeFalse();
+            comparer.Equals(_value12, _value11).Should().BeFalse();
 
-            Verify.IsTrue(comparer.Equals(_value21, _value11));
-            Verify.IsTrue(comparer.Equals(_value22, _value12));
-            Verify.IsTrue(comparer.Equals(_value11, _value21));
-            Verify.IsTrue(comparer.Equals(_value12, _value22));
+            comparer.Equals(_value21, _value11).Should().BeTrue();
+            comparer.Equals(_value22, _value12).Should().BeTrue();
+            comparer.Equals(_value11, _value21).Should().BeTrue();
+            comparer.Equals(_value12, _value22).Should().BeTrue();
         }
 
         private class MockComparable

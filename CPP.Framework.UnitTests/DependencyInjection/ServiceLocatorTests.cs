@@ -1,16 +1,17 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using CPP.Framework.DependencyInjection.Resolvers;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
 using CPP.Framework.Services;
+using FluentAssertions;
 using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CPP.Framework.DependencyInjection
 {
     #region Sample Class Definitions
-    
+
     public abstract class ObjectInterfaceClass { }
     public sealed class ProviderClassAnonName : ObjectInterfaceClass { }
     public sealed class ProviderClassSingleton : ObjectInterfaceClass { }
@@ -152,7 +153,7 @@ namespace CPP.Framework.DependencyInjection
         public void GenericCheckConfigRegistration()
         {
             ServiceLocator.Initialize();
-            Verify.IsTrue(ServiceLocator.IsRegistered<ObjectInterfaceClass>());
+            ServiceLocator.IsRegistered<ObjectInterfaceClass>().Should().BeTrue();
         }
 
         [TestMethod]
@@ -160,9 +161,9 @@ namespace CPP.Framework.DependencyInjection
         [TestGroup(TestGroupTarget.DependencyInjection)]
         public void GenericCheckDefaultRegistration()
         {
-            Verify.IsFalse(ServiceLocator.IsRegistered<Object>());
+            ServiceLocator.IsRegistered<Object>().Should().BeFalse();
             ServiceLocator.Register<Object, String>();
-            Verify.IsTrue(ServiceLocator.IsRegistered<Object>());
+            ServiceLocator.IsRegistered<Object>().Should().BeTrue();
         }
 
         [TestMethod]
@@ -172,28 +173,28 @@ namespace CPP.Framework.DependencyInjection
         {
             const string RegistrationName = "named";
             ServiceLocator.Register<ObjectInterfaceClass, ProviderClassAnonName>();
-            Verify.IsTrue(ServiceLocator.IsRegistered<ObjectInterfaceClass>());
-            Verify.IsFalse(ServiceLocator.IsRegistered<ObjectInterfaceClass>(RegistrationName));
+            ServiceLocator.IsRegistered<ObjectInterfaceClass>().Should().BeTrue();
+            ServiceLocator.IsRegistered<ObjectInterfaceClass>(RegistrationName).Should().BeFalse();
             ServiceLocator.Register<ObjectInterfaceClass, ProviderClassWithName>(RegistrationName);
-            Verify.IsTrue(ServiceLocator.IsRegistered<ObjectInterfaceClass>(RegistrationName));
+            ServiceLocator.IsRegistered<ObjectInterfaceClass>(RegistrationName).Should().BeTrue();
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void GenericCheckRegistrationWithEmptyName()
         {
-            ServiceLocator.IsRegistered<ObjectInterfaceClass>("");
+            Action act = () => { ServiceLocator.IsRegistered<ObjectInterfaceClass>(""); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("name")]
         public void GenericCheckRegistrationWithNullName()
         {
-            ServiceLocator.IsRegistered<ObjectInterfaceClass>(null);
+            Action act = () => { ServiceLocator.IsRegistered<ObjectInterfaceClass>(null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
@@ -205,13 +206,13 @@ namespace CPP.Framework.DependencyInjection
             var resolver = new DependencyResolver(typeof(SampleService), expected);
             {
                 var actual = ServiceLocator.GetInstance<CtorInterfaceClassAnon>(resolver);
-                Verify.IsNotNull(actual);
-                Verify.AreEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Guid.Should().Be(expected.Guid);
             }
             {
                 var actual = ServiceLocator.GetInstance<CtorInterfaceClassAnon>();
-                Verify.IsNotNull(actual);
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
         }
 
@@ -234,22 +235,22 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register<CtorInterfaceClassAnon, CtorInterfaceClassNamed>(RegistrationName);
             {
                 var actual = ServiceLocator.GetInstance<CtorInterfaceClassAnon>(RegistrationName, resolver);
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().Be(expected.Guid);
             }
             {
                 var actual = ServiceLocator.GetInstance<CtorInterfaceClassAnon>(RegistrationName);
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
             {
                 var actual = ServiceLocator.GetInstance<CtorInterfaceClassAnon>();
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassAnon));
-                Verify.IsNotInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassAnon>();
+                actual.Should().NotBeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
         }
 
@@ -264,22 +265,22 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register<CtorInterfaceClassAnon, CtorInterfaceClassNamed>(RegistrationName);
             {
                 var actual = ServiceLocator.GetInstance<CtorInterfaceClassAnon>(RegistrationName, resolver);
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().Be(expected.Guid);
             }
             {
                 var actual = ServiceLocator.GetInstance<CtorInterfaceClassAnon>(RegistrationName);
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
             {
                 var actual = ServiceLocator.GetInstance<CtorInterfaceClassAnon>();
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassAnon));
-                Verify.IsNotInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassAnon>();
+                actual.Should().NotBeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
         }
 
@@ -292,13 +293,13 @@ namespace CPP.Framework.DependencyInjection
             var resolver = new ParameterResolver("service", expected);
             {
                 var actual = ServiceLocator.GetInstance<CtorInterfaceClassAnon>(resolver);
-                Verify.IsNotNull(actual);
-                Verify.AreEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Guid.Should().Be(expected.Guid);
             }
             {
                 var actual = ServiceLocator.GetInstance<CtorInterfaceClassAnon>();
-                Verify.IsNotNull(actual);
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
         }
 
@@ -311,8 +312,8 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register<ObjectInterfaceClass, ProviderClassAnonName>();
             var actual = ServiceLocator.GetMappedType<ObjectInterfaceClass>();
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -321,7 +322,7 @@ namespace CPP.Framework.DependencyInjection
         public void GenericGetMappedTypeWithDefaultAndFactory()
         {
             ServiceLocator.Register<ObjectInterfaceClass>(name => new ProviderClassWithFact());
-            Verify.IsNull(ServiceLocator.GetMappedType<ObjectInterfaceClass>());
+            ServiceLocator.GetMappedType<ObjectInterfaceClass>().Should().BeNull();
         }
 
         [TestMethod]
@@ -330,7 +331,7 @@ namespace CPP.Framework.DependencyInjection
         public void GenericGetMappedTypeWithDefaultAndSingleton()
         {
             ServiceLocator.Register<ObjectInterfaceClass>(new ProviderClassSingleton());
-            Verify.IsNull(ServiceLocator.GetMappedType<ObjectInterfaceClass>());
+            ServiceLocator.GetMappedType<ObjectInterfaceClass>().Should().BeNull();
         }
 
         [TestMethod]
@@ -344,8 +345,8 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register<ObjectInterfaceClass, ProviderClassWithName>(RegistrationName);
             var actual = ServiceLocator.GetMappedType<ObjectInterfaceClass>(RegistrationName);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -356,7 +357,7 @@ namespace CPP.Framework.DependencyInjection
             const string RegistrationName = "named";
             ServiceLocator.Register<ObjectInterfaceClass, ProviderClassAnonName>();
             ServiceLocator.Register<ObjectInterfaceClass>(name => new ProviderClassWithFact(), RegistrationName);
-            Verify.IsNull(ServiceLocator.GetMappedType<ObjectInterfaceClass>(RegistrationName));
+            ServiceLocator.GetMappedType<ObjectInterfaceClass>(RegistrationName).Should().BeNull();
         }
 
         [TestMethod]
@@ -367,7 +368,7 @@ namespace CPP.Framework.DependencyInjection
             const string RegistrationName = "named";
             ServiceLocator.Register<ObjectInterfaceClass, ProviderClassAnonName>();
             ServiceLocator.Register<ObjectInterfaceClass>(new ProviderClassSingleton(), RegistrationName);
-            Verify.IsNull(ServiceLocator.GetMappedType<ObjectInterfaceClass>(RegistrationName));
+            ServiceLocator.GetMappedType<ObjectInterfaceClass>(RegistrationName).Should().BeNull();
         }
 
         [TestMethod]
@@ -375,7 +376,7 @@ namespace CPP.Framework.DependencyInjection
         [TestGroup(TestGroupTarget.DependencyInjection)]
         public void GenericGetMappedTypeWithUnmappedType()
         {
-            Verify.IsNull(ServiceLocator.GetMappedType<Object>());
+            ServiceLocator.GetMappedType<Object>().Should().BeNull();
         }
 
         [TestMethod]
@@ -389,14 +390,12 @@ namespace CPP.Framework.DependencyInjection
             ObjectInterfaceClass instance = null;
 
             instance = ServiceLocator.GetInstance<ObjectInterfaceClass>();
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassAnonName));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassAnonName>();
 
             instance = ServiceLocator.GetInstance<ObjectInterfaceClass>(RegistrationName);
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassWithFact));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassWithFact>();
         }
 
         [TestMethod]
@@ -408,54 +407,53 @@ namespace CPP.Framework.DependencyInjection
             ObjectInterfaceClass instance = null;
 
             instance = ServiceLocator.GetInstance<ObjectInterfaceClass>();
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassWithFact));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassWithFact>();
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void GenericRegisterFactoryWithEmptyName()
         {
-            ServiceLocator.Register<ObjectInterfaceClass>((name => null), "");
+            Action act = () => { ServiceLocator.Register<ObjectInterfaceClass>((name => null), ""); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("name")]
         public void GenericRegisterFactoryWithNullName()
         {
-            ServiceLocator.Register<ObjectInterfaceClass>((name => null), null);
+            Action act = () => { ServiceLocator.Register<ObjectInterfaceClass>((name => null), null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("factory")]
         public void GenericRegisterFactoryWithNull()
         {
-            ServiceLocator.Register((ServiceFactoryDelegate<ObjectInterfaceClass>)null);
+            Action act = () => { ServiceLocator.Register((ServiceFactoryDelegate<ObjectInterfaceClass>)null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("factory");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("factory")]
         public void GenericRegisterFactoryWithNullAndName()
         {
-            ServiceLocator.Register((ServiceFactoryDelegate<ObjectInterfaceClass>)null, null);
+            Action act = () => { ServiceLocator.Register((ServiceFactoryDelegate<ObjectInterfaceClass>)null, null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("factory");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void GenericRegisterFactoryWithWhiteSpaceName()
         {
-            ServiceLocator.Register<ObjectInterfaceClass>((name => null), new string(' ', 4));
+            Action act = () => { ServiceLocator.Register<ObjectInterfaceClass>((name => null), new string(' ', 4)); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
@@ -469,14 +467,12 @@ namespace CPP.Framework.DependencyInjection
             ObjectInterfaceClass instance = null;
 
             instance = ServiceLocator.GetInstance<ObjectInterfaceClass>();
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassAnonName));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassAnonName>();
 
             instance = ServiceLocator.GetInstance<ObjectInterfaceClass>(RegistrationName);
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassWithName));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassWithName>();
         }
 
         [TestMethod]
@@ -489,8 +485,8 @@ namespace CPP.Framework.DependencyInjection
             ObjectInterfaceClass instance = null;
 
             instance = ServiceLocator.GetInstance<ObjectInterfaceClass>();
-            Verify.IsNotNull(instance);
-            Verify.AreSame(singleton, instance);
+            instance.Should().NotBeNull();
+            instance.Should().BeSameAs(singleton);
         }
 
         [TestMethod]
@@ -506,88 +502,87 @@ namespace CPP.Framework.DependencyInjection
             ObjectInterfaceClass instance = null;
 
             instance = ServiceLocator.GetInstance<ObjectInterfaceClass>();
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassAnonName));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassAnonName>();
 
             instance = ServiceLocator.GetInstance<ObjectInterfaceClass>(RegistrationName);
-            Verify.IsNotNull(instance);
-            Verify.AreSame(singleton, instance);
+            instance.Should().NotBeNull();
+            instance.Should().BeSameAs(singleton);
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void GenericRegisterSingletonWithEmptyName()
         {
             var instance = new ProviderClassAnonName();
-            ServiceLocator.Register<ObjectInterfaceClass>(instance, "");
+            Action act = () => { ServiceLocator.Register<ObjectInterfaceClass>(instance, ""); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("instance")]
         public void GenericRegisterSingletonWithNullInstance()
         {
-            ServiceLocator.Register((ObjectInterfaceClass)null);
+            Action act = () => { ServiceLocator.Register((ObjectInterfaceClass)null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("instance");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("instance")]
         public void GenericRegisterSingletonWithNullInstanceAndName()
         {
-            ServiceLocator.Register((ObjectInterfaceClass)null, null);
+            Action act = () => { ServiceLocator.Register((ObjectInterfaceClass)null, null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("instance");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("name")]
         public void GenericRegisterSingletonWithNullName()
         {
             var instance = new ProviderClassAnonName();
-            ServiceLocator.Register<ObjectInterfaceClass>(instance, null);
+            Action act = () => { ServiceLocator.Register<ObjectInterfaceClass>(instance, null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void GenericRegisterSingletonWithWhiteSpaceName()
         {
             var instance = new ProviderClassAnonName();
-            ServiceLocator.Register<ObjectInterfaceClass>(instance, new string(' ', 4));
+            Action act = () => { ServiceLocator.Register<ObjectInterfaceClass>(instance, new string(' ', 4)); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void GenericRegisterWithEmptyName()
         {
-            ServiceLocator.Register<ObjectInterfaceClass, ProviderClassAnonName>("");
+            Action act = () => { ServiceLocator.Register<ObjectInterfaceClass, ProviderClassAnonName>(""); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("name")]
         public void GenericRegisterWithNullName()
         {
-            ServiceLocator.Register<ObjectInterfaceClass, ProviderClassAnonName>(null);
+            Action act = () => { ServiceLocator.Register<ObjectInterfaceClass, ProviderClassAnonName>(null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void GenericRegisterWithWhiteSpaceName()
         {
-            ServiceLocator.Register<ObjectInterfaceClass, ProviderClassAnonName>(new string(' ', 4));
+            Action act = () => { ServiceLocator.Register<ObjectInterfaceClass, ProviderClassAnonName>(new string(' ', 4)); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
@@ -597,9 +592,9 @@ namespace CPP.Framework.DependencyInjection
         {
             ServiceLocator.Register<ObjectInterfaceClass, ProviderClassAnonName>();
             ObjectInterfaceClass instance = null;
-            Verify.IsTrue(ServiceLocator.TryGetInstance(out instance));
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassAnonName));
+            ServiceLocator.TryGetInstance(out instance).Should().BeTrue();
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassAnonName>();
         }
 
         [TestMethod]
@@ -611,13 +606,13 @@ namespace CPP.Framework.DependencyInjection
             var resolver = new DependencyResolver(typeof(SampleService), expected);
             CtorInterfaceClassAnon actual = null;
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(out actual, resolver));
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(out actual, resolver).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Guid.Should().Be(expected.Guid);
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(out actual));
-            Verify.IsNotNull(actual);
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Guid.Should().NotBe(expected.Guid);
         }
 
         [TestMethod]
@@ -631,21 +626,21 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register<CtorInterfaceClassAnon, CtorInterfaceClassNamed>(RegistrationName);
             CtorInterfaceClassAnon actual = null;
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(RegistrationName, out actual, resolver));
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(RegistrationName, out actual, resolver).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().Be(expected.Guid);
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(RegistrationName, out actual));
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
-            
-            Verify.IsTrue(ServiceLocator.TryGetInstance(out actual));
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassAnon));
-            Verify.IsNotInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(RegistrationName, out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().NotBe(expected.Guid);
+
+            ServiceLocator.TryGetInstance(out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<CtorInterfaceClassAnon>();
+            actual.Should().NotBeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().NotBe(expected.Guid);
         }
 
         [TestMethod]
@@ -659,21 +654,21 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register<CtorInterfaceClassAnon, CtorInterfaceClassNamed>(RegistrationName);
             CtorInterfaceClassAnon actual = null;
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(RegistrationName, out actual, resolver));
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(RegistrationName, out actual, resolver).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().Be(expected.Guid);
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(RegistrationName, out actual));
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(RegistrationName, out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().NotBe(expected.Guid);
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(out actual));
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassAnon));
-            Verify.IsNotInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<CtorInterfaceClassAnon>();
+            actual.Should().NotBeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().NotBe(expected.Guid);
         }
 
         [TestMethod]
@@ -685,13 +680,13 @@ namespace CPP.Framework.DependencyInjection
             var resolver = new ParameterResolver("service", expected);
             CtorInterfaceClassAnon actual = null;
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(out actual, resolver));
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(out actual, resolver).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Guid.Should().Be(expected.Guid);
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(out actual));
-            Verify.IsNotNull(actual);
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Guid.Should().NotBe(expected.Guid);
         }
 
         [TestMethod]
@@ -701,8 +696,8 @@ namespace CPP.Framework.DependencyInjection
         {
             ObjectInterfaceClass instance = null;
             ServiceLocator.Register<ObjectInterfaceClass, ObjectInterfaceClass>();
-            Verify.IsFalse(ServiceLocator.TryGetInstance(out instance));
-            Verify.IsNull(instance);
+            ServiceLocator.TryGetInstance(out instance).Should().BeFalse();
+            instance.Should().BeNull();
         }
 
         [TestMethod]
@@ -715,9 +710,9 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register<ObjectInterfaceClass, ProviderClassWithName>(RegistrationName);
 
             ObjectInterfaceClass instance = null;
-            Verify.IsTrue(ServiceLocator.TryGetInstance(RegistrationName, out instance));
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassWithName));
+            ServiceLocator.TryGetInstance(RegistrationName, out instance).Should().BeTrue();
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassWithName>();
         }
 
         [TestMethod]
@@ -730,8 +725,8 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register<ObjectInterfaceClass, ObjectInterfaceClass>(RegistrationName);
 
             ObjectInterfaceClass instance = null;
-            Verify.IsFalse(ServiceLocator.TryGetInstance(RegistrationName, out instance));
-            Verify.IsNull(instance);
+            ServiceLocator.TryGetInstance(RegistrationName, out instance).Should().BeFalse();
+            instance.Should().BeNull();
         }
 
         [TestMethod]
@@ -740,8 +735,8 @@ namespace CPP.Framework.DependencyInjection
         public void GetInstanceWithInjectedContainer()
         {
             var actual = ServiceLocator.GetInstance<UnityContainerInjectionClass>(UnityContainerResolver.Instance);
-            Verify.IsNotNull(actual);
-            Verify.AreSame(ServiceLocator.Container, actual.Container);
+            actual.Should().NotBeNull();
+            actual.Container.Should().BeSameAs(ServiceLocator.Container);
         }
 
         [TestMethod]
@@ -750,10 +745,10 @@ namespace CPP.Framework.DependencyInjection
         public void GetInstanceWithSingletonWithoutRegistration()
         {
             var service1 = ServiceLocator.GetInstance<AutoRegisterInterface>();
-            Verify.IsNotNull(service1);
+            service1.Should().NotBeNull();
             var service2 = ServiceLocator.GetInstance<AutoRegisterInterface>();
-            Verify.IsNotNull(service2);
-            Verify.AreSame(service1, service2);
+            service2.Should().NotBeNull();
+            service2.Should().BeSameAs(service1);
         }
 
         [TestMethod]
@@ -761,10 +756,10 @@ namespace CPP.Framework.DependencyInjection
         [TestGroup(TestGroupTarget.DependencyInjection)]
         public void InitializeTwiceWithDifferentConfig()
         {
-            Verify.IsTrue(ServiceLocator.Initialize());
-            Verify.AreEqual(ServiceLocator.ConfigurationName, ServiceLocator.DefaultConfigurationName);
-            Verify.IsTrue(ServiceLocator.Initialize(CustomConfigurationName));
-            Verify.AreEqual(ServiceLocator.ConfigurationName, CustomConfigurationName);
+            ServiceLocator.Initialize().Should().BeTrue();
+            ServiceLocator.ConfigurationName.Should().Be(ServiceLocator.DefaultConfigurationName);
+            ServiceLocator.Initialize(CustomConfigurationName).Should().BeTrue();
+            ServiceLocator.ConfigurationName.Should().Be(CustomConfigurationName);
         }
 
         [TestMethod]
@@ -772,10 +767,10 @@ namespace CPP.Framework.DependencyInjection
         [TestGroup(TestGroupTarget.DependencyInjection)]
         public void InitializeTwiceWithSameConfig()
         {
-            Verify.IsTrue(ServiceLocator.Initialize());
-            Verify.AreEqual(ServiceLocator.ConfigurationName, ServiceLocator.DefaultConfigurationName);
-            Verify.IsFalse(ServiceLocator.Initialize());
-            Verify.AreEqual(ServiceLocator.ConfigurationName, ServiceLocator.DefaultConfigurationName);
+            ServiceLocator.Initialize().Should().BeTrue();
+            ServiceLocator.ConfigurationName.Should().Be(ServiceLocator.DefaultConfigurationName);
+            ServiceLocator.Initialize().Should().BeFalse();
+            ServiceLocator.ConfigurationName.Should().Be(ServiceLocator.DefaultConfigurationName);
         }
 
         [TestMethod]
@@ -795,10 +790,9 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Initialize(CustomConfigurationName);
             var instance = ServiceLocator.GetInstance<ObjectInterfaceClass>();
 
-            Verify.AreEqual(ServiceLocator.ConfigurationName, CustomConfigurationName);
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassAnonName));
+            ServiceLocator.ConfigurationName.Should().Be(CustomConfigurationName);
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassAnonName>();
         }
 
         [TestMethod]
@@ -808,10 +802,9 @@ namespace CPP.Framework.DependencyInjection
         {
             ServiceLocator.Initialize();
             var instance = ServiceLocator.GetInstance<ObjectInterfaceClass>();
-            Verify.AreEqual(ServiceLocator.ConfigurationName, ServiceLocator.DefaultConfigurationName);
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassAtConfig));
+            ServiceLocator.ConfigurationName.Should().Be(ServiceLocator.DefaultConfigurationName);
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassAtConfig>();
         }
 
         [TestMethod]
@@ -830,10 +823,9 @@ namespace CPP.Framework.DependencyInjection
         {
             ServiceLocator.Initialize(null);
             var instance = ServiceLocator.GetInstance<ObjectInterfaceClass>();
-            Verify.AreEqual(ServiceLocator.ConfigurationName, ServiceLocator.DefaultConfigurationName);
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassAtConfig));
+            ServiceLocator.ConfigurationName.Should().Be(ServiceLocator.DefaultConfigurationName);
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassAtConfig>();
         }
 
         [TestMethod]
@@ -841,7 +833,7 @@ namespace CPP.Framework.DependencyInjection
         [TestGroup(TestGroupTarget.DependencyInjection)]
         public void NonGenericCheckConfigRegistration()
         {
-            Verify.IsTrue(ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass)));
+            ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass)).Should().BeTrue();
         }
 
         [TestMethod]
@@ -849,9 +841,9 @@ namespace CPP.Framework.DependencyInjection
         [TestGroup(TestGroupTarget.DependencyInjection)]
         public void NonGenericCheckDefaultRegistration()
         {
-            Verify.IsFalse(ServiceLocator.IsRegistered(typeof(Object)));
+            ServiceLocator.IsRegistered(typeof(Object)).Should().BeFalse();
             ServiceLocator.Register(typeof(Object), typeof(String));
-            Verify.IsTrue(ServiceLocator.IsRegistered(typeof(Object)));
+            ServiceLocator.IsRegistered(typeof(Object)).Should().BeTrue();
         }
 
         [TestMethod]
@@ -861,28 +853,28 @@ namespace CPP.Framework.DependencyInjection
         {
             const string RegistrationName = "named";
             ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassAnonName));
-            Verify.IsTrue(ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass)));
-            Verify.IsFalse(ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass), RegistrationName));
+            ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass)).Should().BeTrue();
+            ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass), RegistrationName).Should().BeFalse();
             ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassWithName), RegistrationName);
-            Verify.IsTrue(ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass), RegistrationName));
+            ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass), RegistrationName).Should().BeTrue();
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void NonGenericCheckRegistrationWithEmptyName()
         {
-            ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass), "");
+            Action act = () => { ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass), ""); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("name")]
         public void NonGenericCheckRegistrationWithNullName()
         {
-            ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass), null);
+            Action act = () => { ServiceLocator.IsRegistered(typeof(ObjectInterfaceClass), null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
@@ -894,13 +886,13 @@ namespace CPP.Framework.DependencyInjection
             var resolver = new DependencyResolver(typeof(SampleService), expected);
             {
                 var actual = (ServiceLocator.GetInstance(typeof(CtorInterfaceClassAnon), resolver) as CtorInterfaceClassAnon);
-                Verify.IsNotNull(actual);
-                Verify.AreEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Guid.Should().Be(expected.Guid);
             }
             {
                 var actual = (ServiceLocator.GetInstance(typeof(CtorInterfaceClassAnon)) as CtorInterfaceClassAnon);
-                Verify.IsNotNull(actual);
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
         }
 
@@ -915,22 +907,22 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register(typeof(CtorInterfaceClassAnon), typeof(CtorInterfaceClassNamed), RegistrationName);
             {
                 var actual = (ServiceLocator.GetInstance(typeof(CtorInterfaceClassAnon), RegistrationName, resolver) as CtorInterfaceClassAnon);
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().Be(expected.Guid);
             }
             {
                 var actual = (ServiceLocator.GetInstance(typeof(CtorInterfaceClassAnon), RegistrationName) as CtorInterfaceClassAnon);
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
             {
                 var actual = (ServiceLocator.GetInstance(typeof(CtorInterfaceClassAnon)) as CtorInterfaceClassAnon);
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassAnon));
-                Verify.IsNotInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassAnon>();
+                actual.Should().NotBeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
         }
 
@@ -945,22 +937,22 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register(typeof(CtorInterfaceClassAnon), typeof(CtorInterfaceClassNamed), RegistrationName);
             {
                 var actual = (ServiceLocator.GetInstance(typeof(CtorInterfaceClassAnon), RegistrationName, resolver) as CtorInterfaceClassAnon);
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().Be(expected.Guid);
             }
             {
                 var actual = (ServiceLocator.GetInstance(typeof(CtorInterfaceClassAnon), RegistrationName) as CtorInterfaceClassAnon);
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
             {
                 var actual = (ServiceLocator.GetInstance(typeof(CtorInterfaceClassAnon)) as CtorInterfaceClassAnon);
-                Verify.IsNotNull(actual);
-                Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassAnon));
-                Verify.IsNotInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<CtorInterfaceClassAnon>();
+                actual.Should().NotBeOfType<CtorInterfaceClassNamed>();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
         }
 
@@ -973,13 +965,13 @@ namespace CPP.Framework.DependencyInjection
             var resolver = new ParameterResolver("service", expected);
             {
                 var actual = (ServiceLocator.GetInstance(typeof(CtorInterfaceClassAnon), resolver) as CtorInterfaceClassAnon);
-                Verify.IsNotNull(actual);
-                Verify.AreEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Guid.Should().Be(expected.Guid);
             }
             {
                 var actual = (ServiceLocator.GetInstance(typeof(CtorInterfaceClassAnon)) as CtorInterfaceClassAnon);
-                Verify.IsNotNull(actual);
-                Verify.AreNotEqual(expected.Guid, actual.Guid);
+                actual.Should().NotBeNull();
+                actual.Guid.Should().NotBe(expected.Guid);
             }
         }
 
@@ -992,8 +984,8 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassAnonName));
             var actual = ServiceLocator.GetMappedType(typeof(ObjectInterfaceClass));
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -1002,7 +994,7 @@ namespace CPP.Framework.DependencyInjection
         public void NonGenericGetMappedTypeWithDefaultAndFactory()
         {
             ServiceLocator.Register(typeof(ObjectInterfaceClass), ((type, name) => new ProviderClassWithFact()));
-            Verify.IsNull(ServiceLocator.GetMappedType(typeof(ObjectInterfaceClass)));
+            ServiceLocator.GetMappedType(typeof(ObjectInterfaceClass)).Should().BeNull();
         }
 
         [TestMethod]
@@ -1011,7 +1003,7 @@ namespace CPP.Framework.DependencyInjection
         public void NonGenericGetMappedTypeWithDefaultAndSingleton()
         {
             ServiceLocator.Register(typeof(ObjectInterfaceClass), new ProviderClassSingleton());
-            Verify.IsNull(ServiceLocator.GetMappedType(typeof(ObjectInterfaceClass)));
+            ServiceLocator.GetMappedType(typeof(ObjectInterfaceClass)).Should().BeNull();
         }
 
         [TestMethod]
@@ -1025,8 +1017,8 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassWithName), RegistrationName);
             var actual = ServiceLocator.GetMappedType(typeof(ObjectInterfaceClass), RegistrationName);
 
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected, actual);
+            actual.Should().NotBeNull();
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -1037,7 +1029,7 @@ namespace CPP.Framework.DependencyInjection
             const string RegistrationName = "named";
             ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassAnonName));
             ServiceLocator.Register(typeof(ObjectInterfaceClass), (type, name) => new ProviderClassWithFact(), RegistrationName);
-            Verify.IsNull(ServiceLocator.GetMappedType(typeof(ObjectInterfaceClass), RegistrationName));
+            ServiceLocator.GetMappedType(typeof(ObjectInterfaceClass), RegistrationName).Should().BeNull();
         }
 
         [TestMethod]
@@ -1048,7 +1040,7 @@ namespace CPP.Framework.DependencyInjection
             const string RegistrationName = "named";
             ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassAnonName));
             ServiceLocator.Register(typeof(ObjectInterfaceClass), new ProviderClassSingleton(), RegistrationName);
-            Verify.IsNull(ServiceLocator.GetMappedType<ObjectInterfaceClass>(RegistrationName));
+            ServiceLocator.GetMappedType<ObjectInterfaceClass>(RegistrationName).Should().BeNull();
         }
 
         [TestMethod]
@@ -1056,7 +1048,7 @@ namespace CPP.Framework.DependencyInjection
         [TestGroup(TestGroupTarget.DependencyInjection)]
         public void NonGenericGetMappedTypeWithUnmappedType()
         {
-            Verify.IsNull(ServiceLocator.GetMappedType(typeof(Object)));
+            ServiceLocator.GetMappedType(typeof(Object)).Should().BeNull();
         }
 
         [TestMethod]
@@ -1070,14 +1062,12 @@ namespace CPP.Framework.DependencyInjection
             ObjectInterfaceClass instance = null;
 
             instance = (ServiceLocator.GetInstance(typeof(ObjectInterfaceClass)) as ObjectInterfaceClass);
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassAnonName));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassAnonName>();
 
             instance = (ServiceLocator.GetInstance(typeof(ObjectInterfaceClass), RegistrationName) as ObjectInterfaceClass);
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassWithFact));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassWithFact>();
         }
 
         [TestMethod]
@@ -1089,54 +1079,53 @@ namespace CPP.Framework.DependencyInjection
             ObjectInterfaceClass instance = null;
 
             instance = (ServiceLocator.GetInstance(typeof(ObjectInterfaceClass)) as ObjectInterfaceClass);
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassWithFact));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassWithFact>();
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void NonGenericRegisterFactoryWithEmptyName()
         {
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), ((type, name) => null), "");
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), ((type, name) => null), ""); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("name")]
         public void NonGenericRegisterFactoryWithNullName()
         {
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), ((type, name) => null), null);
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), ((type, name) => null), null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("factory")]
         public void NonGenericRegisterFactoryWithNull()
         {
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), (ServiceFactoryDelegate)null);
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), (ServiceFactoryDelegate)null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("factory");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("factory")]
         public void NonGenericRegisterFactoryWithNullAndName()
         {
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), (ServiceFactoryDelegate)null, null);
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), (ServiceFactoryDelegate)null, null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("factory");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void NonGenericRegisterFactoryWithWhiteSpaceName()
         {
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), ((type, name) => null), new string(' ', 4));
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), ((type, name) => null), new string(' ', 4)); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
@@ -1150,14 +1139,12 @@ namespace CPP.Framework.DependencyInjection
             ObjectInterfaceClass instance = null;
 
             instance = (ServiceLocator.GetInstance(typeof(ObjectInterfaceClass)) as ObjectInterfaceClass);
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassAnonName));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassAnonName>();
 
             instance = (ServiceLocator.GetInstance(typeof(ObjectInterfaceClass), RegistrationName) as ObjectInterfaceClass);
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassWithName));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassWithName>();
         }
 
         [TestMethod]
@@ -1170,8 +1157,8 @@ namespace CPP.Framework.DependencyInjection
             ObjectInterfaceClass instance = null;
 
             instance = (ServiceLocator.GetInstance(typeof(ObjectInterfaceClass)) as ObjectInterfaceClass);
-            Verify.IsNotNull(instance);
-            Verify.AreSame(singleton, instance);
+            instance.Should().NotBeNull();
+            instance.Should().BeSameAs(singleton);
         }
 
         [TestMethod]
@@ -1187,97 +1174,96 @@ namespace CPP.Framework.DependencyInjection
             ObjectInterfaceClass instance = null;
 
             instance = (ServiceLocator.GetInstance(typeof(ObjectInterfaceClass)) as ObjectInterfaceClass);
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ObjectInterfaceClass));
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassAnonName));
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassAnonName>();
 
             instance = (ServiceLocator.GetInstance(typeof(ObjectInterfaceClass), RegistrationName) as ObjectInterfaceClass);
-            Verify.IsNotNull(instance);
-            Verify.AreSame(singleton, instance);
+            instance.Should().NotBeNull();
+            instance.Should().BeSameAs(singleton);
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void NonGenericRegisterSingletonWithEmptyName()
         {
             var instance = new ProviderClassAnonName();
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), instance, "");
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), instance, ""); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("instance")]
         public void NonGenericRegisterSingletonWithNullInstance()
         {
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), (ObjectInterfaceClass)null);
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), (ObjectInterfaceClass)null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("instance");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("instance")]
         public void NonGenericRegisterSingletonWithNullInstanceAndName()
         {
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), (ObjectInterfaceClass)null, null);
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), (ObjectInterfaceClass)null, null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("instance");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("name")]
         public void NonGenericRegisterSingletonWithNullName()
         {
             var instance = new ProviderClassAnonName();
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), instance, null);
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), instance, null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void NonGenericRegisterSingletonWithWhiteSpaceName()
         {
             var instance = new ProviderClassAnonName();
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), instance, new string(' ', 4));
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), instance, new string(' ', 4)); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void NonGenericRegisterWithEmptyName()
         {
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassAnonName), "");
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassAnonName), ""); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("providerType")]
         public void NonGenericRegisterWithInvalidProvider()
         {
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(Object));
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(Object)); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("providerType");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentNullException("name")]
         public void NonGenericRegisterWithNullName()
         {
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassAnonName), null);
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassAnonName), null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.DependencyInjection)]
-        [ExpectedArgumentException("name")]
         public void NonGenericRegisterWithWhiteSpaceName()
         {
-            ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassAnonName), new string(' ', 4));
+            Action act = () => { ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassAnonName), new string(' ', 4)); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("name");
         }
 
         [TestMethod]
@@ -1287,9 +1273,9 @@ namespace CPP.Framework.DependencyInjection
         {
             ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassAnonName));
             object instance = null;
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(ObjectInterfaceClass), out instance));
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassAnonName));
+            ServiceLocator.TryGetInstance(typeof(ObjectInterfaceClass), out instance).Should().BeTrue();
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassAnonName>();
         }
 
         [TestMethod]
@@ -1301,13 +1287,13 @@ namespace CPP.Framework.DependencyInjection
             var resolver = new DependencyResolver(typeof(SampleService), expected);
             CtorInterfaceClassAnon actual = null;
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual, resolver));
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual, resolver).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Guid.Should().Be(expected.Guid);
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual));
-            Verify.IsNotNull(actual);
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Guid.Should().NotBe(expected.Guid);
         }
 
         [TestMethod]
@@ -1321,20 +1307,20 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register(typeof(CtorInterfaceClassAnon), typeof(CtorInterfaceClassNamed), RegistrationName);
             CtorInterfaceClassAnon actual = null;
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), RegistrationName, out actual, resolver));
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), RegistrationName, out actual, resolver).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().Be(expected.Guid);
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), RegistrationName, out actual));
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), RegistrationName, out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().NotBe(expected.Guid);
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual));
-            Verify.IsNotNull(actual);
-            Verify.IsNotInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().NotBeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().NotBe(expected.Guid);
         }
 
         [TestMethod]
@@ -1348,20 +1334,20 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register<CtorInterfaceClassAnon, CtorInterfaceClassNamed>(RegistrationName);
             CtorInterfaceClassAnon actual = null;
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), RegistrationName, out actual, resolver));
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), RegistrationName, out actual, resolver).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().Be(expected.Guid);
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), RegistrationName, out actual));
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), RegistrationName, out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().NotBe(expected.Guid);
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual));
-            Verify.IsNotNull(actual);
-            Verify.IsNotInstanceOfType(actual, typeof(CtorInterfaceClassNamed));
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Should().NotBeOfType<CtorInterfaceClassNamed>();
+            actual.Guid.Should().NotBe(expected.Guid);
         }
 
         [TestMethod]
@@ -1373,13 +1359,13 @@ namespace CPP.Framework.DependencyInjection
             var resolver = new ParameterResolver("service", expected);
             CtorInterfaceClassAnon actual = null;
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual, resolver));
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual, resolver).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Guid.Should().Be(expected.Guid);
 
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual));
-            Verify.IsNotNull(actual);
-            Verify.AreNotEqual(expected.Guid, actual.Guid);
+            ServiceLocator.TryGetInstance(typeof(CtorInterfaceClassAnon), out actual).Should().BeTrue();
+            actual.Should().NotBeNull();
+            actual.Guid.Should().NotBe(expected.Guid);
         }
 
         [TestMethod]
@@ -1400,8 +1386,8 @@ namespace CPP.Framework.DependencyInjection
         {
             ObjectInterfaceClass instance = null;
             ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ObjectInterfaceClass));
-            Verify.IsFalse(ServiceLocator.TryGetInstance(typeof(ObjectInterfaceClass), out instance));
-            Verify.IsNull(instance);
+            ServiceLocator.TryGetInstance(typeof(ObjectInterfaceClass), out instance).Should().BeFalse();
+            instance.Should().BeNull();
         }
 
         [TestMethod]
@@ -1414,9 +1400,9 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ProviderClassWithName), RegistrationName);
 
             ObjectInterfaceClass instance = null;
-            Verify.IsTrue(ServiceLocator.TryGetInstance(typeof(ObjectInterfaceClass), RegistrationName, out instance));
-            Verify.IsNotNull(instance);
-            Verify.IsInstanceOfType(instance, typeof(ProviderClassWithName));
+            ServiceLocator.TryGetInstance(typeof(ObjectInterfaceClass), RegistrationName, out instance).Should().BeTrue();
+            instance.Should().NotBeNull();
+            instance.Should().BeOfType<ProviderClassWithName>();
         }
 
         [TestMethod]
@@ -1442,8 +1428,8 @@ namespace CPP.Framework.DependencyInjection
             ServiceLocator.Register(typeof(ObjectInterfaceClass), typeof(ObjectInterfaceClass), RegistrationName);
 
             ObjectInterfaceClass instance = null;
-            Verify.IsFalse(ServiceLocator.TryGetInstance(typeof(ObjectInterfaceClass), RegistrationName, out instance));
-            Verify.IsNull(instance);
+            ServiceLocator.TryGetInstance(typeof(ObjectInterfaceClass), RegistrationName, out instance).Should().BeFalse();
+            instance.Should().BeNull();
         }
 
         [TestMethod]
@@ -1455,19 +1441,16 @@ namespace CPP.Framework.DependencyInjection
             var actual = default(IAutoRegisterService);
 
             actual = ServiceLocator.GetInstance<IAutoRegisterService>();
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(AutoRegisterServiceOne));
-            Verify.IsNotInstanceOfType(actual, typeof(AutoRegisterServiceTwo));
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<AutoRegisterServiceOne>();
 
             actual = ServiceLocator.GetInstance<IAutoRegisterService>(AutoRegisterServiceOneName);
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(AutoRegisterServiceOne));
-            Verify.IsNotInstanceOfType(actual, typeof(AutoRegisterServiceTwo));
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<AutoRegisterServiceOne>();
 
             actual = ServiceLocator.GetInstance<IAutoRegisterService>(AutoRegisterServiceTwoName);
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(AutoRegisterServiceTwo));
-            Verify.IsNotInstanceOfType(actual, typeof(AutoRegisterServiceOne));
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<AutoRegisterServiceTwo>();
         }
 
         [TestMethod]
@@ -1480,16 +1463,16 @@ namespace CPP.Framework.DependencyInjection
             var service = default(AutoRegisterSingleton);
 
             service = CodeServiceProvider.GetService<AutoRegisterSingleton>(AutoRegisterServiceSingleton);
-            Verify.IsNotNull(service);
-            Verify.AreEqual(1, service.ReferenceCount);
+            service.Should().NotBeNull();
+            service.ReferenceCount.Should().Be(1);
 
             actual = ServiceLocator.GetInstance<IAutoRegisterService>(AutoRegisterServiceSingleton);
-            Verify.IsNotNull(actual);
-            Verify.AreSame(service, actual);
-            Verify.AreEqual(1, service.ReferenceCount);
+            actual.Should().NotBeNull();
+            actual.Should().BeSameAs(service);
+            service.ReferenceCount.Should().Be(1);
 
             ServiceLocator.Unload();
-            Verify.AreEqual(0, service.ReferenceCount);
+            service.ReferenceCount.Should().Be(0);
         }
 
         [TestMethod]
@@ -1503,17 +1486,17 @@ namespace CPP.Framework.DependencyInjection
             var service = default(AutoRegisterSingleton);
 
             actual = ServiceLocator.GetInstance<IAutoRegisterService>(AutoRegisterServiceSingleton);
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(AutoRegisterSingleton));
-            Verify.AreEqual(1, ((AutoRegisterSingleton)actual).ReferenceCount);
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<AutoRegisterSingleton>();
+            ((AutoRegisterSingleton)actual).ReferenceCount.Should().Be(1);
 
             service = CodeServiceProvider.GetService<AutoRegisterSingleton>(AutoRegisterServiceSingleton);
-            Verify.IsNotNull(service);
-            Verify.AreEqual(service, actual);
-            Verify.AreEqual(1, service.ReferenceCount);
+            service.Should().NotBeNull();
+            service.Should().Be(actual);
+            service.ReferenceCount.Should().Be(1);
 
             ServiceLocator.Unload();
-            Verify.AreEqual(0, service.ReferenceCount);
+            service.ReferenceCount.Should().Be(0);
         }
 
         [TestMethod]
@@ -1526,16 +1509,16 @@ namespace CPP.Framework.DependencyInjection
             var service = default(AutoRegisterInterface);
 
             service = CodeServiceProvider.GetService<AutoRegisterInterface>(AutoRegisterServiceInterface);
-            Verify.IsNotNull(service);
-            Verify.AreEqual(1, service.ReferenceCount);
+            service.Should().NotBeNull();
+            service.ReferenceCount.Should().Be(1);
 
             actual = ServiceLocator.GetInstance<IAutoRegisterService>(AutoRegisterServiceInterface);
-            Verify.IsNotNull(actual);
-            Verify.AreEqual(service, actual);
-            Verify.AreEqual(1, service.ReferenceCount);
+            actual.Should().NotBeNull();
+            actual.Should().Be(service);
+            service.ReferenceCount.Should().Be(1);
 
             ServiceLocator.Unload();
-            Verify.AreEqual(0, service.ReferenceCount);
+            service.ReferenceCount.Should().Be(0);
         }
 
         [TestMethod]
@@ -1549,17 +1532,17 @@ namespace CPP.Framework.DependencyInjection
             var service = default(AutoRegisterInterface);
 
             actual = ServiceLocator.GetInstance<IAutoRegisterService>(AutoRegisterServiceInterface);
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(AutoRegisterInterface));
-            Verify.AreEqual(1, ((AutoRegisterInterface)actual).ReferenceCount);
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<AutoRegisterInterface>();
+            ((AutoRegisterInterface)actual).ReferenceCount.Should().Be(1);
 
             service = CodeServiceProvider.GetService<AutoRegisterInterface>(AutoRegisterServiceInterface);
-            Verify.IsNotNull(service);
-            Verify.AreEqual(service, actual);
-            Verify.AreEqual(1, service.ReferenceCount);
+            service.Should().NotBeNull();
+            service.Should().Be(actual);
+            service.ReferenceCount.Should().Be(1);
 
             ServiceLocator.Unload();
-            Verify.AreEqual(0, service.ReferenceCount);
+            service.ReferenceCount.Should().Be(0);
         }
 
         [TestMethod]
@@ -1569,14 +1552,14 @@ namespace CPP.Framework.DependencyInjection
         {
             ServiceLocator.RegisterAll(Assembly.GetExecutingAssembly());
             var actual = default(IAutoRegisterService);
-            
+
             actual = ServiceLocator.GetInstance<IAutoRegisterService>();
-            Verify.IsNotNull(actual);
-            Verify.IsTrue(ServiceLocator.IsRegistered<IAutoRegisterService>());
+            actual.Should().NotBeNull();
+            ServiceLocator.IsRegistered<IAutoRegisterService>().Should().BeTrue();
 
             actual = ServiceLocator.GetInstance<IAutoRegisterService>(AutoRegisterServiceSingleton);
-            Verify.IsNotNull(actual);
-            Verify.IsTrue(ServiceLocator.IsRegistered<IAutoRegisterService>(AutoRegisterServiceSingleton));
+            actual.Should().NotBeNull();
+            ServiceLocator.IsRegistered<IAutoRegisterService>(AutoRegisterServiceSingleton).Should().BeTrue();
         }
 
         [ExpectedException(typeof(ResolutionFailedException))]
@@ -1587,7 +1570,7 @@ namespace CPP.Framework.DependencyInjection
         {
             ServiceLocator.RegisterAll(typeof(Int32).Assembly);
             var actual = ServiceLocator.GetInstance<IAutoRegisterService>();
-            Verify.IsNull(actual);  // we shouldn't get to this point
+            actual.Should().BeNull();  // we shouldn't get to this point
         }
 
         [TestMethod]
@@ -1597,11 +1580,11 @@ namespace CPP.Framework.DependencyInjection
         {
             ServiceLocator.RegisterAll(typeof(AutoRegisterMultiple).Assembly);
             var expect = ServiceLocator.GetInstance<IAutoRegisterService>(ServiceLocatorTests.AutoRegisterServiceMultiple);
-            Verify.IsNotNull(expect);
+            expect.Should().NotBeNull();
 
             var actual = ServiceLocator.GetInstance<IAutoRegisterService2>(ServiceLocatorTests.AutoRegisterServiceMultiple);
-            Verify.IsNotNull(actual);
-            Verify.AreSame(expect, actual);
+            actual.Should().NotBeNull();
+            actual.Should().BeSameAs(expect);
         }
 
         [TestMethod]
@@ -1611,21 +1594,18 @@ namespace CPP.Framework.DependencyInjection
         {
             ServiceLocator.RegisterAll("CPP.Framework.*");
             var actual = default(IAutoRegisterService);
-            
+
             actual = ServiceLocator.GetInstance<IAutoRegisterService>();
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(AutoRegisterServiceOne));
-            Verify.IsNotInstanceOfType(actual, typeof(AutoRegisterServiceTwo));
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<AutoRegisterServiceOne>();
 
             actual = ServiceLocator.GetInstance<IAutoRegisterService>(AutoRegisterServiceOneName);
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(AutoRegisterServiceOne));
-            Verify.IsNotInstanceOfType(actual, typeof(AutoRegisterServiceTwo));
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<AutoRegisterServiceOne>();
 
             actual = ServiceLocator.GetInstance<IAutoRegisterService>(AutoRegisterServiceTwoName);
-            Verify.IsNotNull(actual);
-            Verify.IsInstanceOfType(actual, typeof(AutoRegisterServiceTwo));
-            Verify.IsNotInstanceOfType(actual, typeof(AutoRegisterServiceOne));
+            actual.Should().NotBeNull();
+            actual.Should().BeOfType<AutoRegisterServiceTwo>();
         }
 
         [ExpectedException(typeof(ResolutionFailedException))]
@@ -1636,7 +1616,7 @@ namespace CPP.Framework.DependencyInjection
         {
             ServiceLocator.RegisterAll("Microsoft.Practices.*");
             var actual = ServiceLocator.GetInstance<IAutoRegisterService>();
-            Verify.IsNull(actual);
+            actual.Should().BeNull();
         }
     }
 }

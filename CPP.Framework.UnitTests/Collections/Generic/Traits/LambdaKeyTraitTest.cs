@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -96,7 +97,7 @@ namespace CPP.Framework.Collections.Generic.Traits
         {
             public MockIGuidTypeLambdaKeyTrait() : base(m => m.DifferentKeyId) { }
         }
-        
+
         /// <summary>
         /// A Mock key trait that supplies a null for lambda expression
         /// </summary>
@@ -158,10 +159,13 @@ namespace CPP.Framework.Collections.Generic.Traits
         #endregion
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void CreateNullLambdaKeyTraiy()
         {
-            var trait = new MockINullLambdaKeyTrait();
+            Action act = () =>
+            {
+                var trait = new MockINullLambdaKeyTrait();
+            };
+            act.Should().Throw<ArgumentNullException>();
         }
 
         [TestMethod]
@@ -170,13 +174,13 @@ namespace CPP.Framework.Collections.Generic.Traits
             var trait = new MockIntLambdaKeyTrait();
             var item = new MockIntIdModel();
 
-            Verify.IsNotNull(trait);
-            Verify.AreEqual("GenericEqualityComparer`1", trait.Comparer.GetType().Name);
-            Verify.IsTrue(trait.Comparer.GetType().IsGenericType);
-            Verify.AreEqual(typeof(int), trait.Comparer.GetType().GenericTypeArguments[0]);
+            trait.Should().NotBeNull();
+            trait.Comparer.GetType().Name.Should().Be("GenericEqualityComparer`1");
+            trait.Comparer.GetType().IsGenericType.Should().BeTrue();
+            trait.Comparer.GetType().GenericTypeArguments[0].Should().Be(typeof(int));
 
             var keyValue = trait.GetKeyValue(item);
-            Verify.AreEqual(Int32.MaxValue, keyValue);
+            keyValue.Should().Be(Int32.MaxValue);
         }
 
         [TestMethod]
@@ -185,13 +189,13 @@ namespace CPP.Framework.Collections.Generic.Traits
             var trait = new MockLongLambdaKeyTrait();
             var item = new MockLongIdModel();
 
-            Verify.IsNotNull(trait);
-            Verify.AreEqual("GenericEqualityComparer`1", trait.Comparer.GetType().Name);
-            Verify.IsTrue(trait.Comparer.GetType().IsGenericType);
-            Verify.AreEqual(typeof(long), trait.Comparer.GetType().GenericTypeArguments[0]);
+            trait.Should().NotBeNull();
+            trait.Comparer.GetType().Name.Should().Be("GenericEqualityComparer`1");
+            trait.Comparer.GetType().IsGenericType.Should().BeTrue();
+            trait.Comparer.GetType().GenericTypeArguments[0].Should().Be(typeof(long));
 
             var keyValue = trait.GetKeyValue(item);
-            Verify.AreEqual(Int64.MaxValue, keyValue);
+            keyValue.Should().Be(Int64.MaxValue);
         }
 
         [TestMethod]
@@ -200,13 +204,13 @@ namespace CPP.Framework.Collections.Generic.Traits
             var trait = new MockIGuidTypeLambdaKeyTrait();
             var item = new MockGuidIdModel();
 
-            Verify.IsNotNull(trait);
-            Verify.AreEqual("GenericEqualityComparer`1", trait.Comparer.GetType().Name);
-            Verify.IsTrue(trait.Comparer.GetType().IsGenericType);
-            Verify.AreEqual(typeof(Guid), trait.Comparer.GetType().GenericTypeArguments[0]);
+            trait.Should().NotBeNull();
+            trait.Comparer.GetType().Name.Should().Be("GenericEqualityComparer`1");
+            trait.Comparer.GetType().IsGenericType.Should().BeTrue();
+            trait.Comparer.GetType().GenericTypeArguments[0].Should().Be(typeof(Guid));
 
             var keyValue = trait.GetKeyValue(item);
-            Verify.AreEqual(Guid.Empty, keyValue);
+            keyValue.Should().Be(Guid.Empty);
         }
 
         [TestMethod]
@@ -215,12 +219,12 @@ namespace CPP.Framework.Collections.Generic.Traits
             var trait = new MockBaseTypeLambdaKeyTrait();
             var item = new MockBaseTypeIdModel();
 
-            Verify.IsNotNull(trait);
-            Verify.AreEqual("KeyIdEqualityComparer", trait.Comparer.GetType().Name);
-            Verify.IsFalse(trait.Comparer.GetType().IsGenericType);
+            trait.Should().NotBeNull();
+            trait.Comparer.GetType().Name.Should().Be("KeyIdEqualityComparer");
+            trait.Comparer.GetType().IsGenericType.Should().BeFalse();
 
             var keyValue = trait.GetKeyValue(item);
-            Verify.AreEqual(item.KeyId, keyValue);
+            keyValue.Should().Be(item.KeyId);
         }
 
         [TestMethod]
@@ -229,12 +233,12 @@ namespace CPP.Framework.Collections.Generic.Traits
             var trait = new MockDerivedTypeLambdaKeyTrait();
             var item = new MockDerivedTypeIdModel();
 
-            Verify.IsNotNull(trait);
-            Verify.AreEqual("KeyIdEqualityComparer", trait.Comparer.GetType().Name);
-            Verify.IsFalse(trait.Comparer.GetType().IsGenericType);
-           
+            trait.Should().NotBeNull();
+            trait.Comparer.GetType().Name.Should().Be("KeyIdEqualityComparer");
+            trait.Comparer.GetType().IsGenericType.Should().BeFalse();
+
             var keyValue = trait.GetKeyValue(item);
-            Verify.AreEqual(item.KeyId, keyValue);
+            keyValue.Should().Be(item.KeyId);
         }
     }
 }

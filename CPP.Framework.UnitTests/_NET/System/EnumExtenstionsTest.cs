@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // ReSharper disable CheckNamespace
@@ -16,10 +17,13 @@ namespace System
     public class EnumExtenstionsTest
     {
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void GetDescriptionInvalidEnumTest()
         {
-            var actual = ((TestEnum) (-1)).GetDescription();
+            Action act = () =>
+            {
+                var actual = ((TestEnum) (-1)).GetDescription();
+            };
+            act.Should().Throw<ArgumentOutOfRangeException>();
         }
 
 
@@ -29,7 +33,7 @@ namespace System
             var expected = "Test Value 1";
             var actual = TestEnum.TestValue1.GetDescription();
 
-            Verify.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -38,7 +42,7 @@ namespace System
             var expected = "F 1";
             var actual = ((TestFlags) 1).GetDescription("#");
 
-            Verify.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -47,7 +51,7 @@ namespace System
             var expected = "F 1,F 2,F 3";
             var actual = ((TestFlags) 7).GetDescription();
 
-            Verify.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -56,52 +60,55 @@ namespace System
             var expected = "F 1#F 2#F 3";
             var actual = ((TestFlags) 7).GetDescription("#");
 
-            Verify.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void GetEditorBrowsableStateWithInvalidEnum()
         {
-            ((TestFlags) (-1)).GetEditorBrowsableState();
+            Action act = () =>
+            {
+                ((TestFlags) (-1)).GetEditorBrowsableState();
+            };
+            act.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [TestMethod]
         public void GetEditorBrowsableState()
         {
-            Verify.AreEqual(EditorBrowsableState.Always, TestEnum.TestValue1.GetEditorBrowsableState());
-            Verify.AreEqual(EditorBrowsableState.Advanced, TestEnum.TestValue2.GetEditorBrowsableState());
-            Verify.AreEqual(EditorBrowsableState.Always, TestEnum.TestValue3.GetEditorBrowsableState());
-            Verify.AreEqual(EditorBrowsableState.Never, TestEnum.TestValue4.GetEditorBrowsableState());
+            TestEnum.TestValue1.GetEditorBrowsableState().Should().Be(EditorBrowsableState.Always);
+            TestEnum.TestValue2.GetEditorBrowsableState().Should().Be(EditorBrowsableState.Advanced);
+            TestEnum.TestValue3.GetEditorBrowsableState().Should().Be(EditorBrowsableState.Always);
+            TestEnum.TestValue4.GetEditorBrowsableState().Should().Be(EditorBrowsableState.Never);
         }
 
         [TestMethod]
         public void GetEditorBrowsableStateWithCombinedFlags()
         {
-            Verify.AreEqual(EditorBrowsableState.Always, ((TestFlags) 3).GetEditorBrowsableState());
-            Verify.AreEqual(EditorBrowsableState.Advanced, ((TestFlags) 7).GetEditorBrowsableState());
-            Verify.AreEqual(EditorBrowsableState.Never, ((TestFlags) 15).GetEditorBrowsableState());
-            Verify.AreEqual(EditorBrowsableState.Never, ((TestFlags) 11).GetEditorBrowsableState());
-            Verify.AreEqual(EditorBrowsableState.Never, ((TestFlags) 12).GetEditorBrowsableState());
+            ((TestFlags) 3).GetEditorBrowsableState().Should().Be(EditorBrowsableState.Always);
+            ((TestFlags) 7).GetEditorBrowsableState().Should().Be(EditorBrowsableState.Advanced);
+            ((TestFlags) 15).GetEditorBrowsableState().Should().Be(EditorBrowsableState.Never);
+            ((TestFlags) 11).GetEditorBrowsableState().Should().Be(EditorBrowsableState.Never);
+            ((TestFlags) 12).GetEditorBrowsableState().Should().Be(EditorBrowsableState.Never);
         }
 
         [TestMethod]
         public void GetFullNameTest()
         {
-            Verify.AreEqual("System.EnumExtenstionsTest+TestEnum.TestValue1", TestEnum.TestValue1.GetFullName());
-            Verify.AreEqual("System.EnumExtenstionsTest+TestEnum.TestValue2", TestEnum.TestValue2.GetFullName());
-            Verify.AreEqual("System.EnumExtenstionsTest+TestEnum.TestValue3", TestEnum.TestValue3.GetFullName());
-            Verify.AreEqual("System.EnumExtenstionsTest+TestEnum.TestValue4", TestEnum.TestValue4.GetFullName());
+            TestEnum.TestValue1.GetFullName().Should().Be("System.EnumExtenstionsTest+TestEnum.TestValue1");
+            TestEnum.TestValue2.GetFullName().Should().Be("System.EnumExtenstionsTest+TestEnum.TestValue2");
+            TestEnum.TestValue3.GetFullName().Should().Be("System.EnumExtenstionsTest+TestEnum.TestValue3");
+            TestEnum.TestValue4.GetFullName().Should().Be("System.EnumExtenstionsTest+TestEnum.TestValue4");
         }
 
         [TestMethod]
         public void IsFlagEnumTest()
         {
-            Verify.IsFalse(EnumExtensions.IsFlagsEnum(typeof(TestEnum)));
-            Verify.IsTrue(EnumExtensions.IsFlagsEnum(typeof(TestFlags)));
+            EnumExtensions.IsFlagsEnum(typeof(TestEnum)).Should().BeFalse();
+            EnumExtensions.IsFlagsEnum(typeof(TestFlags)).Should().BeTrue();
 
-            Verify.IsFalse(EnumExtensions.IsFlagsEnum<TestEnum>());
-            Verify.IsTrue(EnumExtensions.IsFlagsEnum<TestFlags>());
+            EnumExtensions.IsFlagsEnum<TestEnum>().Should().BeFalse();
+            EnumExtensions.IsFlagsEnum<TestFlags>().Should().BeTrue();
         }
 
         [TestMethod]
@@ -110,7 +117,7 @@ namespace System
             var expected = new[] {TestFlags.Flag1, TestFlags.Flag2, TestFlags.Flag3, TestFlags.Flag4};
             var actual = ((TestFlags) 15).Split();
 
-            Verify.IsTrue(actual.SequenceEqual(expected));
+            actual.SequenceEqual(expected).Should().BeTrue();
         }
 
         private enum TestEnum

@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 using CPP.Framework.DependencyInjection;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
 using CPP.Framework.Services;
+
+using FluentAssertions;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -26,16 +28,16 @@ namespace CPP.Framework.Security
             var existing = Thread.CurrentPrincipal;
             try
             {
-                var expect = Thread.CurrentPrincipal = StubFactory.CreatePrincipal("basic")
+                var expect = Thread.CurrentPrincipal = ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                     .GrantUserName("testuser");
                 var manager = CodeServiceProvider.GetService<SecurityAuthorizationManager>();
                 var context = new SecurityAuthorizationContext(manager, null);
                 var actual = context.CurrentPrincipal;
-                Verify.AreSame(expect, actual);
+                actual.Should().BeSameAs(expect);
 
                 context = SecurityAuthorizationContext.Create();
                 actual = context.CurrentPrincipal;
-                Verify.AreSame(expect, actual);
+                actual.Should().BeSameAs(expect);
             }
             catch (Exception)
             {

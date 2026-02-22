@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
@@ -7,9 +7,10 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using CPP.Framework.ComponentModel;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rhino.Mocks;
+using NSubstitute;
 
 namespace CPP.Framework.ComponentModel
 {
@@ -33,7 +34,7 @@ namespace CPP.Framework.ComponentModel
             {
                 GuidProperty = Guid.NewGuid();
             }
-            
+
             public void OnPropertyChange(string propertyName)
             {
                 base.OnPropertyChanged(propertyName);
@@ -76,8 +77,8 @@ namespace CPP.Framework.ComponentModel
         {
             ArgumentValidator.ValidateNotNull(() => args);
 
-            Verify.IsTrue(PropertyChangedExpected);
-            ChangedArgs.Add(args); 
+            PropertyChangedExpected.Should().BeTrue();
+            ChangedArgs.Add(args);
 
         }
 
@@ -85,7 +86,7 @@ namespace CPP.Framework.ComponentModel
         public void Initialize()
         {
             ChangedArgs = new List<PropertyChangedEventArgs>();
-            
+
             _model = new MockObservableModel();
             _model.SetPropertyValue(() => _model.GuidProperty, Guid.NewGuid());
 
@@ -101,9 +102,9 @@ namespace CPP.Framework.ComponentModel
             var expectedChangedPropertyName = "Fake";
 
             _model.OnPropertyChange(expectedChangedPropertyName);
-        
-            Verify.AreEqual(1, ChangedArgs.Count);
-            Verify.AreEqual(expectedChangedPropertyName, ChangedArgs[0].PropertyName);
+
+            ChangedArgs.Count.Should().Be(1);
+            ChangedArgs[0].PropertyName.Should().Be(expectedChangedPropertyName);
         }
 
         [TestMethod]

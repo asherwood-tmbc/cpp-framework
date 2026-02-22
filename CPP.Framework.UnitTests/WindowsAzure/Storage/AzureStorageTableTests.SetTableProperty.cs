@@ -1,5 +1,5 @@
-﻿using System;
-using CPP.Framework.Diagnostics.Testing;
+using System;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CPP.Framework.WindowsAzure.Storage
@@ -18,7 +18,7 @@ namespace CPP.Framework.WindowsAzure.Storage
                 table.SetTableProperty(TestPropertyName, expected);
                 actual = table.GetTableProperty<Guid>(TestPropertyName);
             }
-            Verify.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
         [TestMethod]
@@ -39,8 +39,8 @@ namespace CPP.Framework.WindowsAzure.Storage
                 actual2 = table.GetTableProperty<Guid>(TestPropertyName2);
             }
 
-            Verify.AreEqual(expected1, actual1);
-            Verify.AreEqual(expected2, actual2);
+            actual1.Should().Be(expected1);
+            actual2.Should().Be(expected2);
         }
     }
 }

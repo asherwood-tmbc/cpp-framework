@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using CPP.Framework.Collections.Generic.Traits;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // ReSharper disable once CheckNamespace
@@ -42,7 +43,7 @@ namespace CPP.Framework.Collections.Generic
             }
         }
 
-        private class MockItem 
+        private class MockItem
         {
             public MockItem(Guid keyId, int numberId)
             {
@@ -179,7 +180,7 @@ namespace CPP.Framework.Collections.Generic
             {
                 _dictionary.AddOrUpdate(item);
             }
-            Verify.AreEqual(_mockItems.Length, _dictionary.Count());
+            _dictionary.Count().Should().Be(_mockItems.Length);
         }
 
         /// <summary>
@@ -192,14 +193,14 @@ namespace CPP.Framework.Collections.Generic
             {
                 _dictionary.AddOrUpdate(item);
             }
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
 
             var j = 0;
             using (var enumerator = _dictionary.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
-                    Verify.AreEqual(_mockItems[j], enumerator.Current);
+                    enumerator.Current.Should().Be(_mockItems[j]);
                     j++;
                 }
             }
@@ -215,16 +216,16 @@ namespace CPP.Framework.Collections.Generic
             {
                 _dictionary.AddOrUpdate(_mockItems[i]);
             }
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
 
             foreach (var mockItem in _mockItems)
             {
                 var dictItem = _dictionary.GetItemsByKeys(mockItem.KeyId, mockItem.NumberId);
-                Verify.AreEqual(mockItem, dictItem);
+                dictItem.Should().Be(mockItem);
             }
 
             // count should not change
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
         }
 
         /// <summary>
@@ -238,14 +239,14 @@ namespace CPP.Framework.Collections.Generic
                 _dictionary.AddOrUpdate(_mockItems[i]);
                 _dictionary.AddOrUpdate(_mockItems[i]);
             }
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
 
             var j = 0;
             using (var enumerator = _dictionary.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
-                    Verify.AreEqual(_mockItems[j], enumerator.Current);
+                    enumerator.Current.Should().Be(_mockItems[j]);
                     j++;
                 }
             }
@@ -261,28 +262,28 @@ namespace CPP.Framework.Collections.Generic
             {
                 _dictionary.AddOrUpdate(_mockItems[i]);
             }
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
 
             for (var i = 0; i < _duplicateDiffGuidItems.Length; i++)
             {
                 _dictionary.AddOrUpdate(_duplicateDiffGuidItems[i]);
             }
-            Verify.AreEqual(10, _dictionary.Count());
+            _dictionary.Count().Should().Be(10);
 
             foreach (var mockItem in _mockItems)
             {
                 var dictItem = _dictionary.GetItemsByKeys(mockItem.KeyId, mockItem.NumberId);
-                Verify.AreEqual(mockItem, dictItem);
+                dictItem.Should().Be(mockItem);
             }
 
             foreach (var duplicateDiffGuidItem in _duplicateDiffGuidItems)
             {
                 var dictItem = _dictionary.GetItemsByKeys(duplicateDiffGuidItem.KeyId, duplicateDiffGuidItem.NumberId);
-                Verify.AreEqual(duplicateDiffGuidItem, dictItem);
+                dictItem.Should().Be(duplicateDiffGuidItem);
             }
 
             // Make sure nothing is added
-            Verify.AreEqual(10, _dictionary.Count());
+            _dictionary.Count().Should().Be(10);
 
         }
 
@@ -297,22 +298,22 @@ namespace CPP.Framework.Collections.Generic
                 _dictionary.AddOrUpdate(_mockItems[i]);
                 _dictionary.AddOrUpdate(_duplicateDiffIntItems[i]);
             }
-            Verify.AreEqual(10, _dictionary.Count());
+            _dictionary.Count().Should().Be(10);
 
             foreach (var mockItem in _mockItems)
             {
                 var dictItem = _dictionary.GetItemsByKeys(mockItem.KeyId, mockItem.NumberId);
-                Verify.AreEqual(mockItem, dictItem);
+                dictItem.Should().Be(mockItem);
             }
 
             foreach (var duplicateDiffIntItem in _duplicateDiffIntItems)
             {
                 var dictItem = _dictionary.GetItemsByKeys(duplicateDiffIntItem.KeyId, duplicateDiffIntItem.NumberId);
-                Verify.AreEqual(duplicateDiffIntItem, dictItem);
+                dictItem.Should().Be(duplicateDiffIntItem);
             }
 
             // Make sure nothing is added
-            Verify.AreEqual(10, _dictionary.Count());
+            _dictionary.Count().Should().Be(10);
         }
 
         /// <summary>
@@ -325,23 +326,23 @@ namespace CPP.Framework.Collections.Generic
             {
                 _dictionary.AddOrUpdate(_mockItems[i]);
             }
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
 
             foreach (var mockItem in _mockItems)
             {
                 var dictItem = _dictionary.GetItemsByKeys(mockItem.KeyId, mockItem.NumberId);
-                Verify.AreEqual(mockItem, dictItem);
+                dictItem.Should().Be(mockItem);
             }
 
             // These items do not exist in the dictionary (key2 is different), and should be inserted
             foreach (var duplicateDiffGuidItem in _duplicateDiffGuidItems)
             {
                 var dictItem = _dictionary.GetItemsByKeys(duplicateDiffGuidItem.KeyId, duplicateDiffGuidItem.NumberId);
-                Verify.AreEqual(duplicateDiffGuidItem, dictItem);
+                dictItem.Should().Be(duplicateDiffGuidItem);
             }
 
-            // Make sure the different items were added 
-            Verify.AreEqual(10, _dictionary.Count());
+            // Make sure the different items were added
+            _dictionary.Count().Should().Be(10);
 
         }
 
@@ -355,23 +356,23 @@ namespace CPP.Framework.Collections.Generic
             {
                 _dictionary.AddOrUpdate(_mockItems[i]);
             }
-            Verify.AreEqual(5, _dictionary.Count());
-            
+            _dictionary.Count().Should().Be(5);
+
             foreach (var mockItem in _mockItems)
             {
                 var dictItem = _dictionary.GetItemsByKeys(mockItem.KeyId, mockItem.NumberId);
-                Verify.AreEqual(mockItem, dictItem);
+                dictItem.Should().Be(mockItem);
             }
 
             // These items do not exist in the dictionary, and should be inserted
             foreach (var duplicateDiffIntItem in _duplicateDiffIntItems)
             {
                 var dictItem = _dictionary.GetItemsByKeys(duplicateDiffIntItem.KeyId, duplicateDiffIntItem.NumberId);
-                Verify.AreEqual(duplicateDiffIntItem, dictItem);
+                dictItem.Should().Be(duplicateDiffIntItem);
             }
 
-            // Make sure the different items were added 
-            Verify.AreEqual(10, _dictionary.Count());
+            // Make sure the different items were added
+            _dictionary.Count().Should().Be(10);
         }
 
         /// <summary>
@@ -384,15 +385,15 @@ namespace CPP.Framework.Collections.Generic
             {
                 _dictionary.AddOrUpdate(_mockItems[i]);
             }
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
 
             foreach (var mockItem in _mockItems)
             {
-                Verify.IsTrue(_dictionary.Remove(mockItem));
+                _dictionary.Remove(mockItem).Should().BeTrue();
             }
 
             // verify empty
-            Verify.AreEqual(0, _dictionary.Count());
+            _dictionary.Count().Should().Be(0);
         }
 
         /// <summary>
@@ -405,19 +406,19 @@ namespace CPP.Framework.Collections.Generic
             {
                 _dictionary.AddOrUpdate(_mockItems[i]);
             }
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
 
             foreach (var mockItem in _mockItems)
             {
-                Verify.IsTrue(_dictionary.Remove(mockItem.KeyId, mockItem.NumberId));
+                _dictionary.Remove(mockItem.KeyId, mockItem.NumberId).Should().BeTrue();
             }
 
             // verify empty
-            Verify.AreEqual(0, _dictionary.Count());
+            _dictionary.Count().Should().Be(0);
         }
 
         /// <summary>
-        /// A test to validate removal of items by matching just one key. The removal is expected to fail. 
+        /// A test to validate removal of items by matching just one key. The removal is expected to fail.
         /// </summary>
         [TestMethod]
         [Ignore]
@@ -427,19 +428,19 @@ namespace CPP.Framework.Collections.Generic
             {
                 _dictionary.AddOrUpdate(_mockItems[i]);
             }
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
 
             foreach (var item in _mockItems)
             {
-                Verify.IsFalse(_dictionary.Remove(item.KeyId, 0));
+                _dictionary.Remove(item.KeyId, 0).Should().BeFalse();
             }
 
             // verify empty
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
         }
 
         /// <summary>
-        /// A test to validate removal of items by matching just one key. The removal is expected to fail. 
+        /// A test to validate removal of items by matching just one key. The removal is expected to fail.
         /// </summary>
         [TestMethod]
         [Ignore]
@@ -449,15 +450,15 @@ namespace CPP.Framework.Collections.Generic
             {
                 _dictionary.AddOrUpdate(_mockItems[i]);
             }
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
 
             foreach (var item in _mockItems)
             {
-                Verify.IsFalse(_dictionary.Remove(Guid.Empty, item.NumberId));
+                _dictionary.Remove(Guid.Empty, item.NumberId).Should().BeFalse();
             }
 
             // verify empty
-            Verify.AreEqual(5, _dictionary.Count());
+            _dictionary.Count().Should().Be(5);
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
-using CPP.Framework.Diagnostics.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CPP.Framework.WindowsAzure.Storage
@@ -14,67 +14,67 @@ namespace CPP.Framework.WindowsAzure.Storage
         {
             const string expect = "first/second/third/fourth";
             var actual = AzureStoragePath.Combine("first/", "/second/", "/third/", "/fourth/");
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [Ignore]
-        [ExpectedArgumentException("path1")]
         [TestMethod]
         public void CombineWithFourPathsAndInvalidPath1()
         {
-            AzureStoragePath.Combine("first:/", "/second/", "/third/", "/fourth/");
+            Action act = () => AzureStoragePath.Combine("first:/", "/second/", "/third/", "/fourth/");
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("path1");
         }
 
         [Ignore]
-        [ExpectedArgumentException("path2")]
         [TestMethod]
         public void CombineWithFourPathsAndInvalidPath2()
         {
-            AzureStoragePath.Combine("first/", "/second:/", "/third/", "/fourth/");
+            Action act = () => AzureStoragePath.Combine("first/", "/second:/", "/third/", "/fourth/");
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("path2");
         }
 
         [Ignore]
-        [ExpectedArgumentException("path3")]
         [TestMethod]
         public void CombineWithFourPathsAndInvalidPath3()
         {
-            AzureStoragePath.Combine("first/", "/second/", "/third:/", "/fourth/");
+            Action act = () => AzureStoragePath.Combine("first/", "/second/", "/third:/", "/fourth/");
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("path3");
         }
 
         [Ignore]
-        [ExpectedArgumentException("path4")]
         [TestMethod]
         public void CombineWithFourPathsAndInvalidPath4()
         {
-            AzureStoragePath.Combine("first/", "/second/", "/third/", "/fourth:/");
+            Action act = () => AzureStoragePath.Combine("first/", "/second/", "/third/", "/fourth:/");
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("path4");
         }
 
-        [ExpectedArgumentNullException("path1")]
         [TestMethod]
         public void CombineWithFourPathsAndNullPath1()
         {
-            AzureStoragePath.Combine(null, "/second/", "/third/", "/fourth/");
+            Action act = () => AzureStoragePath.Combine(null, "/second/", "/third/", "/fourth/");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("path1");
         }
 
-        [ExpectedArgumentNullException("path2")]
         [TestMethod]
         public void CombineWithFourPathsAndNullPath2()
         {
-            AzureStoragePath.Combine("first/", null, "/third/", "/fourth/");
+            Action act = () => AzureStoragePath.Combine("first/", null, "/third/", "/fourth/");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("path2");
         }
 
-        [ExpectedArgumentNullException("path3")]
         [TestMethod]
         public void CombineWithFourPathsAndNullPath3()
         {
-            AzureStoragePath.Combine("first/", "/second/", null, "/fourth/");
+            Action act = () => AzureStoragePath.Combine("first/", "/second/", null, "/fourth/");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("path3");
         }
 
-        [ExpectedArgumentNullException("path4")]
         [TestMethod]
         public void CombineWithFourPathsAndNullPath4()
         {
-            AzureStoragePath.Combine("first/", "/second/", "/third/", null);
+            Action act = () => AzureStoragePath.Combine("first/", "/second/", "/third/", null);
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("path4");
         }
 
         [TestMethod]
@@ -82,22 +82,22 @@ namespace CPP.Framework.WindowsAzure.Storage
         {
             const string expect = "first/second/third/fourth/fifth";
             var actual = AzureStoragePath.Combine("first/", "/second/", "/third/", "/fourth/", "/fifth/");
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [Ignore]
-        [ExpectedArgumentException("paths")]
         [TestMethod]
         public void CombineWithParamsAndInvalidPath()
         {
-            AzureStoragePath.Combine("first/", "/second/", "/third:/", "/fourth/", "/fifth/");
+            Action act = () => AzureStoragePath.Combine("first/", "/second/", "/third:/", "/fourth/", "/fifth/");
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("paths");
         }
 
-        [ExpectedArgumentNullException("paths")]
         [TestMethod]
         public void CombineWithParamsAndNullPath()
         {
-            AzureStoragePath.Combine("first/", "/second/", null, "/fourth/", "/fifth/");
+            Action act = () => AzureStoragePath.Combine("first/", "/second/", null, "/fourth/", "/fifth/");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("paths");
         }
 
         [TestMethod]
@@ -105,52 +105,52 @@ namespace CPP.Framework.WindowsAzure.Storage
         {
             const string expect = "first/second/third";
             var actual = AzureStoragePath.Combine("first/", "/second/", "/third/");
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [Ignore]
-        [ExpectedArgumentException("path1")]
         [TestMethod]
         public void CombineWithThreePathsAndInvalidPath1()
         {
-            AzureStoragePath.Combine("first:/", "/second/", "/third/");
+            Action act = () => AzureStoragePath.Combine("first:/", "/second/", "/third/");
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("path1");
         }
 
         [Ignore]
-        [ExpectedArgumentException("path2")]
         [TestMethod]
         public void CombineWithThreePathsAndInvalidPath2()
         {
-            AzureStoragePath.Combine("first/", "/second:/", "/third/");
+            Action act = () => AzureStoragePath.Combine("first/", "/second:/", "/third/");
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("path2");
         }
 
         [Ignore]
-        [ExpectedArgumentException("path3")]
         [TestMethod]
         public void CombineWithThreePathsAndInvalidPath3()
         {
-            AzureStoragePath.Combine("first/", "/second/", "/third:/");
+            Action act = () => AzureStoragePath.Combine("first/", "/second/", "/third:/");
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("path3");
         }
 
-        [ExpectedArgumentNullException("path1")]
         [TestMethod]
         public void CombineWithThreePathsAndNullPath1()
         {
-            AzureStoragePath.Combine(null, "/second/", "/third/");
+            Action act = () => AzureStoragePath.Combine(null, "/second/", "/third/");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("path1");
         }
 
-        [ExpectedArgumentNullException("path2")]
         [TestMethod]
         public void CombineWithThreePathsAndNullPath2()
         {
-            AzureStoragePath.Combine("first/", null, "/third/");
+            Action act = () => AzureStoragePath.Combine("first/", null, "/third/");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("path2");
         }
 
-        [ExpectedArgumentNullException("path3")]
         [TestMethod]
         public void CombineWithThreePathsAndNullPath3()
         {
-            AzureStoragePath.Combine("first/", "/second/", null);
+            Action act = () => AzureStoragePath.Combine("first/", "/second/", null);
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("path3");
         }
 
         [TestMethod]
@@ -158,37 +158,37 @@ namespace CPP.Framework.WindowsAzure.Storage
         {
             const string expect = "first/second";
             var actual = AzureStoragePath.Combine("first/", "/second");
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [Ignore]
-        [ExpectedArgumentException("path1")]
         [TestMethod]
         public void CombineWithTwoPathsAndInvalidPath1()
         {
-            AzureStoragePath.Combine("first:/", "/second/");
+            Action act = () => AzureStoragePath.Combine("first:/", "/second/");
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("path1");
         }
 
         [Ignore]
-        [ExpectedArgumentException("path2")]
         [TestMethod]
         public void CombineWithTwoPathsAndInvalidPath2()
         {
-            AzureStoragePath.Combine("first/", "/second:/");
+            Action act = () => AzureStoragePath.Combine("first/", "/second:/");
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("path2");
         }
 
-        [ExpectedArgumentNullException("path1")]
         [TestMethod]
         public void CombineWithTwoPathsAndNullPath1()
         {
-            AzureStoragePath.Combine(null, "/second/");
+            Action act = () => AzureStoragePath.Combine(null, "/second/");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("path1");
         }
 
-        [ExpectedArgumentNullException("path2")]
         [TestMethod]
         public void CombineWithTwoPathsAndNullPath2()
         {
-            AzureStoragePath.Combine("first/", null);
+            Action act = () => AzureStoragePath.Combine("first/", null);
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("path2");
         }
 
         [TestMethod]
@@ -197,7 +197,7 @@ namespace CPP.Framework.WindowsAzure.Storage
             const string expect = "my-blob-file.pdf";
             var path = AzureStoragePath.Combine("container", "location/folder", "my-blob-file.pdf");
             var actual = AzureStoragePath.GetBlobFileName(path);
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [TestMethod]
@@ -206,7 +206,7 @@ namespace CPP.Framework.WindowsAzure.Storage
             const string expect = "";
             var path = AzureStoragePath.Combine("container", "");
             var actual = AzureStoragePath.GetBlobFileName(path);
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [TestMethod]
@@ -215,7 +215,7 @@ namespace CPP.Framework.WindowsAzure.Storage
             const string expect = "location/folder/my-blob-file.pdf";
             var path = AzureStoragePath.Combine("container", "location/folder", "my-blob-file.pdf");
             var actual = AzureStoragePath.GetBlobFilePath(path);
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [TestMethod]
@@ -224,7 +224,7 @@ namespace CPP.Framework.WindowsAzure.Storage
             const string expect = "";
             var path = AzureStoragePath.Combine("container", "");
             var actual = AzureStoragePath.GetBlobFilePath(path);
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [TestMethod]
@@ -233,45 +233,45 @@ namespace CPP.Framework.WindowsAzure.Storage
             const string expect = "container";
             var path = AzureStoragePath.Combine("container", "location/folder", "my-blob-file.pdf");
             var actual = AzureStoragePath.GetContainerName(path);
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [TestMethod]
         public void HasInvalidPathChars()
         {
             var expect = String.Format("reports-out/organization/{0:D}/{1:D}-john-doe-ENTP.pdf", Guid.NewGuid(), Guid.NewGuid());
-            Verify.IsFalse(AzureStoragePath.HasInvalidPathChars(expect));
+            AzureStoragePath.HasInvalidPathChars(expect).Should().BeFalse();
         }
 
         [Ignore]
         [TestMethod]
         public void HasInvalidPathCharsWithInvalidChars()
         {
-            Verify.IsTrue(AzureStoragePath.HasInvalidPathChars("$()%^&!@#*"));
+            AzureStoragePath.HasInvalidPathChars("$()%^&!@#*").Should().BeTrue();
         }
 
         [TestMethod]
         public void IsContainerNameValid()
         {
-            Verify.IsTrue(AzureStoragePath.IsContainerNameValid("test-path-123"));
+            AzureStoragePath.IsContainerNameValid("test-path-123").Should().BeTrue();
         }
 
         [TestMethod]
         public void IsContainerValidWithDoubleDashes()
         {
-            Verify.IsFalse(AzureStoragePath.IsContainerNameValid("test--path"));
+            AzureStoragePath.IsContainerNameValid("test--path").Should().BeFalse();
         }
 
         [TestMethod]
         public void IsContainerNameValidWithInvalidChars()
         {
-            Verify.IsFalse(AzureStoragePath.IsContainerNameValid("test-path#"));
+            AzureStoragePath.IsContainerNameValid("test-path#").Should().BeFalse();
         }
 
         [TestMethod]
         public void IsContainerValidWithLeadingDash()
         {
-            Verify.IsFalse(AzureStoragePath.IsContainerNameValid("-test-path"));
+            AzureStoragePath.IsContainerNameValid("-test-path").Should().BeFalse();
         }
 
         [TestMethod]
@@ -280,7 +280,7 @@ namespace CPP.Framework.WindowsAzure.Storage
             const string expect = "container/org/project";
             var sample = "container/:org/>project";
             var actual = AzureStoragePath.RemoveInvalidChars(sample);
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [TestMethod]
@@ -289,7 +289,7 @@ namespace CPP.Framework.WindowsAzure.Storage
             const string expect = @"container\org\project";
             var sample = @"container\:org\>project";
             var actual = AzureStoragePath.RemoveInvalidChars(sample);
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
     }
 }

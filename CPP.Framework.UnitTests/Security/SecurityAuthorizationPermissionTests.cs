@@ -1,11 +1,13 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using System.Threading;
 
 using CPP.Framework.DependencyInjection;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
 using CPP.Framework.Security.Policies;
+
+using FluentAssertions;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -34,12 +36,12 @@ namespace CPP.Framework.Security
         public void CallGrantAccessRights()
         {
             var policy = SecurityAccessRightPolicy.Create(SeSampleAccessRightNameA);
-            var identity = (ClaimsIdentity) StubFactory.CreatePrincipal("basic")
+            var identity = (ClaimsIdentity) ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .Identity;
 
             identity.GrantAccessRight(SeSampleAccessRightNameA);
-            Assert.IsTrue(identity.CheckAccess(policy));
+            identity.CheckAccess(policy).Should().BeTrue();
         }
 
 
@@ -47,54 +49,54 @@ namespace CPP.Framework.Security
         public void CallRevokeAccessRights()
         {
             var policy = SecurityAccessRightPolicy.Create(SeSampleAccessRightNameA);
-            var identity = (ClaimsIdentity)StubFactory.CreatePrincipal("basic")
+            var identity = (ClaimsIdentity)ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .Identity;
 
             identity.GrantAccessRight(SeSampleAccessRightNameA);
-            Assert.IsTrue(identity.CheckAccess(policy));
+            identity.CheckAccess(policy).Should().BeTrue();
 
             identity.RevokeAccessRight(SeSampleAccessRightNameA);
-            Assert.IsFalse(identity.CheckAccess(policy));
+            identity.CheckAccess(policy).Should().BeFalse();
         }
 
         [TestMethod]
         public void CallRevokeAccessRightsNotAssigned()
         {
             var policy = SecurityAccessRightPolicy.Create(SeSampleAccessRightNameA);
-            var identity = (ClaimsIdentity)StubFactory.CreatePrincipal("basic")
+            var identity = (ClaimsIdentity)ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .Identity;
 
             identity.RevokeAccessRight(SeSampleAccessRightNameA);
-            Assert.IsFalse(identity.CheckAccess(policy));
+            identity.CheckAccess(policy).Should().BeFalse();
         }
 
-        [ExpectedException(typeof(SecurityAuthorizationException))]
         [TestMethod]
         public void CallComboSecuredMethodWithAuthAndNoAccessRights()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .RegisterPrincipal();
-            this.SecuredComboAccessMethod();
+            Action act = () => this.SecuredComboAccessMethod();
+            act.Should().Throw<SecurityAuthorizationException>();
         }
 
-        [ExpectedException(typeof(SecurityAuthorizationException))]
         [TestMethod]
         public void CallComboSecuredMethodWithAuthAndFeatureButNoAccessRights()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .GrantFeatureName(SeSampleFeatureNameNameB)
                 .RegisterPrincipal();
-            this.SecuredComboAccessMethod();
+            Action act = () => this.SecuredComboAccessMethod();
+            act.Should().Throw<SecurityAuthorizationException>();
         }
 
         [TestMethod]
         public void CallSecuredMethodWithAuthAndAccessRight()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .GrantAccessRight(SeSampleAccessRightNameA)
                 .RegisterPrincipal();
@@ -104,92 +106,92 @@ namespace CPP.Framework.Security
         [TestMethod]
         public void CallSecuredMethodWithAuthAndFeatureName()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .GrantFeatureName(SeSampleFeatureNameNameA)
                 .RegisterPrincipal();
             this.SecuredFeatureNameMethod();
         }
 
-        [ExpectedException(typeof(SecurityAuthorizationException))]
         [TestMethod]
         public void CallSecuredMethodWithAuthAndNoAccessRight()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .RegisterPrincipal();
-            this.SecuredAccessRightMethod();
+            Action act = () => this.SecuredAccessRightMethod();
+            act.Should().Throw<SecurityAuthorizationException>();
         }
 
-        [ExpectedException(typeof(SecurityAuthorizationException))]
         [TestMethod]
         public void CallSecuredMethodWithAuthAndNoFeatureName()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .RegisterPrincipal();
-            this.SecuredFeatureNameMethod();
+            Action act = () => this.SecuredFeatureNameMethod();
+            act.Should().Throw<SecurityAuthorizationException>();
         }
 
-        [ExpectedException(typeof(SecurityAuthenticationException))]
         [TestMethod]
         public void CallSecuredMethodWithNoAuthAndNoClaims()
         {
-            StubFactory.CreatePrincipal(null)
+            ClaimsPrincipalTestExtensions.CreatePrincipal(null)
                 .RegisterPrincipal();
-            this.SecuredAccessRightMethod();
+            Action act = () => this.SecuredAccessRightMethod();
+            act.Should().Throw<SecurityAuthenticationException>();
         }
 
         [TestMethod]
         public void CheckAccessWithAuthAndAccessRight()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .GrantAccessRight(SeSampleAccessRightNameA)
                 .RegisterPrincipal();
             var actual = SecurityAuthorizationPermission.CheckAccess(SeSampleAccessRightA);
-            Verify.IsTrue(actual);
+            actual.Should().BeTrue();
         }
 
         [TestMethod]
         public void CheckAccessWithAuthAndFeatureName()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .GrantFeatureName(SeSampleFeatureNameNameA)
                 .RegisterPrincipal();
             var actual = SecurityAuthorizationPermission.CheckAccess(SeSampleFeatureNameA);
-            Verify.IsTrue(actual);
+            actual.Should().BeTrue();
         }
 
         [TestMethod]
         public void CheckAccessWithAuthAndNoAccessRight()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .RegisterPrincipal();
             var actual = SecurityAuthorizationPermission.CheckAccess(SeSampleAccessRightA);
-            Verify.IsFalse(actual);
+            actual.Should().BeFalse();
         }
 
         [TestMethod]
         public void CheckAccessWithAuthAndNoClaims()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .RegisterPrincipal();
             var actual = SecurityAuthorizationPermission.CheckAccess(SeSampleAccessRightA);
-            Verify.IsFalse(actual);
+            actual.Should().BeFalse();
         }
 
         [TestMethod]
         public void CheckAccessWithAuthAndNoFeatureName()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .RegisterPrincipal();
             var actual = SecurityAuthorizationPermission.CheckAccess(SeSampleFeatureNameA);
-            Verify.IsFalse(actual);
+            actual.Should().BeFalse();
         }
 
         [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1501:StatementMustNotBeOnSingleLine", Justification = "Reviewed. Suppression is OK here.")]
@@ -200,11 +202,11 @@ namespace CPP.Framework.Security
             var existing = Thread.CurrentPrincipal;
             try
             {
-                Thread.CurrentPrincipal = StubFactory.CreatePrincipal("basic")
+                Thread.CurrentPrincipal = ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                     .GrantUserName("testuser")
                     .GrantAccessRight(SeSampleAccessRightNameA);
                 var actual = SecurityAuthorizationPermission.CheckAccess(SeSampleAccessRightA);
-                Verify.IsTrue(actual);
+                actual.Should().BeTrue();
             }
             catch (Exception)
             {
@@ -220,24 +222,24 @@ namespace CPP.Framework.Security
         [TestMethod]
         public void CheckAccessWithNoAuthAndNoClaims()
         {
-            StubFactory.CreatePrincipal(null)
+            ClaimsPrincipalTestExtensions.CreatePrincipal(null)
                 .RegisterPrincipal();
             var actual = SecurityAuthorizationPermission.CheckAccess(SeSampleAccessRightA);
-            Verify.IsFalse(actual);
+            actual.Should().BeFalse();
         }
 
         [TestMethod]
         public void CheckAccessWithNoAuthAndExplicitPrincipal()
         {
-            var principal = StubFactory.CreatePrincipal(null);
+            var principal = ClaimsPrincipalTestExtensions.CreatePrincipal(null);
             var actual = SecurityAuthorizationPermission.CheckAccess(SeSampleAccessRightA, principal);
-            Verify.IsFalse(actual);
+            actual.Should().BeFalse();
         }
 
         [TestMethod]
         public void ComplexDemandWithAuthAndAccessRightsAndFeatureName()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .GrantAccessRight(SeSampleAccessRightNameA)
                 .GrantAccessRight(SeSampleAccessRightNameC)
@@ -250,27 +252,27 @@ namespace CPP.Framework.Security
         [TestMethod]
         public void ImperativeDemandWithAnonAndAccessRight()
         {
-            StubFactory.CreatePrincipal(null)
+            ClaimsPrincipalTestExtensions.CreatePrincipal(null)
                 .GrantAccessRight(SeSampleAccessRightNameA)
                 .RegisterPrincipal();
             SeSampleAccessRightPermissionA.Demand(false);
             SecurityAuthorizationPermission.Demand(SeSampleAccessRightA, false);
         }
 
-        [ExpectedException(typeof(SecurityAuthorizationException))]
         [TestMethod]
         public void ImperativeDemandWithAuthAndNoAccessRight()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .RegisterPrincipal();
-            SeSampleAccessRightPermissionA.Demand();
+            Action act = () => SeSampleAccessRightPermissionA.Demand();
+            act.Should().Throw<SecurityAuthorizationException>();
         }
 
         [TestMethod]
         public void SimpleDemandWithAuthAndAccessRight()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .GrantAccessRight(SeSampleAccessRightNameA)
                 .RegisterPrincipal();
@@ -280,50 +282,50 @@ namespace CPP.Framework.Security
         [TestMethod]
         public void SimpleDemandWithAuthAndFeatureName()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .GrantFeatureName(SeSampleFeatureNameNameA)
                 .RegisterPrincipal();
             SecurityAuthorizationPermission.Demand(SeSampleFeatureNameA);
         }
 
-        [ExpectedException(typeof(SecurityAuthorizationException))]
         [TestMethod]
         public void SimpleDemandWithAuthAndNoAccessRight()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .RegisterPrincipal();
-            SecurityAuthorizationPermission.Demand(SeSampleAccessRightA);
+            Action act = () => SecurityAuthorizationPermission.Demand(SeSampleAccessRightA);
+            act.Should().Throw<SecurityAuthorizationException>();
         }
 
-        [ExpectedException(typeof(SecurityAuthorizationException))]
         [TestMethod]
         public void SimpleDemandWithAuthAndNoClaims()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .RegisterPrincipal();
-            SecurityAuthorizationPermission.Demand(SeSampleAccessRightA);
+            Action act = () => SecurityAuthorizationPermission.Demand(SeSampleAccessRightA);
+            act.Should().Throw<SecurityAuthorizationException>();
         }
 
-        [ExpectedException(typeof(SecurityAuthorizationException))]
         [TestMethod]
         public void SimpleDemandWithAuthAndNoFeatureName()
         {
-            StubFactory.CreatePrincipal("basic")
+            ClaimsPrincipalTestExtensions.CreatePrincipal("basic")
                 .GrantUserName("testuser")
                 .RegisterPrincipal();
-            SecurityAuthorizationPermission.Demand(SeSampleFeatureNameA);
+            Action act = () => SecurityAuthorizationPermission.Demand(SeSampleFeatureNameA);
+            act.Should().Throw<SecurityAuthorizationException>();
         }
 
-        [ExpectedException(typeof(SecurityAuthenticationException))]
         [TestMethod]
         public void SimpleDemandWithNoAuthAndNoClaims()
         {
-            StubFactory.CreatePrincipal(null)
+            ClaimsPrincipalTestExtensions.CreatePrincipal(null)
                 .RegisterPrincipal();
-            SecurityAuthorizationPermission.Demand(SeSampleAccessRightA | SeSampleFeatureNameA);
+            Action act = () => SecurityAuthorizationPermission.Demand(SeSampleAccessRightA | SeSampleFeatureNameA);
+            act.Should().Throw<SecurityAuthenticationException>();
         }
 
         #region Internal Helper Methods

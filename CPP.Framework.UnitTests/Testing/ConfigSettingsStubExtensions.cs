@@ -7,6 +7,7 @@ using CPP.Framework.Configuration;
 using CPP.Framework.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute.Extensions;
 
 namespace CPP.Framework.UnitTests.Testing
 {
@@ -142,7 +143,9 @@ namespace CPP.Framework.UnitTests.Testing
         {
             ArgumentValidator.ValidateThisObj(() => service);
             service.IsAvailable.Returns(true);
-            service.GetConfigurationSettingValue(name).Returns(value);
+            // Use Configure() to suppress any previously configured Throws (e.g. from
+            // SetupDefaultConfig) so the setup call does not trigger the wildcard throw.
+            service.Configure().GetConfigurationSettingValue(name).Returns(value);
             return service;
         }
 
@@ -174,7 +177,9 @@ namespace CPP.Framework.UnitTests.Testing
             ArgumentValidator.ValidateThisObj(() => service);
             ArgumentValidator.ValidateNotNull(() => factory);
             service.IsAvailable.Returns(true);
-            service.GetConfigurationSettingValue(name).Throws(factory?.Invoke() ?? new Exception());
+            // Use Configure() to suppress any previously configured Throws (e.g. from
+            // SetupDefaultConfig) so the setup call does not trigger the wildcard throw.
+            service.Configure().GetConfigurationSettingValue(name).Throws(factory?.Invoke() ?? new Exception());
             return service;
         }
     }

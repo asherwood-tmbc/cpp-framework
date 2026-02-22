@@ -1,13 +1,15 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
 using CPP.Framework.WindowsAzure.Storage;
 
 using Microsoft.ServiceBus.Messaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Rhino.Mocks;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using NSubstitute.Extensions;
 
 namespace CPP.Framework.WindowsAzure.ServiceBus.Queue
 {
@@ -18,30 +20,27 @@ namespace CPP.Framework.WindowsAzure.ServiceBus.Queue
     {
         private const string TestTopicName = "TestTopic";
         private const string TestEventName = "TestEvent";
-        
+
         [TestMethod]
         public void EnqueueWithAttributedEventName()
         {
             var model = new AttributedtMessageModel();
-            var account = StubFactory.CreatePartial<AzureStorageAccount>("UseDevelopmentStorage=true", $"{Guid.NewGuid():N}");
-            account
-                .StubAction(stub => stub.GetServiceBus())
-                .WhenCalled((GetServiceBus) =>
+            var account = Substitute.ForPartsOf<AzureStorageAccount>("UseDevelopmentStorage=true", $"{Guid.NewGuid():N}");
+            account.Configure().GetServiceBus()
+                .Returns(callInfo =>
                     {
-                        var serviceBus = StubFactory.CreateStub<AzureServiceBus>(account, account.ConnectionString);
-                        serviceBus.StubAction(stub => stub.GetTopic(Arg<string>.Is.Equal(TestTopicName)))
-                            .WhenCalled((GetTopic) =>
+                        var serviceBus = Substitute.For<AzureServiceBus>(account, account.ConnectionString);
+                        serviceBus.GetTopic(Arg.Is(TestTopicName))
+                            .Returns(getTopicCallInfo =>
                                 {
-                                    var topic = StubFactory.CreateStub<AzureServiceBusTopic>(serviceBus, GetTopic.Arguments[0])
-                                        .StubAction(stub => stub.SendEventMessage(Arg.Is(TestEventName), Arg.Is(model)))
-                                        .DoNothing()
-                                        .StubAction(stub => stub.SendEventMessage(Arg<string>.Is.Anything, Arg.Is(model)))
-                                        .Throw(new InvalidOperationException());
-                                    GetTopic.ReturnValue = topic;
+                                    var topic = Substitute.For<AzureServiceBusTopic>(serviceBus, getTopicCallInfo.ArgAt<string>(0));
+                                    topic.When(t => t.SendEventMessage(Arg.Any<string>(), Arg.Is(model))).Throw<InvalidOperationException>();
+                                    topic.When(t => t.SendEventMessage(Arg.Is(TestEventName), Arg.Is(model))).Do(ci => { });
+                                    return topic;
                                 });
-                        GetServiceBus.ReturnValue = serviceBus;
-                    })
-                .RegisterServiceStub();
+                        return serviceBus;
+                    });
+            account.RegisterServiceStub();
             TestServiceBusQueue.Current.Enqueue(new AttributedtMessageModel());
         }
 

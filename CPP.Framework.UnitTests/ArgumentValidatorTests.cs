@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using CPP.Framework.Configuration;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CPP.Framework
@@ -21,96 +22,80 @@ namespace CPP.Framework
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentException("argument")]
         public void ThrowArgumentExceptionFor()
         {
             var argument = "argument";
             var expected = new ArgumentException("Default exception message 1", argument);
-            
-            try
+
+            Action act = () =>
             {
                 throw ArgumentValidator.CreateArgumentExceptionFor(() => argument, "Default exception message {0}", 1);
-            }
-            catch (ArgumentException ex)
-            {
-                Verify.AreEqual(expected.Message, ex.Message);
-                Verify.AreEqual(expected.ParamName, ex.ParamName);
-                Verify.AreEqual(expected.InnerException, ex.InnerException);
-                Verify.AreEqual(Assembly.GetExecutingAssembly().GetName().Name, ex.Source);
-                throw;
-            }
+            };
+            var ex = act.Should().Throw<ArgumentException>().And;
+            ex.Message.Should().Be(expected.Message);
+            ex.ParamName.Should().Be(expected.ParamName);
+            ex.InnerException.Should().Be(expected.InnerException);
+            ex.Source.Should().Be(Assembly.GetExecutingAssembly().GetName().Name);
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentException("argument")]
         public void ThrowArgumentExceptionForWithObjArgument()
         {
             var argument = new KeyValuePair<string, object>("Key", new Object());
             var expected = new ArgumentException("Default exception message 1", "argument");
 
-            try
+            Action act = () =>
             {
                 throw ArgumentValidator.CreateArgumentExceptionFor(() => argument, "Default exception message {0}", 1);
-            }
-            catch (ArgumentException ex)
-            {
-                Verify.AreEqual(expected.Message, ex.Message);
-                Verify.AreEqual(expected.ParamName, ex.ParamName);
-                Verify.AreEqual(expected.InnerException, ex.InnerException);
-                Verify.AreEqual(Assembly.GetExecutingAssembly().GetName().Name, ex.Source);
-                throw;
-            }
+            };
+            var ex = act.Should().Throw<ArgumentException>().And;
+            ex.Message.Should().Be(expected.Message);
+            ex.ParamName.Should().Be(expected.ParamName);
+            ex.InnerException.Should().Be(expected.InnerException);
+            ex.Source.Should().Be(Assembly.GetExecutingAssembly().GetName().Name);
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentException("argument")]
         public void ThrowArgumentExceptionForWithInner()
         {
             var argument = "argument";
 
             var innerException = new Exception("innerException");
             var expected = new ArgumentException("Default exception message 1", argument, innerException);
-            
-            try
+
+            Action act = () =>
             {
                 throw ArgumentValidator.CreateArgumentExceptionFor(() => argument, innerException, "Default exception message {0}", 1);
-            }
-            catch(ArgumentException ex)
-            {
-                Verify.AreEqual(expected.Message, ex.Message);
-                Verify.AreEqual(expected.ParamName, ex.ParamName);
-                Verify.AreEqual(expected.InnerException, ex.InnerException);
-                Verify.AreEqual(Assembly.GetExecutingAssembly().GetName().Name, ex.Source);
-                throw;
-            }
+            };
+            var ex = act.Should().Throw<ArgumentException>().And;
+            ex.Message.Should().Be(expected.Message);
+            ex.ParamName.Should().Be(expected.ParamName);
+            ex.InnerException.Should().Be(expected.InnerException);
+            ex.Source.Should().Be(Assembly.GetExecutingAssembly().GetName().Name);
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentException("argument")]
         public void ThrowArgumentExceptionForWithNullInnerExplicit()
         {
             var argument = "argument";
 
             var expected = new ArgumentException("Default exception message 1", argument, null);
 
-            try
+            Action act = () =>
             {
                 throw ArgumentValidator.CreateArgumentExceptionFor(() => argument, null, "Default exception message {0}", 1);
-            }
-            catch (ArgumentException ex)
-            {
-                Verify.AreEqual(expected.Message, ex.Message);
-                Verify.AreEqual(expected.ParamName, ex.ParamName);
-                Verify.AreEqual(expected.InnerException, ex.InnerException);
-                Verify.AreEqual(Assembly.GetExecutingAssembly().GetName().Name, ex.Source);
-                throw;
-            }
+            };
+            var ex = act.Should().Throw<ArgumentException>().And;
+            ex.Message.Should().Be(expected.Message);
+            ex.ParamName.Should().Be(expected.ParamName);
+            ex.InnerException.Should().Be(expected.InnerException);
+            ex.Source.Should().Be(Assembly.GetExecutingAssembly().GetName().Name);
         }
 
         #endregion
@@ -231,19 +216,19 @@ namespace CPP.Framework
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentException("argument")]
         public void ValidateConfigCategoryWithInvalidTarget()
         {
             // ReSharper disable ConvertToConstant.Local
 
-            // contrary to ReSharper's suggestion, this cannot be defined as a constant, because it 
+            // contrary to ReSharper's suggestion, this cannot be defined as a constant, because it
             // will cause the test to always fail. the ArgumentValidator class requires the lambda
             // to be a member-access expression, which provides access to the variable name needed
             // to create the exception correctly on failure, whereas a constant expression does not.
             var argument = ConfigSettingKey.EmailRequestQueue;
-            
+
             // ReSharper restore ConvertToConstant.Local
-            ArgumentValidator.ValidateConfigCategory(() => argument, ConfigSettingTarget.None);
+            Action act = () => { ArgumentValidator.ValidateConfigCategory(() => argument, ConfigSettingTarget.None); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("argument");
         }
 
         #endregion
@@ -253,11 +238,11 @@ namespace CPP.Framework
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentException("argument")]
         public void ValidateNotEmptyWithEmptyValue()
         {
             var argument = Guid.Empty;
-            ArgumentValidator.ValidateNotEmpty(() => argument);
+            Action act = () => { ArgumentValidator.ValidateNotEmpty(() => argument); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("argument");
         }
 
         [TestMethod]
@@ -276,21 +261,21 @@ namespace CPP.Framework
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentException("argument")]
         public void ValidateNotNullOrEmptyWithEmtpyValue()
         {
             var argument = String.Empty;
-            ArgumentValidator.ValidateNotNullOrEmpty(() => argument);
+            Action act = () => { ArgumentValidator.ValidateNotNullOrEmpty(() => argument); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("argument");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentNullException("argument")]
         public void ValidateNotNullOrEmptyWithNullValue()
         {
             string argument = null;
-            ArgumentValidator.ValidateNotNullOrEmpty(() => argument);
+            Action act = () => { ArgumentValidator.ValidateNotNullOrEmpty(() => argument); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("argument");
         }
 
         [TestMethod]
@@ -342,21 +327,21 @@ namespace CPP.Framework
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentException("argument")]
         public void ValidateNotNullOrWhiteSpaceWithEmtpyValue()
         {
             var argument = String.Empty;
-            ArgumentValidator.ValidateNotNullOrWhiteSpace(() => argument);
+            Action act = () => { ArgumentValidator.ValidateNotNullOrWhiteSpace(() => argument); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("argument");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentNullException("argument")]
         public void ValidateNotNullOrWhiteSpaceWithNullValue()
         {
             string argument = null;
-            ArgumentValidator.ValidateNotNullOrWhiteSpace(() => argument);
+            Action act = () => { ArgumentValidator.ValidateNotNullOrWhiteSpace(() => argument); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("argument");
         }
 
         [TestMethod]
@@ -407,11 +392,11 @@ namespace CPP.Framework
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentException("argument")]
         public void ValidateNotNullOrWhiteSpaceWithWhiteSpaceValue()
         {
             var argument = new string(' ', 4);
-            ArgumentValidator.ValidateNotNullOrWhiteSpace(() => argument);
+            Action act = () => { ArgumentValidator.ValidateNotNullOrWhiteSpace(() => argument); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("argument");
         }
 
         #endregion
@@ -421,29 +406,29 @@ namespace CPP.Framework
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentException("expression")]
         public void ValidateNotNullWithInvalidExpression()
         {
-            ArgumentValidator.ValidateNotNull(() => "");
+            Action act = () => { ArgumentValidator.ValidateNotNull(() => ""); };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("expression");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentNullException("expression")]
         public void ValidateNotNullWithNullExpression()
         {
-            ArgumentValidator.ValidateNotNull((Expression<Func<object>>)null);
+            Action act = () => { ArgumentValidator.ValidateNotNull((Expression<Func<object>>)null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("expression");
         }
 
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentNullException("argument")]
         public void ValidateNotNullWithNullValue()
         {
             object argument = null;
-            ArgumentValidator.ValidateNotNull(() => argument);
+            Action act = () => { ArgumentValidator.ValidateNotNull(() => argument); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("argument");
         }
 
         [TestMethod]
@@ -458,11 +443,11 @@ namespace CPP.Framework
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentNullException("argument")]
         public void ValidateNotNullWithNullableValueAsNull()
         {
             Guid? argument = null;
-            ArgumentValidator.ValidateNotNull(() => argument);
+            Action act = () => { ArgumentValidator.ValidateNotNull(() => argument); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("argument");
         }
 
         [TestMethod]
@@ -477,10 +462,10 @@ namespace CPP.Framework
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentNullException("expression")]
         public void ValidateThisObjWithInvalidExpression()
         {
-            ArgumentValidator.ValidateThisObj((Expression<Func<object>>)null);
+            Action act = () => { ArgumentValidator.ValidateThisObj((Expression<Func<object>>)null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("expression");
         }
 
         [TestMethod]
@@ -495,10 +480,10 @@ namespace CPP.Framework
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         [TestGroup(TestGroupTarget.Validation)]
-        [ExpectedArgumentNullException("expression")]
         public void ValidateThisObjWithNullableAndInvalidExpression()
         {
-            ArgumentValidator.ValidateThisObj((Expression<Func<bool?>>)null);
+            Action act = () => { ArgumentValidator.ValidateThisObj((Expression<Func<bool?>>)null); };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("expression");
         }
 
         [TestMethod]

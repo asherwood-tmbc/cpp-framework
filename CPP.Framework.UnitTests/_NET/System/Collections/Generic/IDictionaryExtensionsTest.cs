@@ -1,7 +1,8 @@
-﻿using System.Linq;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics.CodeAnalysis;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 
 // ReSharper disable once CheckNamespace
 namespace System.Collections.Generic
@@ -23,18 +24,30 @@ namespace System.Collections.Generic
             var expect = default(IEnumerable<KeyValuePair<Guid, Guid>>);
             var common = new HashSet<Guid>(InsertCommonValues(CommonItemCount, source));
             var unique = new HashSet<Guid>(InsertUniqueValues(UniqueItemCount, source));
-            
+
             var actual = new Dictionary<Guid, Guid>();
             foreach (var dict in source) actual.UnionWith(dict);
             var total = (common.Count + unique.Count);
 
-            Verify.AreEqual(actual.Count, total);
+            actual.Count.Should().Be(total);
             expect = source.First().Where(kvp => (common.Contains(kvp.Key)));
-            Verify.IsSubsetOf(actual, expect, (x, y) => (x == y));
+            foreach (var kvp in expect)
+            {
+                actual.Should().ContainKey(kvp.Key);
+                (actual[kvp.Key] == kvp.Value).Should().BeTrue();
+            }
             expect = source.Skip(1).SelectMany(dict => dict).Where(kvp => (common.Contains(kvp.Key)));
-            Verify.IsSubsetOf(actual, expect, (x, y) => (x != y));
+            foreach (var kvp in expect)
+            {
+                actual.Should().ContainKey(kvp.Key);
+                (actual[kvp.Key] != kvp.Value).Should().BeTrue();
+            }
             expect = source.SelectMany(dict => dict).Where(kvp => (unique.Contains(kvp.Key)));
-            Verify.IsSubsetOf(actual, expect, (x, y) => (x == y));
+            foreach (var kvp in expect)
+            {
+                actual.Should().ContainKey(kvp.Key);
+                (actual[kvp.Key] == kvp.Value).Should().BeTrue();
+            }
         }
 
         [TestMethod]
@@ -54,11 +67,19 @@ namespace System.Collections.Generic
             foreach (var dict in source) actual.UnionWith(dict);
             var total = (common.Count);
 
-            Verify.AreEqual(actual.Count, total);
+            actual.Count.Should().Be(total);
             expect = source.First().Where(kvp => (common.Contains(kvp.Key)));
-            Verify.IsSubsetOf(actual, expect, (x, y) => (x == y));
+            foreach (var kvp in expect)
+            {
+                actual.Should().ContainKey(kvp.Key);
+                (actual[kvp.Key] == kvp.Value).Should().BeTrue();
+            }
             expect = source.Skip(1).SelectMany(dict => dict).Where(kvp => (common.Contains(kvp.Key)));
-            Verify.IsSubsetOf(actual, expect, (x, y) => (x != y));
+            foreach (var kvp in expect)
+            {
+                actual.Should().ContainKey(kvp.Key);
+                (actual[kvp.Key] != kvp.Value).Should().BeTrue();
+            }
         }
 
         [TestMethod]
@@ -78,9 +99,13 @@ namespace System.Collections.Generic
             foreach (var dict in source) actual.UnionWith(dict);
             var total = (unique.Count);
 
-            Verify.AreEqual(actual.Count, total);
+            actual.Count.Should().Be(total);
             expect = source.SelectMany(dict => dict).Where(kvp => (unique.Contains(kvp.Key)));
-            Verify.IsSubsetOf(actual, expect, (x, y) => (x == y));
+            foreach (var kvp in expect)
+            {
+                actual.Should().ContainKey(kvp.Key);
+                (actual[kvp.Key] == kvp.Value).Should().BeTrue();
+            }
         }
 
         #region Private Helper Functions

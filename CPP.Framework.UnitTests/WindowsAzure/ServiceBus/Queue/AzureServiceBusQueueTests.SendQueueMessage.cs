@@ -1,12 +1,16 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
 using CPP.Framework.WindowsAzure.Storage;
+
+using FluentAssertions;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Rhino.Mocks;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using NSubstitute.Extensions;
 
 [assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:ElementsMustBeDocumented", Justification = "Reviewed. Suppression is OK here.")]
 
@@ -23,45 +27,40 @@ namespace CPP.Framework.WindowsAzure.ServiceBus.Queue
         {
             var expect = new SampleMessageModel();
 
-            StubFactory.CreatePartial<AzureStorageAccount>()
-                .StubAction(stub => stub.LoadAzureAccountName()).Return(TestAccountName)
-                .StubAction(stub => stub.LoadConnectionString()).Throw<InvalidOperationException>()
-                .StubAction(stub => stub.GetServiceBus()).Return(CreateServiceBusStub)
-                .StubAction(stub => stub.GetServiceBus(Arg<string>.Is.Anything)).Throw<InvalidOperationException>()
-                .RegisterServiceStub(TestAccountName);
+            var account = Substitute.For<AzureStorageAccount>();
+            account.Configure().LoadAzureAccountName().Returns(TestAccountName);
+            account.Configure().LoadConnectionString().Throws<InvalidOperationException>();
+            account.Configure().GetServiceBus().Returns(callInfo => CreateServiceBusStub(account));
+            account.Configure().GetServiceBus(Arg.Any<string>()).Throws<InvalidOperationException>();
+            account.RegisterServiceStub(TestAccountName);
             AzureServiceBusQueue.SendQueueMessage(expect);
 
-            Verify.AreEqual(1, this.CustomContext.Received.Count);
-            Verify.IsTrue(this.CustomContext.Received.Contains(expect));
+            this.CustomContext.Received.Count.Should().Be(1);
+            this.CustomContext.Received.Contains(expect).Should().BeTrue();
         }
 
         #region Internal Helper Functions
 
         private AzureServiceBus CreateServiceBusStub(AzureStorageAccount account)
         {
-            var instance = StubFactory.CreatePartial<AzureServiceBus>(account, "ignored");
-            instance.StubAction(stub => stub.GetQueue(Arg.Is(TargetQueueName)))
-                .WhenCalled(
-                    (mi) =>
-                        {
-                            mi.ReturnValue = CreateServiceBusQueueStub(instance, ((string)mi.Arguments[0]));
-                        })
-                .StubAction(stub => stub.GetQueue(Arg<string>.Is.Anything)).Throw<InvalidOperationException>();
+            var instance = Substitute.For<AzureServiceBus>(account, "ignored");
+            instance.Configure().GetQueue(Arg.Any<string>()).Throws<InvalidOperationException>();
+            instance.Configure().GetQueue(Arg.Is(TargetQueueName))
+                .Returns(callInfo => CreateServiceBusQueueStub(instance, callInfo.ArgAt<string>(0)));
             return instance;
         }
 
         private AzureServiceBusQueue CreateServiceBusQueueStub(AzureServiceBus serviceBus, string queueName)
         {
-            var instance = StubFactory.CreatePartial<AzureServiceBusQueue>(serviceBus, queueName)
-                .StubAction(stub => stub.SendMessage(Arg<SampleMessageModel>.Is.Anything, Arg<DateTime?>.Is.Anything))
-                .WhenCalled(
-                    (mi) =>
+            var instance = Substitute.For<AzureServiceBusQueue>(serviceBus, queueName);
+            instance.When(stub => stub.SendMessage(Arg.Any<SampleMessageModel>(), Arg.Any<DateTime?>()))
+                .Do(callInfo =>
+                    {
+                        if (callInfo.ArgAt<object>(0) is SampleMessageModel model)
                         {
-                            if (mi.Arguments[0] is SampleMessageModel model)
-                            {
-                                this.CustomContext.Received.Add(model);
-                            }
-                        });
+                            this.CustomContext.Received.Add(model);
+                        }
+                    });
             return instance;
         }
 

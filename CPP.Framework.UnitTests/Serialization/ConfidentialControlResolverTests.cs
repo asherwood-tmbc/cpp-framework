@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 using CPP.Framework.Data;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+
+using FluentAssertions;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -29,7 +31,7 @@ namespace CPP.Framework.Serialization
             var expect = Guid.NewGuid().ToString("N");
             var source = $"{{ \"{AllowedValueProperty}\": \"{Guid.NewGuid().ToString("N")}\", \"{ConfidentialProperty}\": \"{expect}\" }}";
             var actual = JsonConvert.DeserializeObject<SampleModel>(source);
-            Verify.AreEqual(actual.Confidential, expect);
+            actual.Confidential.Should().Be(expect);
         }
 
         [TestMethod]
@@ -43,7 +45,7 @@ namespace CPP.Framework.Serialization
             var expect = $"{{\"{AllowedValueProperty}\":\"{model.AllowedValue}\"}}";
             var actual = JsonConvert.SerializeObject(model, CreateSerializerSettings());
 
-            Verify.AreEqual(expect, actual);
+            actual.Should().Be(expect);
         }
 
         [TestMethod]
@@ -56,8 +58,8 @@ namespace CPP.Framework.Serialization
             };
             var actual = JObject.FromObject(model, CreateSerializer());
 
-            Verify.IsNull(actual.Property(ConfidentialProperty));
-            Verify.IsNotNull(actual.Property(AllowedValueProperty));
+            actual.Property(ConfidentialProperty).Should().BeNull();
+            actual.Property(AllowedValueProperty).Should().NotBeNull();
         }
 
         #region Internal Helper Functions

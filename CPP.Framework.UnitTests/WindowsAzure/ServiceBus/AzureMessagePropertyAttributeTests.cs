@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CPP.Framework.Diagnostics.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CPP.Framework.WindowsAzure.ServiceBus
@@ -23,9 +23,9 @@ namespace CPP.Framework.WindowsAzure.ServiceBus
             var reader = MessagePropertyReader.GetPropertyReader<CustomMessage<bool>>();
             var message = new CustomMessage<bool> { MessageProperty = true };
             var properties = reader.GetPropertyValues(message).ToList();
-            Verify.AreEqual(1, properties.Count);
-            Verify.AreEqual(CustomPropertyName, properties[0].Name);
-            Verify.AreEqual("true", properties[0].Value);
+            properties.Count.Should().Be(1);
+            properties[0].Name.Should().Be(CustomPropertyName);
+            properties[0].Value.Should().Be("true");
         }
 
         #region CustomMessage Class Declaration

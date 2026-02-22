@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
 using CPP.Framework.Serialization;
+
+using FluentAssertions;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -25,17 +27,17 @@ namespace CPP.Framework.Serialization
 
             actual.Clear();
             actual.UnionWith(JsonKnownTypeResolver.GetKnownTypes(typeof(JsonCommonClass)));
-            Verify.IsFalse(actual.Contains(typeof(JsonCommonClass)));
-            Verify.IsTrue(actual.Contains(typeof(JsonExternalDerivedClass)));
-            Verify.IsTrue(actual.Contains(typeof(JsonExternalClassByProxy)));
-            Verify.IsTrue(actual.Contains(typeof(JsonInternalDerivedClass)));
+            actual.Contains(typeof(JsonCommonClass)).Should().BeFalse();
+            actual.Contains(typeof(JsonExternalDerivedClass)).Should().BeTrue();
+            actual.Contains(typeof(JsonExternalClassByProxy)).Should().BeTrue();
+            actual.Contains(typeof(JsonInternalDerivedClass)).Should().BeTrue();
 
             actual.Clear();
             actual.UnionWith(JsonKnownTypeResolver.GetKnownTypes(typeof(JsonExternalDerivedClass)));
-            Verify.IsFalse(actual.Contains(typeof(JsonCommonClass)));
-            Verify.IsFalse(actual.Contains(typeof(JsonExternalDerivedClass)));
-            Verify.IsTrue(actual.Contains(typeof(JsonExternalClassByProxy)));
-            Verify.IsFalse(actual.Contains(typeof(JsonInternalDerivedClass)));
+            actual.Contains(typeof(JsonCommonClass)).Should().BeFalse();
+            actual.Contains(typeof(JsonExternalDerivedClass)).Should().BeFalse();
+            actual.Contains(typeof(JsonExternalClassByProxy)).Should().BeTrue();
+            actual.Contains(typeof(JsonInternalDerivedClass)).Should().BeFalse();
         }
 
         #region Internal Helper Class Definitions

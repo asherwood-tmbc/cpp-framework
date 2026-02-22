@@ -1,7 +1,8 @@
-﻿
+
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // ReSharper disable once CheckNamespace
@@ -9,7 +10,7 @@ namespace System.Collections.Generic
 {
     /// <summary>
     /// Unit tests for the <see cref="IListExtensions"/> class.
-    /// 
+    ///
     /// Test GUID generated for the following:
     ///  1) NOT a new GUID object (with all zeros)
     ///  2) The formatting of GUID ToString() is hypenated 32 digits (00000000-0000-0000-0000-000000000000)
@@ -35,11 +36,11 @@ namespace System.Collections.Generic
 
             actual.AddRange(valuesToAdd);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -53,11 +54,11 @@ namespace System.Collections.Generic
 
             actual.AddRange(valuesToSet);
 
-            Verify.AreEqual(expected.Count, actual.Count);
-            
+            actual.Count.Should().Be(expected.Count);
+
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -71,14 +72,14 @@ namespace System.Collections.Generic
 
             actual.AddRange(valuesToAdd);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
-        
+
         [TestMethod]
         [TestGroup(TestGroupTarget.Core)]
         public void AddSortedListToListTest()
@@ -94,11 +95,11 @@ namespace System.Collections.Generic
 
             actual.AddRange(valuesToAdd.Values);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -115,11 +116,11 @@ namespace System.Collections.Generic
 
             actual.AddRange(valuesToAdd);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -136,11 +137,11 @@ namespace System.Collections.Generic
 
             actual.AddRange(valuesToAdd);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -157,11 +158,11 @@ namespace System.Collections.Generic
 
             actual.AddRange(valuesToAdd);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -180,11 +181,11 @@ namespace System.Collections.Generic
 
             actual.AddRange(valuesToAdd.Values);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -198,11 +199,11 @@ namespace System.Collections.Generic
 
             actual.AddRange(valuesToAdd);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -222,11 +223,11 @@ namespace System.Collections.Generic
 
             actual.SetRange(valuesToSet);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -240,11 +241,11 @@ namespace System.Collections.Generic
 
             actual.SetRange(valuesToSet);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -263,11 +264,11 @@ namespace System.Collections.Generic
 
             actual.SetRange(valuesToSet.Values);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -284,11 +285,11 @@ namespace System.Collections.Generic
 
             actual.SetRange(valuesToSet);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -305,11 +306,11 @@ namespace System.Collections.Generic
 
             actual.SetRange(valuesToSet);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -326,11 +327,11 @@ namespace System.Collections.Generic
 
             actual.SetRange(valuesToSet);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -349,11 +350,11 @@ namespace System.Collections.Generic
 
             actual.SetRange(valuesToSet.Values);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 
@@ -367,11 +368,11 @@ namespace System.Collections.Generic
 
             actual.SetRange(valuesToSet);
 
-            Verify.AreEqual(expected.Count, actual.Count);
+            actual.Count.Should().Be(expected.Count);
 
             for (var i = 0; i < expected.Count; i++)
             {
-                Verify.AreEqual(expected[i], actual[i]);
+                actual[i].Should().Be(expected[i]);
             }
         }
 

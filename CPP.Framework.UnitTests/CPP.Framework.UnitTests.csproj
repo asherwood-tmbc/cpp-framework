@@ -32,7 +32,6 @@
     <PackageReference Include="MSTest.TestAdapter" Version="3.6.3" />
     <PackageReference Include="MSTest.TestFramework" Version="3.6.3" />
     <PackageReference Include="NSubstitute" Version="5.*" />
-    <PackageReference Include="RhinoMocks" Version="3.6.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,7 +39,6 @@
     <ProjectReference Include="..\CPP.Framework.EntityData\CPP.Framework.EntityData.csproj" />
     <ProjectReference Include="..\CPP.Framework.Messaging\CPP.Framework.Messaging.csproj" />
     <ProjectReference Include="..\CPP.Framework.Serialization\CPP.Framework.Serialization.csproj" />
-    <ProjectReference Include="..\CPP.Framework.Testing\CPP.Framework.Testing.csproj" />
     <ProjectReference Include="..\CPP.Framework.WindowsAzure\CPP.Framework.WindowsAzure.csproj" />
   </ItemGroup>
 

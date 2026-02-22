@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using CPP.Framework.DependencyInjection;
-using CPP.Framework.Diagnostics.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.WindowsAzure.Storage;
 using Newtonsoft.Json;
-using Rhino.Mocks;
 
 namespace CPP.Framework.WindowsAzure.Storage
 {
@@ -22,55 +21,67 @@ namespace CPP.Framework.WindowsAzure.Storage
                     .StubMetadataValue(TestPropertyName, expected);
                 actual = target.GetTableProperty<Guid>(TestPropertyName);
             }
-            Verify.AreEqual(expected, actual);
+            actual.Should().Be(expected);
         }
 
-        [ExpectedArgumentException("propertyName")]
         [TestMethod]
         public void GetTablePropertyWithEmptyName()
         {
-            using (var account = CreateStorageAccountStub(true))
+            Action act = () =>
             {
-                var target = account.GetStorageTable<SampleEntity>();
-                target.GetTableProperty<Guid>("");
-            }
+                using (var account = CreateStorageAccountStub(true))
+                {
+                    var target = account.GetStorageTable<SampleEntity>();
+                    target.GetTableProperty<Guid>("");
+                }
+            };
+            act.Should().Throw<ArgumentException>().And.ParamName.Should().Be("propertyName");
         }
 
-        [ExpectedException(typeof(AzureTablePropertyNotFoundException))]
         [TestMethod]
         public void GetTablePropertyWithInvalidName()
         {
-            using (var account = CreateStorageAccountStub(true))
+            Action act = () =>
             {
-                var target = account.GetStorageTable<SampleEntity>();
-                target.GetTableProperty<Guid>("missing");
-            }
+                using (var account = CreateStorageAccountStub(true))
+                {
+                    var target = account.GetStorageTable<SampleEntity>();
+                    target.GetTableProperty<Guid>("missing");
+                }
+            };
+            act.Should().Throw<AzureTablePropertyNotFoundException>();
         }
 
-        [ExpectedArgumentNullException("propertyName")]
         [TestMethod]
         public void GetTablePropertyWithNullName()
         {
-            using (var account = CreateStorageAccountStub(true))
+            Action act = () =>
             {
-                var target = account.GetStorageTable<SampleEntity>();
-                target.GetTableProperty<Guid>(null);
-            }
+                using (var account = CreateStorageAccountStub(true))
+                {
+                    var target = account.GetStorageTable<SampleEntity>();
+                    target.GetTableProperty<Guid>(null);
+                }
+            };
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("propertyName");
         }
 
-        [ExpectedException(typeof(InvalidCastException))]
         [TestMethod]
         public void GetTablePropertyWithInvalidType()
         {
             const string TestPropertyName = "SampleProperty";
             var expected = Guid.NewGuid();
 
-            using (var account = CreateStorageAccountStub(true))
+            Action act = () =>
             {
-                var target = account.GetStorageTable<SampleEntity>()
-                    .StubMetadataValue(TestPropertyName, expected);
-                target.GetTableProperty<bool>(TestPropertyName);
-            }
+                using (var account = CreateStorageAccountStub(true))
+                {
+                    var target = account.GetStorageTable<SampleEntity>()
+                        .StubMetadataValue(TestPropertyName, expected);
+                    target.GetTableProperty<bool>(TestPropertyName);
+                }
+            };
+            act.Should().Throw<InvalidCastException>();
         }
     }
 }

@@ -1,13 +1,14 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CPP.Framework
 {
     /// <summary>
     /// Unit tests for the <see cref="GuidGeneratorService"/> class.
-    /// 
+    ///
     /// Test GUID generated for the following:
     ///  1) NOT a new GUID object (with all zeros)
     ///  2) The formatting of GUID ToString() is hypenated 32 digits (00000000-0000-0000-0000-000000000000)
@@ -25,8 +26,8 @@ namespace CPP.Framework
             var notExpected = new Guid(); // Just making sure it is not an all zero GUID
 
             Console.WriteLine(actual);
-            Verify.AreEqual(actual, Guid.ParseExact(actual.ToString(), "D"));
-            Verify.AreNotEqual(notExpected, actual);
+            Guid.ParseExact(actual.ToString(), "D").Should().Be(actual);
+            actual.Should().NotBe(notExpected);
         }
 
         [TestMethod]
@@ -38,8 +39,8 @@ namespace CPP.Framework
             var notExpected = new Guid(); // Just making sure it is not an all zero GUID
 
             Console.WriteLine(actual);
-            Verify.AreEqual(actual, Guid.ParseExact(actual.ToString(), "D"));
-            Verify.AreNotEqual(notExpected, actual);
+            Guid.ParseExact(actual.ToString(), "D").Should().Be(actual);
+            actual.Should().NotBe(notExpected);
         }
 
         [TestMethod]
@@ -51,8 +52,8 @@ namespace CPP.Framework
             var notExpected = new Guid(); // Just making sure it is not an all zero GUID
 
             Console.WriteLine(actual);
-            Verify.AreEqual(actual, Guid.ParseExact(actual.ToString(), "D"));
-            Verify.AreNotEqual(notExpected, actual);
+            Guid.ParseExact(actual.ToString(), "D").Should().Be(actual);
+            actual.Should().NotBe(notExpected);
         }
     }
 }

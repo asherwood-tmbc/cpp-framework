@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rhino.Mocks.Interfaces;
 
 // ReSharper disable CheckNamespace
 namespace System.Linq
@@ -31,9 +31,9 @@ namespace System.Linq
             }
             var actual = source.Distinct(obj => obj.GuidValue).ToArray();
 
-            Verify.AreEqual(expect.Length, actual.Length);
-            Verify.IsTrue(expect.SequenceEqual(actual));
-            Verify.IsFalse(random.Where((obj, idx) => ReferenceEquals(obj, actual[idx])).Any());
+            actual.Length.Should().Be(expect.Length);
+            expect.SequenceEqual(actual).Should().BeTrue();
+            random.Where((obj, idx) => ReferenceEquals(obj, actual[idx])).Any().Should().BeFalse();
         }
 
         [TestMethod]
@@ -53,12 +53,12 @@ namespace System.Linq
             // has not already enumerated the sequence, which is very important for chaining Linq
             // calls. therfore, if this assert fails, it's a pretty good indication that callers'
             // performance numbers are going to suffer if they use this extension method.
-            Verify.IsInstanceOfType(result, typeof(IEnumerator<MockObject>));
+            result.Should().BeAssignableTo<IEnumerable<MockObject>>();
 
-            Verify.AreEqual(expect.Count, actual.Length);
-            Verify.IsTrue(expect.SetEquals(actual));
-            Verify.IsTrue(source.IsProperSupersetOf(actual));
-            Verify.IsFalse(random.Overlaps(actual));
+            actual.Length.Should().Be(expect.Count);
+            expect.SetEquals(actual).Should().BeTrue();
+            source.IsProperSupersetOf(actual).Should().BeTrue();
+            random.Overlaps(actual).Should().BeFalse();
         }
 
         [TestMethod]
@@ -74,11 +74,11 @@ namespace System.Linq
             var result = IEnumerableExtensions.WhereAnyOf(source.AsQueryable(), obj => obj.GuidValue, filter);
             var actual = result.ToArray();
 
-            Verify.IsInstanceOfType(result, typeof(IQueryable<MockObject>));
-            Verify.AreEqual(expect.Count, actual.Length);
-            Verify.IsTrue(expect.SetEquals(actual));
-            Verify.IsTrue(source.IsProperSupersetOf(actual));
-            Verify.IsFalse(random.Overlaps(actual));
+            result.Should().BeAssignableTo<IQueryable<MockObject>>();
+            actual.Length.Should().Be(expect.Count);
+            expect.SetEquals(actual).Should().BeTrue();
+            source.IsProperSupersetOf(actual).Should().BeTrue();
+            random.Overlaps(actual).Should().BeFalse();
         }
 
         #region Internal Helper Functions

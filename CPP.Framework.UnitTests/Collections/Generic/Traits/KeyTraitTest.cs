@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using CPP.Framework.Diagnostics.Testing;
+using CPP.Framework.UnitTests.Testing;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // ReSharper disable once CheckNamespace
@@ -28,7 +29,7 @@ namespace CPP.Framework.Collections.Generic.Traits
         {
             public string ItemValue = "Item: " + DateTime.Now;
 
-           
+
         }
 
         private sealed class GuidEqualityComparer : IEqualityComparer<Guid>
@@ -60,7 +61,7 @@ namespace CPP.Framework.Collections.Generic.Traits
             var testKeyTrait = new TestKeyTrait<Guid, TestKeyTraitItem>(new GuidEqualityComparer());
             var actual = testKeyTrait.Comparer;
 
-            Verify.IsInstanceOfType(actual, expected);
+            actual.Should().BeOfType<GuidEqualityComparer>();
         }
     }
 }
