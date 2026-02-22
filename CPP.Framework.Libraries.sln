@@ -37,6 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		prereleasebuild.ps1 = prereleasebuild.ps1
 		SDKProjectUpgrade.md = SDKProjectUpgrade.md
+		UnitTestMigration.md = UnitTestMigration.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{114818F7-F709-48A4-AD27-D10C753414A3}"
